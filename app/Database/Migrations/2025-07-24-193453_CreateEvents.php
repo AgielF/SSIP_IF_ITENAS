@@ -13,10 +13,10 @@ class CreateEvents extends Migration
             'nama_event' => ['type' => 'VARCHAR', 'constraint' => 50],
             'deskripsi'  => ['type' => 'TEXT'],
             'jenis'      => ['type' => 'ENUM', 'constraint' => ['praktikum', 'seminar', 'lomba', 'rapat']],
-            'create_at'  => ['type' => 'INT', 'unsigned' => true],
+            'created_at'  => ['type' => 'INT', 'unsigned' => true],
         ]);
         $this->forge->addKey('id_event', true);
-        $this->forge->addForeignKey('create_at', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('created_at', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('events');
     }
 

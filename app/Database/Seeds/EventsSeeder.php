@@ -13,13 +13,13 @@ class EventsSeeder extends Seeder
                 'nama_event' => 'Praktikum Basis Data',
                 'deskripsi'  => 'Praktikum untuk mahasiswa semester 4',
                 'jenis'      => 'praktikum',
-                'create_at'  => 1, // id user yang membuat event
+                'created_at'  => 1, // id user yang membuat event
             ],
             [
                 'nama_event' => 'Seminar AI',
                 'deskripsi'  => 'Seminar tentang Artificial Intelligence',
                 'jenis'      => 'seminar',
-                'create_at'  => 1,
+                'created_at'  => 1,
             ],
         ];
 
