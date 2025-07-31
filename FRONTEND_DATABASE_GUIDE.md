@@ -61,12 +61,6 @@ Dosen: 2 lecturers (D001, D002)
 3 Recruitment Records (2 open, 1 closed)
 ```
 
-## 🚀 **Yang Bisa Dilakukan Frontend:**
-
-### **1. Login System**
-- Gunakan field `nomor` (NIM) dan `password`
-- Check `role_id` untuk menentukan dashboard
-
 ### **2. Dashboard Berdasarkan Role**
 ```
 Admin: Akses semua data
@@ -81,12 +75,6 @@ Mahasiswa: Lihat jadwal, nilai, modul
 - **News & Gallery** untuk homepage
 - **Publications & Research** untuk showcase
 - **Practical data** dengan nilai dan modul
-
-### **Minggu 3-4:**
-1. **Setup project** dengan Bootstrap 5
-2. **Buat login page** dengan form NIM/password
-3. **Buat dashboard** berdasarkan role
-4. **Integrasi API** yang akan dibuat backend
 
 ### **Yang Sudah Siap:**
 - ✅ **Database structure** lengkap
