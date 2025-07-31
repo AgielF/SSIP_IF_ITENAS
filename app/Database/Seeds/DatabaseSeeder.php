@@ -13,5 +13,13 @@ class DatabaseSeeder extends Seeder
         $this->call('EventsSeeder');
         $this->call('JadwalSeeder');
         $this->call('AsistenJadwalSeeder');
+        $this->call('PublikasiSeeder');
+        $this->call('PraktikumSeeder');
+        $this->call('RekrutSeeder');
+        $this->call('ProyekRisetSeeder');
+        $this->call('BeritaSeeder');
+        $this->call('GaleriUmumSeeder');
+        $this->call('ModulPraktikumSeeder');
+        $this->call('PesertaPraktikumSeeder');
     }
 }

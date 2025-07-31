@@ -9,14 +9,17 @@ class RolesSeeder extends Seeder
     public function run()
     {
         $data = [
-            ['nama_role' => 'admin'],
-            ['nama_role' => 'asisten'],
-            ['nama_role' => 'mahasiswa'],
+            ['role_name' => 'admin'],
+            ['role_name' => 'asisten'],
+            ['role_name' => 'mahasiswa'],
+            ['role_name' => 'dosen'],
         ];
 
-        // Simple Queries
         foreach ($data as $role) {
-            $this->db->table('roles')->insert($role);
+            $existing = $this->db->table('roles')->where('role_name', $role['role_name'])->get()->getRow();
+            if (!$existing) {
+                $this->db->table('roles')->insert($role);
+            }
         }
     }
 }
