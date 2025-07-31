@@ -158,15 +158,4 @@ $status = "dibuka"; // dibuka, ditutup
 $syarat = "Minimal IPK 3.5, Lulus mata kuliah...";
 ```
 
-## **Tinggal lakukan:**
-
-1. **Gunakan NIM format** 152022xxx untuk testing
-2. **Check role_id** untuk menentukan akses
-3. **Data sudah ada** - tinggal integrasi API
-4. **Responsive design** dengan Bootstrap 5
-5. **Mobile-first** approach
-
----
-
 **Status: Database ✅ READY**  
-**Frontend bisa mulai development!** 🚀 
