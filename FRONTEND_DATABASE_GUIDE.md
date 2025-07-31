@@ -94,6 +94,82 @@ Mahasiswa: Lihat jadwal, nilai, modul
 - ✅ **User roles** dan permissions
 - ✅ **Content data** untuk homepage
 
+## 📊 **Variabel dari Seeder untuk Frontend:**
+
+### **1. User Authentication Variables**
+```php
+// Login form fields
+$nomor = "152022001"; // NIM format
+$password = "password"; // Will be hashed
+$role_id = 1; // 1=admin, 2=asisten, 3=mahasiswa, 4=dosen
+
+// User profile data
+$nama = "Jeffry Sukmawidiajja";
+$no_telp = "08123456789";
+$jurusan = "Informatika";
+```
+
+### **2. Event & Schedule Variables**
+```php
+// Event data
+$nama_event = "Praktikum Basis Data";
+$jenis = "praktikum"; // praktikum, seminar, lomba, rapat
+$deskripsi = "Praktikum untuk mahasiswa semester 4";
+
+// Schedule data
+$tanggal = "2025-08-01";
+$waktu_mulai = "08:00:00";
+$waktu_selesai = "10:00:00";
+$ruangan = "Lab 1";
+```
+
+### **3. Academic System Variables**
+```php
+// Practical data
+$desc_aturan = "Praktikum Algoritma dan Pemrograman - Dilarang menggunakan AI untuk coding";
+$status = "terdaftar"; // terdaftar, lulus, tidak lulus
+$nilai = 85.5; // float, bisa NULL
+
+// Module data
+$judul = "Modul Praktikum Algoritma dan Pemrograman";
+$file_url = "/uploads/modul/modul_algoritma.pdf";
+```
+
+### **4. Content Management Variables**
+```php
+// News data
+$judul = "Workshop Pengembangan Aplikasi Web Modern";
+$kategori = "workshop"; // workshop, seminar, internal, pengumuman
+$konten = "Jurusan Informatika akan mengadakan workshop...";
+$tanggal = "2024-12-15";
+
+// Gallery data
+$kategori = "foto"; // foto, video
+$file_url = "/uploads/galeri/praktikum_lab.jpg";
+$keterangan = "Foto kegiatan praktikum di laboratorium komputer";
+
+// Publication data
+$jenis_publikasi = "jurnal"; // jurnal, prosiding, paten
+$link_publikasi = "https://doi.org/10.1000/example1";
+$kategori = "Jurnal Nasional";
+$tanggal_publikasi = "2024-01-15";
+```
+
+### **5. Research & Recruitment Variables**
+```php
+// Research data
+$judul = "Pengembangan Sistem Informasi Akademik Berbasis Web";
+$mitra = "Universitas Indonesia";
+$sumber_dana = "DIKTI"; // DIKTI, LPDP
+$tahun_mulai = 2024;
+$tahun_selesai = 2026;
+
+// Recruitment data
+$deskripsi = "Rekrutmen Asisten Praktikum Algoritma dan Pemrograman";
+$status = "dibuka"; // dibuka, ditutup
+$syarat = "Minimal IPK 3.5, Lulus mata kuliah...";
+```
+
 ## **Tinggal lakukan:**
 
 1. **Gunakan NIM format** 152022xxx untuk testing
