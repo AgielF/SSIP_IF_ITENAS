@@ -4,7 +4,7 @@ namespace App\Controllers\Api;
 
 use CodeIgniter\RESTful\ResourceController;
 
-class Role extends ResourceController
+class Roles extends ResourceController
 {
     protected $modelName = 'App\Models\RoleModel';
     protected $format    = 'json';
