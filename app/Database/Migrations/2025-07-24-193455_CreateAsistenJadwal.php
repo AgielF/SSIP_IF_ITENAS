@@ -12,6 +12,8 @@ class CreateAsistenJadwal extends Migration
             'id'        => ['type' => 'INT', 'auto_increment' => true, 'unsigned' => true],
             'id_jadwal' => ['type' => 'INT', 'unsigned' => true],
             'id_user'   => ['type' => 'INT', 'unsigned' => true],
+            'created_at' => ['type' => 'DATETIME', 'null' => true],
+            'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ]);
         $this->forge->addKey('id', true);
         $this->forge->addForeignKey('id_jadwal', 'jadwal', 'id_jadwal', 'CASCADE', 'CASCADE');

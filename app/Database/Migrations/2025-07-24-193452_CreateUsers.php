@@ -10,7 +10,7 @@ class CreateUsers extends Migration
     {
          $this->forge->addField([
             'id'        => ['type' => 'INT', 'auto_increment' => true, 'unsigned' => true],
-            'nrp'       => ['type' => 'VARCHAR', 'constraint' => 9, 'unique' => true],
+            'nomor'       => ['type' => 'VARCHAR', 'constraint' => 9, 'unique' => true],
             'nama'      => ['type' => 'VARCHAR', 'constraint' => 100],
             'no_telp'   => ['type' => 'VARCHAR', 'constraint' => 15],
             'jurusan'   => ['type' => 'VARCHAR', 'constraint' => 100],

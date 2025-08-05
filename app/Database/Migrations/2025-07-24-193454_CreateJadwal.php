@@ -15,6 +15,8 @@ class CreateJadwal extends Migration
             'waktu_mulai'   => ['type' => 'TIME'],
             'waktu_selesai' => ['type' => 'TIME'],
             'ruangan'       => ['type' => 'VARCHAR', 'constraint' => 100],
+            'created_at'    => ['type' => 'DATETIME', 'null' => true],
+            'updated_at'    => ['type' => 'DATETIME', 'null' => true],
         ]);
         $this->forge->addKey('id_jadwal', true);
         $this->forge->addForeignKey('id_event', 'events', 'id_event', 'CASCADE', 'CASCADE');

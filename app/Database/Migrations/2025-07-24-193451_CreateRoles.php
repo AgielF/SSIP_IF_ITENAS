@@ -15,7 +15,7 @@ class CreateRoles extends Migration
                 'unsigned' => true,
                 'auto_increment' => true,
             ],
-            'nama_role' => [
+            'role_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => 50,
                 'unique' => true,
