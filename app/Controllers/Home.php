@@ -134,20 +134,6 @@ class Home extends BaseController
         return view('acara_list_view', $data);
     }
 
-    /**
-     * Method untuk menampilkan halaman Visi & Misi.
-     * URL: /visimisi
-     */
-    public function asisten()
-    {
-        $data = [
-            'title' => 'Visi & Misi | Lab. Fisika Dasar'
-        ];
-        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
-        // atau gabungkan di view lain.
-        // Untuk contoh ini, kita anggap ada view khusus.
-        return view('asisten_list_view', $data); 
-    }
       public function jadwal()
     {
         $jadwalModel = new JadwalModel();
