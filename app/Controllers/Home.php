@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\JadwalModel;
 use App\Models\AsistenJadwalModel;
+use App\Models\UserModel;
 class Home extends BaseController
 {
     /**
@@ -134,6 +135,42 @@ class Home extends BaseController
         return view('acara_list_view', $data);
     }
 
+    /**
+     * Method untuk menampilkan halaman Asisten Lab.
+     * URL: /asisten
+     */
+    public function asisten()
+    {
+        $userModel = new UserModel();
+        
+        // Mengambil data user berdasarkan role
+        $asisten = $userModel->getAsistenLab();
+        $dosen = $userModel->getDosenLab();
+        $praktikan = $userModel->praktikan();
+       
+
+        // Array untuk semua user
+        $allPersonnel = [];
+        
+        // role untuk setiap jenis user
+        foreach ($asisten as $a) {
+            $a['role'] = 'asisten';
+            $allPersonnel[] = $a;
+        }
+        
+        foreach ($dosen as $d) {
+            $d['role'] = 'dosen';
+            $allPersonnel[] = $d;
+        }
+        
+        foreach ($praktikan as $p) {
+            $p['role'] = 'praktikan';
+            $allPersonnel[] = $p;
+        }
+        
+        $data['asisten'] = $allPersonnel;
+        return view('asisten_list_view', $data);
+    }
       public function jadwal()
     {
         $jadwalModel = new JadwalModel();
