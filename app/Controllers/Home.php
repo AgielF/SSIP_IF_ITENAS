@@ -72,7 +72,7 @@ class Home extends BaseController
      */
     public function agenda()
     {
-         $jadwalModel = new JadwalModel();
+        $jadwalModel = new JadwalModel();
         $asistenJadwalModel = new AsistenJadwalModel();
         
         // 1. Ambil data gabungan dari database

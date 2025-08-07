@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\RolesModel;
+use App\Models\RoleModel;
 
 class RolesController extends BaseController
 {
@@ -11,7 +11,7 @@ class RolesController extends BaseController
      */
     public function index()
     {
-        $roleModel = new RolesModel();
+        $roleModel = new RoleModel();
         $data = [
             'title' => 'Daftar Role Pengguna',
             'roles' => $roleModel->findAll()
@@ -24,7 +24,7 @@ class RolesController extends BaseController
      */
     public function create()
     {
-        $roleModel = new RolesModel();
+        $roleModel = new RoleModel();
         $data = [
             'role_name' => $this->request->getPost('role_name'),
         ];
