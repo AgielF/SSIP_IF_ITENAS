@@ -62,6 +62,14 @@ class Home extends BaseController
             'title'     => 'Daftar Jadwal Lab',
             'schedules' => $processedSchedules // Gunakan key 'schedules' sesuai kebutuhan view
         ];
+
+        // 5. Siapkan data untuk Visi & Misi
+        $model = new \App\Models\VisiMisiModel();
+        $visiRow = $model->where('judul', 'Visi')->first();
+        $misiRow = $model->where('judul', 'Misi')->first();
+        $data['visi'] = $visiRow ? $visiRow['isi'] : '';
+        $data['misi'] = $misiRow ? $misiRow['isi'] : '';
+
         // Memuat view home_view, yang akan dibungkus oleh layout/main.php
         return view('home_view', $data);
     }
