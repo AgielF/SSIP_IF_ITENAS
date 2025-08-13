@@ -2,8 +2,8 @@
 
 namespace App\Controllers;
 
-use App\Models\UsersModel;
-use App\Models\RolesModel;
+use App\Models\UserModel;
+use App\Models\RoleModel;
 
 class UsersController extends BaseController
 {
@@ -12,7 +12,7 @@ class UsersController extends BaseController
      */
     public function index()
     {
-        $userModel = new UsersModel();
+        $userModel = new UserModel();
         $data = [
             'title' => 'Daftar Pengguna',
             'users' => $userModel->getUsersWithRoles() // Menggunakan method custom dari model
@@ -26,7 +26,7 @@ class UsersController extends BaseController
      */
     public function new()
     {
-        $roleModel = new RolesModel();
+        $roleModel = new RoleModel();
         $data = [
             'title' => 'Tambah Pengguna Baru',
             'roles' => $roleModel->findAll()
@@ -39,7 +39,7 @@ class UsersController extends BaseController
      */
     public function create()
     {
-        $userModel = new UsersModel();
+        $userModel = new UserModel();
         $data = [
             'nrp'     => $this->request->getPost('nrp'),
             'nama'    => $this->request->getPost('nama'),

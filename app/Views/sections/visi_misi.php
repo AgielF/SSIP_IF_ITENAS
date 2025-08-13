@@ -12,8 +12,7 @@
                 <i class="fas fa-eye fa-3x text-primary mb-3"></i>
                 <h3 class="h4">Visi</h3>
                 <p class="lead fst-italic">
-                    To become a center of excellence in the development of smart systems and information processing technology that is innovative, adaptive, and applicable to the needs of society and data-based industry.
-
+                    <?= esc($visi) ?>
                 </p>
             </div>
         </div>
@@ -25,28 +24,14 @@
                 <h3 class="h4">Misi</h3>
             </div>
             <ul class="list-group list-group-flush">
+                <?php foreach (explode("\n", $misi) as $misi_item): ?>
                 <li class="list-group-item border-0">
                     <i class="fas fa-check-circle text-success me-2"></i>
-                   Organizing educational and practical activities based on smart systems and information processing.
+                    <?= esc($misi_item) ?>
                 </li>
-                <li class="list-group-item border-0">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    
-Carrying out innovative research in the fields of AI, machine learning, deep learning, data mining, IR, NLP, and expert systems.
-                </li>
-                <li class="list-group-item border-0">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Providing a collaborative platform for lecturers, students, and industry to develop smart data-based solutions.
-                </li>
-                <li class="list-group-item border-0">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                   Encourage scientific publications, research products, and patents based on exploration results in the field of smart systems and data processing.
-                </li>
-                <li class="list-group-item border-0">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                  Building a project-based learning ecosystem that is relevant to the needs of the global workplace and research world.
-                </li>
+                <?php endforeach; ?>
             </ul>
         </div>
     </div>
 </div>
+?>

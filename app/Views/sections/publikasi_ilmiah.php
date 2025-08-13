@@ -70,7 +70,6 @@ $data = [
                     <h4 class="mb-0" id="content-title">Jurnal</h4>
                     <p class="text-muted small" id="content-subtitle">Daftar jurnal yang telah dipublikasikan</p>
                 </div>
-                <button class="btn btn-primary">Tambah Publikasi</button>
             </div>
 
             <div class="table-responsive">

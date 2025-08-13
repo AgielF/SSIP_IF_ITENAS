@@ -1,5 +1,6 @@
 <!-- DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/2.0.8/css/dataTables.bootstrap5.css">
+<link rel="stylesheet" href="<?= base_url('assets/datatables/css/dataTables.bootstrap5.min.css') ?>"/>
+
 
 <style>
     .schedule-container {
@@ -49,7 +50,7 @@
                         <th>Dosen</th>
                         <th>Ruang</th>
                         <th>Jenis</th>
-                        <th>Aksi</th>
+               
                     </tr>
                 </thead>
                 <tbody>
@@ -64,17 +65,7 @@
                                 <td><?= esc($schedule['lab']) ?></td>
                                 <td>KULIAH</td> <!-- Data dummy untuk Jenis -->
                                 <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-light btn-sm" title="Lihat Detail">
-                                            <i class="fas fa-search"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-light btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="visually-hidden">Toggle Dropdown</span>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Edit</a></li>
-                                            <li><a class="dropdown-item" href="#">Hapus</a></li>
-                                        </ul>
+                                 
                                     </div>
                                 </td>
                             </tr>
@@ -92,8 +83,8 @@
 
 <!-- DataTables JS -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.0.8/js/dataTables.bootstrap5.js"></script>
+<script src="<?= base_url('assets/datatables/js/dataTables.min.js') ?>"></script>
+<script src="<?= base_url('assets/datatables/js/dataTables.bootstrap5.min.js') ?>"></script>
 
 <script>
     // Inisialisasi DataTables

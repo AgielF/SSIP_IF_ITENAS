@@ -8,24 +8,24 @@
             <div class="col-md-4 mb-4">
                 <h5>LAB SSIP</h5>
                 <p class="small text-muted">
-                    2025 © copyright by Divisi Media & Informasi Laboratorium Fisika Dasar Itenas. All rights reserved.
+                    2025 © copyright by Laboratorium SSIP ITENAS. All rights reserved.
                 </p>
             </div>
             <!-- Kolom 2: Menu Utama -->
             <div class="col-md-2 mb-4">
                 <h5 class="mb-3">Menu Utama</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Gallery</a></li>
-                    <li><a href="#">Alumni</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/asisten">Anggota</a></li>
+                    <li><a href="/galeri">Gallery</a></li>
+                    <li><a href="/rekrutmen">Rekrutmen</a></li>
                 </ul>
             </div>
             <!-- Kolom 3: Akademik -->
             <div class="col-md-3 mb-4">
                 <h5 class="mb-3">Akademik</h5>
                 <ul class="list-unstyled">
-                    <li><a href="#">Jadwal Praktikum</a></li>
+                    <li><a href="/jadwal">Jadwal Praktikum</a></li>
                     <li><a href="#">Nilai Praktikum</a></li>
                     <li><a href="#">Kelompok Praktikum</a></li>
                     <li><a href="#">Agenda</a></li>

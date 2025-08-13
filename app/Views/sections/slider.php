@@ -15,7 +15,7 @@
                 <div class="container">
                     <h1 class="display-4">Jadwal Praktikum Terbaru</h1>
                     <p class="lead">Jadwal praktikum semester genap 2024/2025 telah dirilis.</p>
-                    <a href="#" class="btn btn-primary btn-lg">Lihat Jadwal</a>
+                    <a href="/jadwal" class="btn btn-primary btn-lg">Lihat Jadwal</a>
                 </div>
             </div>
         </div>

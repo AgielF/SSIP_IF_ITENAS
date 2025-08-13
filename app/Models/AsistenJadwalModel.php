@@ -26,7 +26,7 @@ class AsistenJadwalModel extends Model
         return $this->db->table('asisten_jadwal')
             ->join('users', 'users.id = asisten_jadwal.id_user')
             ->where('asisten_jadwal.id_jadwal', $id_jadwal)
-            ->select('users.nama, users.nrp')
+            ->select('users.nama, users.nomor')
             ->get()->getResultArray();
     }
 }

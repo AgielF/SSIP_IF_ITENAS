@@ -72,7 +72,7 @@ $data = [
                     <h4 class="mb-0" id="content-title">Daftar Proyek Riset</h4>
                     <p class="text-muted small" id="content-subtitle">Daftar proyek riset yang sedang/telah dilakukan</p>
                 </div>
-                <button class="btn btn-primary">Tambah Data</button>
+                
             </div>
 
             <div class="table-responsive">
