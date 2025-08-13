@@ -135,3 +135,23 @@ $routes->post('/admin/events/create', 'Admin\Events::create');
 $routes->get('/admin/events/edit/(:num)', 'Admin\Events::edit/$1');
 $routes->post('/admin/events/update/(:num)', 'Admin\Events::update/$1');
 $routes->get('/admin/events/delete/(:num)', 'Admin\Events::delete/$1');
+
+
+// routes API Content
+$routes->get('/api/visi-misi', 'Api\Content::visiMisi');
+$routes->get('/api/proyek-riset', 'Api\Content::proyekRiset');
+$routes->get('/api/publikasi', 'Api\Content::publikasi');       
+$routes->get('/api/galeri', 'Api\Content::galeri');
+$routes->get('/api/rekrutmen', 'Api\Content::rekrutmen');
+$routes->get('/api/berita', 'Api\Content::berita');
+$routes->get('/api/events', 'Api\Content::events');
+$routes->get('/api/agenda', 'Api\Content::agenda');
+$routes->get('/api/asisten', 'Api\Content::asisten');
+$routes->get('/api/asisten-admin', 'Api\Content::asistenAdmin');
+$routes->get('/api/jadwal', 'Api\Content::jadwal');
+$routes->get('/api/jadwal-list', 'Api\Content::jadwalCard');
+$routes->get('/api/penelitian-proyek', 'Api\Content::penelitianProyek');
+$routes->get('/api/repositori', 'Api\Content::repositoriPage');
+$routes->get('/api/rekrutmen-page', 'Api\Content::rekrutmenPage');
+$routes->get('/api/publikasi-page', 'Api\Content::publikasiPage');
+$routes->get('/api/peserta-praktikum', 'Api\Content::pesertaPraktikum');
