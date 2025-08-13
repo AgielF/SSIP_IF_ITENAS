@@ -4,7 +4,7 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\JadwalModel;
-use App\Models\EventModel;
+use App\Models\EventsModel;
 
 class Jadwal extends BaseController
 {
@@ -14,7 +14,7 @@ class Jadwal extends BaseController
     public function __construct()
     {
         $this->jadwalModel = new JadwalModel();
-        $this->eventModel = new EventModel();
+        $this->eventModel = new EventsModel();
     }
 
     //Menampilkan daftar jadwal

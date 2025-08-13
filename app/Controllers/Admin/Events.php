@@ -3,7 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
-use App\Models\EventModel;
+use App\Models\EventsModel;
 use App\Models\UserModel;
 
 class Events extends BaseController
@@ -13,7 +13,7 @@ class Events extends BaseController
 
     public function __construct()
     {
-        $this->eventModel = new EventModel();
+        $this->eventModel = new EventsModel();
         $this->userModel = new UserModel();
     }
 
