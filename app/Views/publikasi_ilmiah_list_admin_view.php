@@ -2,8 +2,6 @@
 
 <?= $this->include('sections/slider') ?>
 
-<?= $this->include('sections/agenda_list') ?>
-
-<?= $this->include('sections/rekrutmen') ?>
+<?= $this->include('sections/publikasi_ilmiah_admin') ?>
 
 <?= $this->include('layout/footer') ?>

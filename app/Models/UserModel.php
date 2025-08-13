@@ -25,3 +25,18 @@ class UserModel extends Model
 }
 
 
+
+    public function getAsistenLab () 
+    {
+        return $this->where('role_id', 2)->findAll();
+    }
+    
+    public function getDosenLab()
+    {
+        return $this->where('role_id', 3)->findAll();
+    }
+
+    public function praktikan(){
+        return $this->where('role_id', 4)->findAll();
+    }
+}

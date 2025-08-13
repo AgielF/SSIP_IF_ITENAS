@@ -2,8 +2,6 @@
 
 <?= $this->include('sections/slider') ?>
 
-<?= $this->include('sections/agenda_list') ?>
-
-<?= $this->include('sections/rekrutmen') ?>
+<?= $this->include('sections/repositori') ?>
 
 <?= $this->include('layout/footer') ?>

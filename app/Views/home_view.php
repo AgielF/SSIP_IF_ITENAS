@@ -5,7 +5,7 @@
 <main>
     <!-- Anda bisa menambahkan section berita di sini -->
     <?= $this->include('sections/agenda') ?>
-    <?= $this->include('sections/testimoni') ?>
+    <?= $this->include('sections/topic') ?>
     
     <!-- TAMBAHKAN BARIS INI -->
     <?= $this->include('sections/visi_misi') ?>

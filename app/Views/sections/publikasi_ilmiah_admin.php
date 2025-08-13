@@ -70,6 +70,10 @@ $data = [
                     <h4 class="mb-0" id="content-title">Jurnal</h4>
                     <p class="text-muted small" id="content-subtitle">Daftar jurnal yang telah dipublikasikan</p>
                 </div>
+                 <div class="d-flex align-items-center">
+                    <input type="text" id="searchInput" class="form-control me-2" placeholder="Cari...">
+                    <button class="btn btn-primary">Tambah Publikasi</button>
+                </div>
             </div>
 
             <div class="table-responsive">
@@ -96,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentSubtitle = document.getElementById('content-subtitle');
     const tableHeader = document.getElementById('table-header');
     const tableBody = document.getElementById('table-body');
+    const searchInput = document.getElementById('searchInput');
 
     // Fungsi untuk merender tabel berdasarkan kategori yang dipilih
     function renderTable(category) {
@@ -107,40 +112,61 @@ document.addEventListener('DOMContentLoaded', function() {
         contentTitle.textContent = linkText;
         contentSubtitle.textContent = `Daftar ${linkText.toLowerCase()} yang telah dipublikasikan`;
 
-        // Render header tabel
+        // Render header tabel, tambahkan kolom Aksi
         let headerHtml = '<tr>';
         data.headers.forEach(header => {
             headerHtml += `<th>${header}</th>`;
         });
-        headerHtml += '</tr>';
+        headerHtml += '<th>Aksi</th></tr>'; // Tambah header Aksi
         tableHeader.innerHTML = headerHtml;
 
-        // Render isi tabel
+        // Render isi tabel, tambahkan tombol Aksi
         let bodyHtml = '';
         data.rows.forEach(row => {
             bodyHtml += '<tr>';
             row.forEach(cell => {
                 bodyHtml += `<td>${cell}</td>`;
             });
+            // Tambah tombol Edit dan Hapus
+            bodyHtml += `
+                <td>
+                    <a href="#" class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i class="fas fa-pencil-alt"></i></a>
+                    <a href="#" class="btn btn-sm btn-outline-danger" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                </td>
+            `;
             bodyHtml += '</tr>';
         });
         tableBody.innerHTML = bodyHtml;
+    }
+
+    // Fungsi untuk filter pencarian
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const rowText = row.textContent.toLowerCase();
+            if (rowText.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
     }
 
     // Event listener untuk setiap link di navigasi tab
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-
-            // Hapus kelas 'active' dari semua link
             navLinks.forEach(l => l.classList.remove('active'));
-            // Tambahkan kelas 'active' ke link yang diklik
             this.classList.add('active');
-
             const category = this.getAttribute('data-content');
             renderTable(category);
+            filterTable(); // Terapkan filter saat tab diganti
         });
     });
+
+    // Event listener untuk input pencarian
+    searchInput.addEventListener('keyup', filterTable);
 
     // Render tabel awal saat halaman dimuat
     renderTable('jurnal');

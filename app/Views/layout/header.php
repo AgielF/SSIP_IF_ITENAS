@@ -3,13 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?= $title ?? 'Lab. Fisika Dasar' ?></title>
+    <title><?= $title ?? 'Lab. SSIP' ?></title>
     
     <!-- Bootstrap CSS -->
     <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
     <!-- Font Awesome untuk Ikon -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-
+    <link rel="stylesheet" href="<?= base_url('assets/fontawesome/css/all.min.css') ?>"/>
     <!-- Custom CSS for new layout -->
     <style>
         body {
@@ -167,21 +166,21 @@
     <ul class="sidebar-nav">
         <!-- Link yang ada di sidebar -->
         <li class="nav-item">
-            <a class="nav-link" href="/"><i class="fas fa-project-diagram"></i>Penelitian & Proyek</a>
+            <a class="nav-link" href="/penelitian-proyek"><i class="fas fa-project-diagram"></i>Penelitian & Proyek</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/asisten"><i class="fas fa-book-open"></i>Publikasi Ilmiah</a>
+            <a class="nav-link" href="/publikasi-ilmiah"><i class="fas fa-book-open"></i>Publikasi Ilmiah</a>
         </li>
         
         <!-- === STRUKTUR HTML BARU UNTUK DROPDOWN === -->
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="/jadwal" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-flask"></i>Praktikum
             </a>
             <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="#">Peraturan</a></li>
                 <li><a class="dropdown-item" href="#">Kelompok</a></li>
-                <li><a class="dropdown-item" href="#">Jadwal</a></li>
+                <li><a class="dropdown-item" href="/jadwal">Jadwal</a></li>
                 <li><a class="dropdown-item" href="#">Nilai</a></li>
                 <li><a class="dropdown-item" href="#">Modul</a></li>
                 <li><a class="dropdown-item" href="#">Perizinan</a></li>
@@ -189,16 +188,16 @@
         </li>
         <!-- === AKHIR STRUKTUR HTML BARU === -->
          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
+            <a class="nav-link" href="/agenda"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-bullhorn"></i>Rekrutmen</a>
+            <a class="nav-link" href="/rekrutmen"><i class="fas fa-bullhorn"></i>Rekrutmen</a>
         </li>
          <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa-solid fa-images"></i>Galeri</a>
+            <a class="nav-link" href="/galeri"><i class="fa-solid fa-images"></i>Galeri</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fa-solid fa-file-export"></i>Repo Project</a>
+            <a class="nav-link" href="/repositori"><i class="fa-solid fa-file-export"></i>Repo Project</a>
         </li>
     </ul>
 </aside>

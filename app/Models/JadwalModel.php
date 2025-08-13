@@ -18,3 +18,13 @@ class JadwalModel extends Model
                     ->findAll();
     }
 }
+
+
+    public function getJadwalWithDetails()
+    {
+        // Query untuk mengambil data jadwal dengan detail event
+        return $this->select('jadwal.*, events.nama_event')
+                    ->join('events', 'events.id_event = jadwal.id_event')
+                    ->findAll();
+    }
+}
