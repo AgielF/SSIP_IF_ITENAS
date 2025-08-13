@@ -83,7 +83,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
@@ -106,7 +106,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
@@ -162,7 +162,7 @@ class AdminApi extends ResourceController
             'sumber_dana' => $this->request->getPost('sumber_dana'),
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -187,7 +187,7 @@ class AdminApi extends ResourceController
             'sumber_dana' => $this->request->getPost('sumber_dana'),
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -237,7 +237,7 @@ class AdminApi extends ResourceController
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -261,7 +261,7 @@ class AdminApi extends ResourceController
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -311,7 +311,7 @@ class AdminApi extends ResourceController
             'keterangan' => $this->request->getPost('keterangan'),
             'file_url' => $this->request->getPost('file_url'),
             'tanggal_upload' => $this->request->getPost('tanggal_upload'),
-            'id_user' => $this->request->getPost('id_user')
+            'id_user' => 1, // Default to admin user ID
         ];
 
         if ($this->galeriUmumModel->save($data)) {
@@ -333,7 +333,7 @@ class AdminApi extends ResourceController
             'keterangan' => $this->request->getPost('keterangan'),
             'file_url' => $this->request->getPost('file_url'),
             'tanggal_upload' => $this->request->getPost('tanggal_upload'),
-            'id_user' => $this->request->getPost('id_user')
+            'id_user' => 1, // Default to admin user ID
         ];
 
         if ($this->galeriUmumModel->update($id, $data)) {
@@ -486,7 +486,7 @@ class AdminApi extends ResourceController
 
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -507,7 +507,7 @@ class AdminApi extends ResourceController
 
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -554,7 +554,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'status' => $this->request->getPost('status'),
             'nilai' => $this->request->getPost('nilai')
@@ -575,7 +575,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'status' => $this->request->getPost('status'),
             'nilai' => $this->request->getPost('nilai')
@@ -609,7 +609,7 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $users = $this->userModel->select('users.*, roles.name as role_name')
+        $users = $this->userModel->select('users.*, roles.role_name as role_name')
             ->join('roles', 'roles.id = users.role_id')
             ->findAll();
 
@@ -686,7 +686,7 @@ class AdminApi extends ResourceController
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -710,7 +710,7 @@ class AdminApi extends ResourceController
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -757,7 +757,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),
@@ -780,7 +780,7 @@ class AdminApi extends ResourceController
         }
 
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),

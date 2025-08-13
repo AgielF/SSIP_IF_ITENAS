@@ -48,7 +48,7 @@ class Rekrut extends BaseController
     public function create()
     {
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
@@ -85,7 +85,7 @@ class Rekrut extends BaseController
     public function update($id)
     {
         $data = [
-            'id_user' => $this->request->getPost('id_user'),
+            'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
