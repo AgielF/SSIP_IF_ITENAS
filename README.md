@@ -21,10 +21,12 @@ SSIP IF ITENAS adalah sistem informasi akademik yang dirancang untuk mengelola k
 - ✅ Comprehensive test data
 
 ### **Minggu 3: Admin Page** ⭐ **CURRENT**
+
 Frontend (Admin):
--✅ Implementasi UI tabel interaktif menggunakan DataTables.net untuk semua fitur CRUD.
--✅ Halaman untuk mengelola Jadwal dan Anggota Lab.
--✅ Mengintegrasikan data dari backend pada jadwal dan asisten.
+
+- ✅ Implementasi UI tabel interaktif menggunakan DataTables.net untuk semua fitur CRUD.
+- ✅ Halaman untuk mengelola Jadwal dan Anggota Lab.
+- ✅ Mengintegrasikan data dari backend pada jadwal dan asisten.
 🔜 Selanjutnya: Mengintegrasikan dengan controller data BACKEND.
 
 ## 🗄️ Database Structure
