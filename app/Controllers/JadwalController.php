@@ -30,7 +30,7 @@ class JadwalController extends BaseController
 
         $data = [
             'title'    => 'Detail Jadwal',
-            'jadwal'   => $jadwalModel->getJadwalWithDetails($id_jadwal), // Perlu modifikasi di model
+            'jadwal'   => $jadwalModel->getJadwalWithDetails(), // Perlu modifikasi di model
             'asisten'  => $asistenJadwalModel->getAsistenByJadwal($id_jadwal)
         ];
 

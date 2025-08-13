@@ -6,17 +6,14 @@ use CodeIgniter\Model;
 
 class EventsModel extends Model
 {
-    protected $table            = 'events';
-    protected $primaryKey       = 'id_event';
-    protected $useAutoIncrement = true;
-    protected $returnType       = 'array';
-    protected $protectFields    = true;
-    
-    // Kolom yang diizinkan untuk diisi
-    protected $allowedFields    = ['nama_event', 'deskripsi', 'jenis'];
+    protected $table = 'events';
+    protected $primaryKey = 'id_event';
+    protected $allowedFields = ['nama_event', 'deskripsi', 'jenis', 'created_by', 'created_at', 'updated_at'];
 
-    // Mengaktifkan timestamps, disesuaikan dengan nama kolom di ERD
-    protected $useTimestamps = true;
-    protected $createdField  = 'create_at'; // Sesuai ERD
-    protected $updatedField  = ''; // Tidak ada updated_at di ERD
+    public function getEventsWithCreator()
+    {
+        return $this->select('events.*, users.nama as creator_name')
+                    ->join('users', 'users.id = events.created_by')
+                    ->findAll();
+    }
 }
