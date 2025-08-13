@@ -2,12 +2,6 @@
 
 Dokumen ini berisi panduan lengkap untuk menggunakan API backend dalam pengembangan frontend. API ini menyediakan endpoint-endpoint yang mengembalikan data dalam format JSON untuk setiap bagian dari website.
 
-## Daftar Isi
-1. [Penggunaan Dasar API](#penggunaan-dasar-api)
-2. [Endpoint API Lengkap](#endpoint-api-lengkap)
-3. [Contoh Implementasi](#contoh-implementasi)
-4. [Struktur Data Response](#struktur-data-response)
-
 ## Penggunaan Dasar API
 
 Semua endpoint API dapat diakses melalui URL dasar website diikuti dengan path endpoint. Semua endpoint menggunakan metode HTTP GET dan mengembalikan data dalam format JSON.
