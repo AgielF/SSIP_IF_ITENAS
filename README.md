@@ -12,13 +12,20 @@ SSIP IF ITENAS adalah sistem informasi akademik yang dirancang untuk mengelola k
 - ✅ Requirements analysis
 - ✅ Technology stack selection
 
-### **Minggu 2: Database Implementation** ⭐ **CURRENT**
+### **Minggu 2: Database Implementation** 
 - ✅ Complete database structure (13 tables)
 - ✅ Migration files (14 files)
 - ✅ Seeder files with realistic data (14 files)
 - ✅ Model files (13 files)
 - ✅ Data integrity and relationships
 - ✅ Comprehensive test data
+
+### **Minggu 3: Admin Page** ⭐ **CURRENT**
+Frontend (Admin):
+-✅ Implementasi UI tabel interaktif menggunakan DataTables.net untuk semua fitur CRUD.
+-✅ Halaman untuk mengelola Jadwal dan Anggota Lab.
+-✅ Mengintegrasikan data dari backend pada jadwal dan asisten.
+🔜 Selanjutnya: Mengintegrasikan dengan controller data BACKEND.
 
 ## 🗄️ Database Structure
 
