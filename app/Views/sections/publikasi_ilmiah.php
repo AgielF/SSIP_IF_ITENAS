@@ -1,27 +1,16 @@
 <?php
-// Data dummy untuk setiap kategori. Seharusnya ini diambil dari database.
-$data = [
+$data = isset($publicationData) ? $publicationData : [
     'jurnal' => [
-        'headers' => ['Judul Artikel', 'Penulis Utama', 'Nama Jurnal', 'Tahun', 'Link/DOI'],
-        'rows' => [
-            ['AI in Medical Imaging: A Review', 'Dr. Smith', 'Journal of Medical Technology', '2023', '<a href="#">Link</a>'],
-            ['IoT for Precision Agriculture', 'Prof. Johnson', 'IEEE Internet of Things Journal', '2024', '<a href="#">Link</a>'],
-            ['Big Data for Stock Market Prediction', 'Dr. Williams', 'Journal of Finance and Data Science', '2022', '<a href="#">Link</a>'],
-        ]
+        'headers' => ['Judul Artikel', 'Penulis Utama', 'Penulis Pendamping', 'Nama Jurnal', 'Tahun', 'DOI', 'Link'],
+        'rows' => []
     ],
     'prosiding' => [
-        'headers' => ['Judul Makalah', 'Konferensi', 'Lokasi', 'Tahun', 'Penerbit'],
-        'rows' => [
-            ['A Novel Approach to IoT Security', 'IEEE ICON-SONICS', 'Bandung, Indonesia', '2023', 'IEEE Xplore'],
-            ['Deep Learning for NLP', 'International Conference on AI', 'Virtual', '2024', 'ACM Digital Library'],
-        ]
+        'headers' => ['Judul Makalah', 'Konferensi', 'Kategori', 'Tahun', 'Link'],
+        'rows' => []
     ],
     'paten' => [
-        'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan'],
-        'rows' => [
-            ['Sistem Deteksi Dini Penyakit Tanaman', 'P00202300123', 'Prof. Johnson', '15/06/2023'],
-            ['Alat Ukur Kualitas Udara Portabel', 'P00202200456', 'Dr. Williams', '21/11/2022'],
-        ]
+        'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan', 'Link'],
+        'rows' => []
     ]
 ];
 ?>

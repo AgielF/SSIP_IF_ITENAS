@@ -4,10 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Daftar Agenda & Acara</title>
-    
-
-
-
     <!-- Custom CSS -->
     <style>
         .event-list-item {
