@@ -21,7 +21,6 @@ use App\Models\EventsModel;
 class AdminApi extends ResourceController
 {
     use ResponseTrait;
-
     protected $rekrutModel;
     protected $proyekRisetModel;
     protected $publikasiModel;
@@ -142,11 +141,53 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $proyek = $this->proyekRisetModel->select('proyek_riset.*, users.nama as penanggung_jawab')
-            ->join('users', 'users.id = proyek_riset.id_user')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $mitra = $this->request->getVar('mitra');
+        $tahun = $this->request->getVar('tahun');
 
-        return $this->respond($proyek);
+        // Build query with filters
+        $builder = $this->proyekRisetModel->select('proyek_riset.*, users.nama as penanggung_jawab')
+            ->join('users', 'users.id = proyek_riset.id_user');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('proyek_riset.judul', $search)
+                ->orLike('proyek_riset.deskripsi', $search)
+                ->groupEnd();
+        }
+
+        if ($mitra) {
+            $builder->where('proyek_riset.mitra', $mitra);
+        }
+
+        if ($tahun) {
+            $builder->where('proyek_riset.tahun_mulai <=', $tahun)
+                ->where('proyek_riset.tahun_selesai >=', $tahun);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $proyek = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $proyek,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createProyekRiset()
@@ -219,11 +260,60 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $publikasi = $this->publikasiModel->select('publikasi.*, users.nama as penulis')
-            ->join('users', 'users.id = publikasi.id_user')
-            ->findAll();
+       // Pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $kategori = $this->request->getVar('kategori');
+        $jenis = $this->request->getVar('jenis');
+        $dateFrom = $this->request->getVar('date_from');
+        $dateTo = $this->request->getVar('date_to');
 
-        return $this->respond($publikasi);
+        $builder = $this->publikasiModel->select('publikasi.*, users.nama as penulis')
+            ->join('users', 'users.id = publikasi.id_user');
+
+        if ($search) {
+            $builder->groupStart()
+                ->like('publikasi.jenis_publikasi', $search)
+                ->orLike('publikasi.kategori', $search)
+                ->groupEnd();
+        }
+
+        if ($kategori) {
+            $builder->where('publikasi.kategori', $kategori);
+        }
+
+        if ($jenis) {
+            $builder->where('publikasi.jenis_publikasi', $jenis);
+        }
+
+        if ($dateFrom) {
+            $builder->where('publikasi.tanggal_publikasi >=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $builder->where('publikasi.tanggal_publikasi <=', $dateTo);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $publikasi = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $publikasi,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createPublikasi()
@@ -293,11 +383,57 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $galeri = $this->galeriUmumModel->select('galeri_umum.*, users.nama as uploader')
-            ->join('users', 'users.id = galeri_umum.id_user')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $kategori = $this->request->getVar('kategori');
+        $dateFrom = $this->request->getVar('date_from');
+        $dateTo = $this->request->getVar('date_to');
 
-        return $this->respond($galeri);
+        // Build query with filters
+        $builder = $this->galeriUmumModel->select('galeri_umum.*, users.nama as uploader')
+            ->join('users', 'users.id = galeri_umum.id_user');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('galeri_umum.keterangan', $search)
+                ->orLike('galeri_umum.kategori', $search)
+                ->groupEnd();
+        }
+
+        if ($kategori) {
+            $builder->where('galeri_umum.kategori', $kategori);
+        }
+
+        if ($dateFrom) {
+            $builder->where('galeri_umum.tanggal_upload >=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $builder->where('galeri_umum.tanggal_upload <=', $dateTo);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $galeri = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $galeri,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createGaleri()
@@ -396,11 +532,57 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $jadwal = $this->jadwalModel->select('jadwal.*, events.nama_event')
-            ->join('events', 'events.id_event = jadwal.id_event')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $event = $this->request->getVar('event');
+        $dateFrom = $this->request->getVar('date_from');
+        $dateTo = $this->request->getVar('date_to');
 
-        return $this->respond($jadwal);
+        // Build query with filters
+        $builder = $this->jadwalModel->select('jadwal.*, events.nama_event')
+            ->join('events', 'events.id_event = jadwal.id_event');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('events.nama_event', $search)
+                ->orLike('jadwal.ruangan', $search)
+                ->groupEnd();
+        }
+
+        if ($event) {
+            $builder->where('jadwal.id_event', $event);
+        }
+
+        if ($dateFrom) {
+            $builder->where('jadwal.tanggal >=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $builder->where('jadwal.tanggal <=', $dateTo);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $jadwal = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $jadwal,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createJadwal()
@@ -470,12 +652,45 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $asistenJadwal = $this->asistenJadwalModel->select('asisten_jadwal.*, jadwal.tanggal, users.nama as asisten_nama')
-            ->join('jadwal', 'jadwal.id_jadwal = asisten_jadwal.id_jadwal')
-            ->join('users', 'users.id = asisten_jadwal.id_user')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $jadwal = $this->request->getVar('jadwal');
 
-        return $this->respond($asistenJadwal);
+        // Build query with filters
+        $builder = $this->asistenJadwalModel->select('asisten_jadwal.*, jadwal.tanggal, users.nama as asisten_nama')
+            ->join('jadwal', 'jadwal.id_jadwal = asisten_jadwal.id_jadwal')
+            ->join('users', 'users.id = asisten_jadwal.id_user');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->like('users.nama', $search);
+        }
+
+        if ($jadwal) {
+            $builder->where('asisten_jadwal.id_jadwal', $jadwal);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $asistenJadwal = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $asistenJadwal,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createAsistenJadwal()
@@ -539,12 +754,50 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $pesertaPraktikum = $this->pesertaPraktikumModel->select('peserta_praktikum.*, users.nama as peserta, jadwal.tanggal as jadwal_tanggal')
-            ->join('users', 'users.id = peserta_praktikum.id_user')
-            ->join('jadwal', 'jadwal.id_jadwal = peserta_praktikum.id_jadwal')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $jadwal = $this->request->getVar('jadwal');
+        $status = $this->request->getVar('status');
 
-        return $this->respond($pesertaPraktikum);
+        // Build query with filters
+        $builder = $this->pesertaPraktikumModel->select('peserta_praktikum.*, users.nama as peserta, jadwal.tanggal as jadwal_tanggal')
+            ->join('users', 'users.id = peserta_praktikum.id_user')
+            ->join('jadwal', 'jadwal.id_jadwal = peserta_praktikum.id_jadwal');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->like('users.nama', $search);
+        }
+
+        if ($jadwal) {
+            $builder->where('peserta_praktikum.id_jadwal', $jadwal);
+        }
+
+        if ($status) {
+            $builder->where('peserta_praktikum.status', $status);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $pesertaPraktikum = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $pesertaPraktikum,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createPesertaPraktikum()
@@ -609,11 +862,52 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $users = $this->userModel->select('users.*, roles.role_name as role_name')
-            ->join('roles', 'roles.id = users.role_id')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $role = $this->request->getVar('role');
+        $jurusan = $this->request->getVar('jurusan');
 
-        return $this->respond($users);
+        // Build query with filters
+        $builder = $this->userModel->select('users.*, roles.role_name as role_name')
+            ->join('roles', 'roles.id = users.role_id');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('users.nama', $search)
+                ->orLike('users.nomor', $search)
+                ->groupEnd();
+        }
+
+        if ($role) {
+            $builder->where('users.role_id', $role);
+        }
+
+        if ($jurusan) {
+            $builder->like('users.jurusan', $jurusan);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $users = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $users,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createUser()
@@ -668,11 +962,57 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $berita = $this->beritaModel->select('berita.*, users.nama as creator')
-            ->join('users', 'users.id = berita.id_user')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $kategori = $this->request->getVar('kategori');
+        $dateFrom = $this->request->getVar('date_from');
+        $dateTo = $this->request->getVar('date_to');
 
-        return $this->respond($berita);
+        // Build query with filters
+        $builder = $this->beritaModel->select('berita.*, users.nama as creator')
+            ->join('users', 'users.id = berita.id_user');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('berita.judul', $search)
+                ->orLike('berita.konten', $search)
+                ->groupEnd();
+        }
+
+        if ($kategori) {
+            $builder->where('berita.kategori', $kategori);
+        }
+
+        if ($dateFrom) {
+            $builder->where('berita.tanggal >=', $dateFrom);
+        }
+
+        if ($dateTo) {
+            $builder->where('berita.tanggal <=', $dateTo);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $berita = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $berita,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createBerita()
@@ -885,11 +1225,47 @@ class AdminApi extends ResourceController
             return $this->failUnauthorized('Unauthorized');
         }
 
-        $events = $this->eventsModel->select('events.*, users.nama as creator')
-            ->join('users', 'users.id = events.created_by')
-            ->findAll();
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 10);
+        $search = $this->request->getVar('search');
+        $jenis = $this->request->getVar('jenis');
 
-        return $this->respond($events);
+        // Build query with filters
+        $builder = $this->eventsModel->select('events.*, users.nama as creator')
+            ->join('users', 'users.id = events.created_by');
+
+        // Apply filters if provided
+        if ($search) {
+            $builder->groupStart()
+                ->like('events.nama_event', $search)
+                ->orLike('events.deskripsi', $search)
+                ->groupEnd();
+        }
+
+        if ($jenis) {
+            $builder->where('events.jenis', $jenis);
+        }
+
+        // Get total count before pagination
+        $total = $builder->countAllResults(false); // false to keep the query builder
+
+        // Apply pagination
+        $offset = ($page - 1) * $limit;
+        $events = $builder->limit($limit, $offset)->findAll();
+
+        // Prepare response with pagination info
+        $response = [
+            'data' => $events,
+            'pagination' => [
+                'page' => (int)$page,
+                'limit' => (int)$limit,
+                'total' => (int)$total,
+                'pages' => ceil($total / $limit)
+            ]
+        ];
+
+        return $this->respond($response);
     }
 
     public function createEvent()
