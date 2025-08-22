@@ -8,5 +8,5 @@ class PublikasiModel extends Model
 {
     protected $table = 'publikasi';
     protected $primaryKey = 'id_publikasi';
-    protected $allowedFields = ['jenis_publikasi', 'link_publikasi', 'kategori', 'tanggal_publikasi', 'id_user', 'created_at', 'updated_at'];
-} 
+    protected $allowedFields = ['jenis_publikasi', 'link_publikasi', 'kategori', 'tanggal_publikasi', 'id_user', 'created_at', 'updated_at', 'penulis_pendamping', 'volume', 'nomor', 'tahun', 'link_doi', 'link_gdrive', 'conference', 'deskripsi'];
+}
