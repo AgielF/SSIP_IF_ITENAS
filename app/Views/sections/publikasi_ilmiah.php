@@ -13,7 +13,26 @@ $data = isset($publicationData) ? $publicationData : [
         'rows' => []
     ]
 ];
+
+// Get pagination data if available
+$pagination = isset($pagination) ? $pagination : null;
 ?>
+<!-- Debug information - you can remove this after testing -->
+<pre>
+<?php
+echo "Publication data debug:\n";
+echo "Jurnal count: " . count($data['jurnal']['rows']) . "\n";
+echo "Prosiding count: " . count($data['prosiding']['rows']) . "\n";
+echo "Paten count: " . count($data['paten']['rows']) . "\n";
+if (isset($pagination)) {
+    echo "Pagination info:\n";
+    echo "  Page: " . $pagination['page'] . "\n";
+    echo "  Limit: " . $pagination['limit'] . "\n";
+    echo "  Total: " . $pagination['total'] . "\n";
+    echo "  Pages: " . $pagination['pages'] . "\n";
+}
+?>
+</pre>
 <style>
     .fm-content {
         padding: 30px;
@@ -73,6 +92,64 @@ $data = isset($publicationData) ? $publicationData : [
             </div>
         </div>
     </main>
+    
+    <?php if ($pagination && $pagination['pages'] > 1): ?>
+    <!-- Pagination Controls -->
+    <nav aria-label="Navigasi halaman publikasi" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous Button -->
+            <?php if ($pagination['page'] > 1): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $pagination['page'] - 1 ?>&limit=<?= $pagination['limit'] ?>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <span class="page-link">&laquo;</span>
+                </li>
+            <?php endif; ?>
+
+            <!-- Page Numbers -->
+            <?php
+            $start = max(1, $pagination['page'] - 2);
+            $end = min($pagination['pages'], $start + 4);
+            $start = max(1, $end - 4);
+            
+            for ($i = $start; $i <= $end; $i++):
+            ?>
+                <?php if ($i == $pagination['page']): ?>
+                    <li class="page-item active">
+                        <span class="page-link"><?= $i ?></span>
+                    </li>
+                <?php else: ?>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<?= $i ?>&limit=<?= $pagination['limit'] ?>"><?= $i ?></a>
+                    </li>
+                <?php endif; ?>
+            <?php endfor; ?>
+
+            <!-- Next Button -->
+            <?php if ($pagination['page'] < $pagination['pages']): ?>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<?= $pagination['page'] + 1 ?>&limit=<?= $pagination['limit'] ?>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="page-item disabled">
+                    <span class="page-link">&raquo;</span>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>
+    
+    <!-- Display current page info -->
+    <div class="text-center text-muted small mt-2">
+        Halaman <?= $pagination['page'] ?> dari <?= $pagination['pages'] ?>
+        (Total <?= $pagination['total'] ?> publikasi)
+    </div>
+    <?php endif; ?>
 </div>
 
 <script>

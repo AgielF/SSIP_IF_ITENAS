@@ -1,31 +1,6 @@
 <?php
 // Data dummy untuk setiap kategori. Seharusnya ini diambil dari database.
-$data = [
-    'riset' => [
-        'headers' => ['Nama Proyek', 'Ketua Peneliti', 'Status', 'Tahun'],
-        'rows' => [
-            ['Pengembangan AI untuk Analisis Citra Medis', 'Dr. Smith', 'Selesai', '2023'],
-            ['Sistem IoT untuk Smart Agriculture', 'Prof. Johnson', 'Berjalan', '2024'],
-            ['Analisis Big Data untuk Prediksi Pasar Saham', 'Dr. Williams', 'Selesai', '2022'],
-        ]
-    ],
-    'kolaborasi' => [
-        'headers' => ['Nama Mitra', 'Jenis Kolaborasi', 'Proyek Terkait', 'Durasi'],
-        'rows' => [
-            ['PT. Teknologi Maju', 'Riset Bersama', 'Sistem IoT', '2023-2025'],
-            ['Universitas Sebelah', 'Pertukaran Peneliti', 'AI Medis', '2024'],
-            ['GovTech Indonesia', 'Pengembangan Produk', 'Aplikasi Layanan Publik', '2023-2024'],
-        ]
-    ],
-    'pendanaan' => [
-        'headers' => ['Sumber Dana', 'Nama Hibah', 'Jumlah', 'Periode'],
-        'rows' => [
-            ['DIKTI', 'Hibah Penelitian Dasar', 'Rp 150.000.000', '2023'],
-            ['LPDP', 'Riset Inovatif Produktif (RISPRO)', 'Rp 300.000.000', '2024-2026'],
-            ['Industri XYZ', 'Dana Riset Terapan', 'Rp 75.000.000', '2023'],
-        ]
-    ]
-];
+$data = [ ];
 ?>
 <style>
     .fm-content {

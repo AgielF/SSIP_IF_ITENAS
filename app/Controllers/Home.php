@@ -549,6 +549,8 @@ class Home extends BaseController
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 15);
+        // Ensure limit is at least 1 to prevent DivisionByZeroError
+        $limit = max(1, $limit);
         $search = $this->request->getVar('search');
         $kategori = $this->request->getVar('kategori');
         $jenis = $this->request->getVar('jenis');
@@ -615,6 +617,19 @@ class Home extends BaseController
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo
         ];
+        
+        // Debug information - you can remove this after testing
+        echo "<pre>";
+        echo "Total items in database: " . $total . "\n";
+        echo "Current page: " . $page . "\n";
+        echo "Items per page (limit): " . $limit . "\n";
+        echo "Offset: " . $offset . "\n";
+        echo "Number of items retrieved: " . count($publikasi) . "\n";
+        echo "Transformed data count:\n";
+        echo "  Jurnal: " . count($transformedData['jurnal']['rows']) . "\n";
+        echo "  Prosiding: " . count($transformedData['prosiding']['rows']) . "\n";
+        echo "  Paten: " . count($transformedData['paten']['rows']) . "\n";
+        echo "</pre>";
         
         return view('publikasi_ilmiah_list_view', $data);
     }
@@ -969,7 +984,6 @@ class Home extends BaseController
                     break;
             }
         }
-        
         return $data;
     }
 }
