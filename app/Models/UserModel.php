@@ -16,10 +16,10 @@ class UserModel extends Model
     
     public function getDosenLab()
     {
-        return $this->where('role_id', 3)->findAll();
+        return $this->where('role_id', 4)->findAll();
     }
 
     public function praktikan(){
-        return $this->where('role_id', 4)->findAll();
+        return $this->where('role_id', 3)->findAll();
     }
 }

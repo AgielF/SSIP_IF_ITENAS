@@ -1,7 +1,12 @@
-<?= $this->include('layout/header') ?>
+<?= $this->extend('layout/main') ?>
 
-<?= $this->include('sections/slider') ?>
+<?= $this->section('content') ?>
 
-<?= $this->include('sections/asisten_lab') ?>
+    <!-- 
+      Karena file ini meng-extend layout utama, semua variabel yang dikirim 
+      dari controller (seperti $asisten) akan tersedia di sini dan 
+      di semua file yang di-include dari sini.
+    -->
+    <?= $this->include('sections/asisten_lab') ?>
 
-<?= $this->include('layout/footer') ?>
+<?= $this->endSection() ?>
