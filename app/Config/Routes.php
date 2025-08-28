@@ -60,6 +60,12 @@ $routes->get('/api/rekrutmen-page', 'Api\Content::rekrutmenPage');
 $routes->get('/api/publikasi-page', 'Api\Content::publikasiPage');
 $routes->get('/api/peserta-praktikum', 'Api\Content::pesertaPraktikum');
 
+// Authentication API routes
+$routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($routes) {
+    $routes->post('login', 'Auth::login');
+    $routes->get('profile', 'Auth::profile');
+});
+
 // Admin CRUD route web
 // 1. Rekrutmen
 $routes->get('/admin/rekrut', 'Admin\Rekrut::index');
