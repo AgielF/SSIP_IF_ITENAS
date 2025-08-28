@@ -230,6 +230,9 @@
 <div class="main-content">
     <!-- Konten dari setiap halaman akan dimulai di sini -->
 
+<!-- Bootstrap JS (Path sudah diperbaiki) -->
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const menuToggle = document.querySelector('.menu-toggle');

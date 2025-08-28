@@ -2,18 +2,16 @@
 
 namespace App\Controllers;
 
+// Import semua model yang dibutuhkan di satu tempat
 use App\Models\JadwalModel;
 use App\Models\AsistenJadwalModel;
 use App\Models\UserModel;
-use App\Models\BeritaModel;
-use App\Models\GaleriUmumModel;
 use App\Models\ProyekRisetModel;
 use App\Models\PublikasiModel;
-use App\Models\RekrutModel;
-use App\Models\ModulPraktikumModel;
+use App\Models\GaleriUmumModel;
 use App\Models\VisiMisiModel;
-use App\Models\EventsModel;
-use App\Models\PesertaPraktikumModel;
+// use App\Models\RekrutmenModel; // Asumsi ada model ini
+// use App\Models\RepositoriModel; // Asumsi ada model ini
 
 class Home extends BaseController
 {
@@ -23,21 +21,65 @@ class Home extends BaseController
      */
     public function index()
     {
-        // Get processed schedules
-        $processedSchedules = $this->getProcessedJadwalData();
+        $jadwalModel = new JadwalModel();
+        $asistenJadwalModel = new AsistenJadwalModel();
         
-        // Get visi & misi data
-        $visiMisiModel = new VisiMisiModel();
-        $visiRow = $visiMisiModel->where('judul', 'Visi')->first();
-        $misiRow = $visiMisiModel->where('judul', 'Misi')->first();
-        
+        // 1. Ambil data gabungan dari database
+        $databaseData = $jadwalModel->getJadwalWithDetails();
+
+        // 2. Siapkan array kosong untuk menampung data yang sudah diproses
+        $processedSchedules = [];
+        $today = new \DateTime('today');
+
+        // 3. Looping dan format data
+        foreach ($databaseData as $item) {
+            $scheduleDate = new \DateTime($item['tanggal']);
+            
+            // Tentukan status berdasarkan tanggal
+            if ($scheduleDate > $today) {
+                $status = 'Upcoming';
+                $status_color = 'success';
+                $actions = ['details', 'cancel'];
+            } elseif ($scheduleDate < $today) {
+                $status = 'Completed';
+                $status_color = 'primary';
+                $actions = ['details', 'report'];
+            } else {
+                $status = 'Today';
+                $status_color = 'warning';
+                $actions = ['details', 'reschedule'];
+            }
+
+            // Ambil nama asisten (disederhanakan, ambil yang pertama)
+            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
+            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
+
+            $processedSchedules[] = [
+                'title'        => $item['nama_event'],
+                'lab'          => $item['ruangan'],
+                'status'       => $status,
+                'status_color' => $status_color,
+                'date'         => $scheduleDate->format('l, d F Y'),
+                'time'         => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor'   => $instructor,
+                'actions'      => $actions
+            ];
+        }
+
+        // 4. Kirim data yang sudah diproses ke view
         $data = [
-            'title'     => 'Beranda | Lab. Fisika Dasar',
-            'schedules' => array_slice($processedSchedules, 0, 5), // Show only first 5 schedules on homepage
-            'visi' => $visiRow ? $visiRow['isi'] : '',
-            'misi' => $misiRow ? $misiRow['isi'] : ''
+            'title'     => 'Daftar Jadwal Lab',
+            'schedules' => $processedSchedules // Gunakan key 'schedules' sesuai kebutuhan view
         ];
 
+        // 5. Siapkan data untuk Visi & Misi
+        $model = new \App\Models\VisiMisiModel();
+        $visiRow = $model->where('judul', 'Visi')->first();
+        $misiRow = $model->where('judul', 'Misi')->first();
+        $data['visi'] = $visiRow ? $visiRow['isi'] : '';
+        $data['misi'] = $misiRow ? $misiRow['isi'] : '';
+
+        // Memuat view home_view, yang akan dibungkus oleh layout/main.php
         return view('home_view', $data);
     }
 
@@ -72,100 +114,45 @@ class Home extends BaseController
         $jadwalModel = new JadwalModel();
         $eventsModel = new EventsModel();
         $asistenJadwalModel = new AsistenJadwalModel();
+        
+        // 1. Ambil data gabungan dari database
+        $databaseData = $jadwalModel->getJadwalWithDetails();
 
-        // Build query with filters
-        $builder = $jadwalModel->select('jadwal.*, events.nama_event')
-                    ->join('events', 'events.id_event = jadwal.id_event');
-
-        // Apply filters if provided
-        if ($search) {
-            $builder->groupStart()
-                ->like('events.nama_event', $search)
-                ->orLike('jadwal.ruangan', $search)
-                ->groupEnd();
-        }
-
-        if ($event) {
-            $builder->where('jadwal.id_event', $event);
-        }
-
-        if ($dateFrom) {
-            $builder->where('jadwal.tanggal >=', $dateFrom);
-        }
-
-        if ($dateTo) {
-            $builder->where('jadwal.tanggal <=', $dateTo);
-        }
-
-        // Get total count before pagination
-        $total = $builder->countAllResults(false); // false to keep the query builder
-
-        // Apply pagination
-        $offset = ($page - 1) * $limit;
-        $schedulesData = $builder->limit($limit, $offset)->findAll();
-
-        // Process the schedules data
+        // 2. Siapkan array kosong untuk menampung data yang sudah diproses
         $processedSchedules = [];
         $today = new \DateTime('today');
 
-        foreach ($schedulesData as $item) {
+        // 3. Looping dan format data
+        foreach ($databaseData as $item) {
             $scheduleDate = new \DateTime($item['tanggal']);
-            
-            // Tentukan status berdasarkan tanggal
             if ($scheduleDate > $today) {
-                $status = 'Upcoming';
-                $status_color = 'success';
-                $actions = ['details', 'cancel'];
+                $status = 'Upcoming'; $status_color = 'success';
             } elseif ($scheduleDate < $today) {
-                $status = 'Completed';
-                $status_color = 'primary';
-                $actions = ['details', 'report'];
+                $status = 'Completed'; $status_color = 'primary';
             } else {
-                $status = 'Today';
-                $status_color = 'warning';
-                $actions = ['details', 'reschedule'];
+                $status = 'Today'; $status_color = 'warning';
             }
-
-            // Ambil nama asisten (disederhanakan, ambil yang pertama)
             $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
             $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
-
             $processedSchedules[] = [
-                'title'        => $item['nama_event'],
-                'lab'          => $item['ruangan'],
-                'status'       => $status,
-                'status_color' => $status_color,
-                'date'         => $scheduleDate->format('l, d F Y'),
-                'time'         => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
-                'instructor'   => $instructor,
-                'actions'      => $actions
+                'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
+                'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
+                'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor' => $instructor
             ];
         }
 
-        // Prepare response with pagination info
-        $pagination = [
-            'page' => (int)$page,
-            'limit' => (int)$limit,
-            'total' => (int)$total,
-            'pages' => ceil($total / $limit)
-        ];
-
+        // 4. Kirim data yang sudah diproses ke view
         $data = [
-            'title' => 'Agenda & Acara | Lab. Fisika Dasar',
-            'schedules' => $processedSchedules,
-            'pagination' => $pagination,
-            'search' => $search,
-            'event' => $event,
-            'dateFrom' => $dateFrom,
-            'dateTo' => $dateTo
+            'title'     => 'Daftar Jadwal Lab',
+            'schedules' => $processedSchedules // Gunakan key 'schedules' sesuai kebutuhan view
         ];
-        
+        // Memuat view acara_list_view
         return view('acara_list_view', $data);
     }
 
     /**
-     * Method untuk menampilkan halaman Asisten Lab.
-     * URL: /asisten
+     * Mengambil dan memproses data anggota lab (personnel).
      */
     public function asisten()
     {
@@ -849,38 +836,43 @@ class Home extends BaseController
     private function getProcessedPersonnelData(): array
     {
         $userModel = new UserModel();
-        
-        // Mengambil data user berdasarkan role
         $asisten = $userModel->getAsistenLab();
         $dosen = $userModel->getDosenLab();
         $praktikan = $userModel->praktikan();
         
-        // Array untuk semua user
         $allPersonnel = [];
-        
-        // Menambahkan 'role' untuk setiap jenis user dan menggabungkannya
-        foreach ($asisten as $a) {
-            $a['role'] = 'asisten';
-            $allPersonnel[] = $a;
-        }
-        
-        foreach ($dosen as $d) {
-            $d['role'] = 'dosen';
-            $allPersonnel[] = $d;
-        }
-        
-        foreach ($praktikan as $p) {
-            $p['role'] = 'praktikan';
-            $allPersonnel[] = $p;
-        }
+        foreach ($dosen as $d) { $d['role'] = 'dosen'; $allPersonnel[] = $d; }
+        foreach ($asisten as $a) { $a['role'] = 'asisten'; $allPersonnel[] = $a; }
+        foreach ($praktikan as $p) { $p['role'] = 'praktikan'; $allPersonnel[] = $p; }
         
         return $allPersonnel;
     }
 
     /**
-     * Helper method to process schedule data for both user and admin views
+     * Menampilkan halaman daftar anggota lab untuk pengguna biasa.
      */
-    private function getProcessedJadwalData(): array
+    public function asisten()
+    {
+        $data = [
+            'title'   => 'Anggota Laboratorium',
+            'asisten' => $this->getProcessedPersonnelData() // Panggil helper method
+        ];
+        return view('asisten_list_view', $data);
+    }
+
+    /**
+     * Menampilkan halaman daftar anggota lab untuk admin.
+     */
+    public function asisten_admin()
+    {
+        $data = [
+            'title'   => 'Admin: Kelola Anggota Laboratorium',
+            'asisten' => $this->getProcessedPersonnelData() // Panggil helper method yang sama
+        ];
+        // Admin view mungkin memiliki tombol Edit/Hapus, jadi view-nya berbeda
+        return view('asisten_list_admin_view', $data);
+    }
+     private function getProcessedJadwalData(): array
     {
         $jadwalModel = new JadwalModel();
         $asistenJadwalModel = new AsistenJadwalModel();
@@ -929,61 +921,143 @@ class Home extends BaseController
         
         return $processedSchedules;
     }
-    
-    /**
-     * Transform publikasi data into the format expected by the view
-     */
-    private function transformPublikasiData($publikasi)
+       public function jadwal()
     {
         $data = [
-            'jurnal' => [
-                'headers' => ['Judul Artikel', 'Penulis Utama', 'Penulis Pendamping', 'Nama Jurnal', 'Tahun', 'DOI', 'Link'],
-                'rows' => []
-            ],
-            'prosiding' => [
-                'headers' => ['Judul Makalah', 'Konferensi', 'Kategori', 'Tahun', 'Link'],
-                'rows' => []
-            ],
-            'paten' => [
-                'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan', 'Link'],
-                'rows' => []
-            ]
+            'title'     => 'Daftar Jadwal Lab',
+            'schedules' => $this->getProcessedJadwalData() // Panggil helper method
         ];
-        foreach ($publikasi as $item) {
-                    // Map database fields to table columns based on jenis_publikasi
-                    switch ($item['jenis_publikasi']) {
-                        case 'jurnal':
-                            $data['jurnal']['rows'][] = [
-                                $item['deskripsi'] ?? $item['jenis_publikasi'], // Judul Artikel (using deskripsi as it contains the title)
-                                $item['penulis'], // Penulis Utama
-                                $item['penulis_pendamping'],// Pendamping
-                                $item['kategori'] ?? '', // Nama Jurnal (using kategori as it contains journal name)
-                                $item['tahun'] ?? '', // Tahun
-                                $item['link_doi'] ? '<a href="' . $item['link_doi'] . '" target="_blank">Link</a>' : '', // Link/DOI
-                                $item['link_gdrive'] ? '<a href="' . $item['link_gdrive'] . '" target="_blank">Link</a>' : '' // Google Drive Link
-                            ];
-        
-                    break;
-                case 'prosiding':
-                    $data['prosiding']['rows'][] = [
-                        $item['deskripsi'] ?? $item['jenis_publikasi'], // Judul Makalah (using deskripsi as it contains the title)
-                        $item['conference'] ?? '', // Konferensi
-                        $item['kategori'] ?? '', // Kategori
-                        $item['tahun'] ?? '', // Tahun
-                        $item['link_doi'] ? '<a href="' . $item['link_doi'] . '" target="_blank">Link</a>' : '' // Link
-                    ];
-                    break;
-                case 'paten':
-                    $data['paten']['rows'][] = [
-                        $item['deskripsi'] ?? $item['jenis_publikasi'], // Judul Invensi (using deskripsi as it contains the title)
-                        $item['nomor'] ?? '', // Nomor Paten
-                        $item['penulis'], // Inventor Utama
-                        $item['tanggal_publikasi'] ?? '', // Tanggal Diberikan
-                        $item['link_doi'] ? '<a href="' . $item['link_doi'] . '" target="_blank">Link</a>' : '' // Link
-                    ];
-                    break;
-            }
-        }
-        return $data;
+        return view('jadwal_card_view', $data); 
     }
+
+    /**
+     * Menampilkan halaman jadwal untuk admin.
+     */
+    public function jadwal_admin()
+    {
+        $data = [
+            'title'     => 'Admin: Daftar Jadwal Lab',
+            'schedules' => $this->getProcessedJadwalData() // Panggil helper method yang sama
+        ];
+        return view('jadwal_card_admin_view', $data); 
+    }
+      public function jadwal_card()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('jadwal_view', $data); 
+    }
+      public function galeri()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('galeri_list_view', $data); 
+    }
+      public function galeri_admin()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('galeri_list_admin_view', $data); 
+    }
+    
+    public function penelitian_proyek()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('penelitian_proyek_list', $data); 
+    }
+    public function penelitian_proyek_admin()
+    {
+           $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('penelitian_proyek_list_admin_view', $data); 
+    }
+    
+     public function publikasi_ilmiah()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('publikasi_ilmiah_list_view', $data); 
+    }
+    public function publikasi_ilmiah_admin()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('publikasi_ilmiah_list_admin_view', $data); 
+    }
+
+
+      public function repositori()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('repositori_list_view', $data); 
+    }
+      public function repositori_admin()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('repositori_list_admin_view', $data); 
+    }
+       public function rekrutmen()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('rekrutmen_view', $data); 
+    }
+      public function rekrutmen_admin()
+    {
+        $data = [
+            'title' => 'Visi & Misi | Lab. Fisika Dasar'
+        ];
+        // Buat file view baru bernama 'visi_misi_page.php' jika diperlukan
+        // atau gabungkan di view lain.
+        // Untuk contoh ini, kita anggap ada view khusus.
+        return view('rekrutmen_admin_view', $data); 
+    }
+
+
+
+    // Anda bisa menambahkan method lain untuk halaman lain di sini
+    // contoh: public function kontak() { ... }
 }

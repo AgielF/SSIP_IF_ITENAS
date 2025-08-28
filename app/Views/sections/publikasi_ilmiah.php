@@ -54,10 +54,27 @@ if (isset($pagination)) {
         color: #0d6efd;
         border-color: #dee2e6 #dee2e6 #fff;
     }
+    /* STYLE BARU UNTUK PRINT PDF */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #printable-area, #printable-area * {
+            visibility: visible;
+        }
+        #printable-area {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        }
+        .btn, .nav-tabs, #search-input, #sort-filter, #items-per-page-filter, #pagination-controls, label { 
+            display: none !important; /* Sembunyikan semua elemen interaktif di PDF */
+        }
+    }
 </style>
 
 <div class="container my-5">
-    <!-- Navigasi Tab di Atas -->
     <ul class="nav nav-tabs" id="publication-nav">
         <li class="nav-item">
             <a class="nav-link active" href="#" data-content="jurnal">Jurnal</a>
@@ -70,26 +87,53 @@ if (isset($pagination)) {
         </li>
     </ul>
 
-    <!-- Konten Utama (Tabel Dinamis) -->
     <main class="fm-content card rounded-0 rounded-bottom border-top-0">
         <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h4 class="mb-0" id="content-title">Jurnal</h4>
-                    <p class="text-muted small" id="content-subtitle">Daftar jurnal yang telah dipublikasikan</p>
+            <div id="printable-area">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+                    <div id="content-title-wrapper">
+                        <h4 class="mb-0" id="content-title">Jurnal</h4>
+                    </div>
+                    
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
+                        
+                        <div class="d-flex align-items-center">
+                            <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
+                            <select class="form-select form-select-sm" id="sort-filter">
+                                <option value="newest">Terbaru</option>
+                                <option value="oldest">Terlama</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="items-per-page-filter" class="form-label me-2 mb-0 small text-nowrap">Tampilkan:</label>
+                            <select class="form-select form-select-sm" id="items-per-page-filter">
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+                        <button id="export-pdf-btn" class="btn btn-sm btn-danger">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <p class="text-muted small mb-3" id="record-info">Menampilkan data...</p>
+
+                <div class="table-responsive">
+                    <table class="table fm-table table-hover">
+                        <thead id="table-header"></thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
                 </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table fm-table table-hover">
-                    <thead id="table-header">
-                        <!-- Header tabel akan dirender oleh JavaScript -->
-                    </thead>
-                    <tbody id="table-body">
-                        <!-- Isi tabel akan dirender oleh JavaScript -->
-                    </tbody>
-                </table>
-            </div>
+            
+            <nav>
+                <ul class="pagination pagination-sm justify-content-end" id="pagination-controls">
+                    <!-- Tombol paginasi akan dirender oleh JavaScript -->
+                </ul>
+            </nav>
         </div>
     </main>
     
@@ -154,61 +198,151 @@ if (isset($pagination)) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Mengambil data PHP dan menyimpannya di variabel JavaScript
     const publicationData = <?= json_encode($data) ?>;
 
     const navLinks = document.querySelectorAll('#publication-nav .nav-link');
     const contentTitle = document.getElementById('content-title');
-    const contentSubtitle = document.getElementById('content-subtitle');
     const tableHeader = document.getElementById('table-header');
     const tableBody = document.getElementById('table-body');
+    const sortFilter = document.getElementById('sort-filter');
+    const itemsPerPageFilter = document.getElementById('items-per-page-filter');
+    const recordInfo = document.getElementById('record-info');
+    const searchInput = document.getElementById('search-input');
+    const paginationControls = document.getElementById('pagination-controls');
+    const exportPdfBtn = document.getElementById('export-pdf-btn');
 
-    // Fungsi untuk merender tabel berdasarkan kategori yang dipilih
-    function renderTable(category) {
-        const data = publicationData[category];
-        if (!data) return;
-
-        // Update judul
-        const linkText = document.querySelector(`.nav-link[data-content="${category}"]`).textContent;
-        contentTitle.textContent = linkText;
-        contentSubtitle.textContent = `Daftar ${linkText.toLowerCase()} yang telah dipublikasikan`;
-
-        // Render header tabel
-        let headerHtml = '<tr>';
-        data.headers.forEach(header => {
-            headerHtml += `<th>${header}</th>`;
-        });
-        headerHtml += '</tr>';
-        tableHeader.innerHTML = headerHtml;
-
-        // Render isi tabel
-        let bodyHtml = '';
-        data.rows.forEach(row => {
-            bodyHtml += '<tr>';
-            row.forEach(cell => {
-                bodyHtml += `<td>${cell}</td>`;
-            });
-            bodyHtml += '</tr>';
-        });
-        tableBody.innerHTML = bodyHtml;
+    let currentState = {
+        category: 'jurnal',
+        sortOrder: 'newest',
+        itemsPerPage: 5,
+        currentPage: 1,
+        searchTerm: ''
+    };
+    
+    function parseDate(dateStr) {
+        if (String(dateStr).includes('/')) {
+            const parts = dateStr.split('/');
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
     }
 
-    // Event listener untuk setiap link di navigasi tab
+    function updateView() {
+        const data = publicationData[currentState.category];
+        if (!data) return;
+
+        const linkText = document.querySelector(`.nav-link[data-content="${currentState.category}"]`).textContent;
+        contentTitle.textContent = linkText;
+
+        // 1. Filter
+        let processedRows = data.rows.filter(row => 
+            row.some(cell => String(cell).toLowerCase().includes(currentState.searchTerm))
+        );
+
+        // 2. Sortir
+        let dateColumnIndex = (currentState.category === 'jurnal') ? 5 : (currentState.category === 'prosiding' ? 4 : 3);
+        processedRows.sort((a, b) => {
+            const dateA = parseDate(a[dateColumnIndex]);
+            const dateB = parseDate(b[dateColumnIndex]);
+            return (currentState.sortOrder === 'newest') 
+                ? String(dateB).localeCompare(String(dateA))
+                : String(dateA).localeCompare(String(dateB));
+        });
+        
+        const totalRows = processedRows.length;
+
+        // 3. Paginasi
+        const limit = currentState.itemsPerPage === 'all' ? totalRows : parseInt(currentState.itemsPerPage, 10);
+        const startIndex = (currentState.currentPage - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedRows = processedRows.slice(startIndex, endIndex);
+
+        // Render Header
+        let headerHtml = '<tr><th>No.</th>';
+        data.headers.forEach(header => headerHtml += `<th>${header}</th>`);
+        tableHeader.innerHTML = headerHtml + '</tr>';
+        
+        // Render Body
+        let bodyHtml = '';
+        if (paginatedRows.length === 0) {
+            bodyHtml = `<tr><td colspan="${data.headers.length + 1}" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+        } else {
+            paginatedRows.forEach((row, index) => {
+                bodyHtml += `<tr><td>${startIndex + index + 1}</td>`;
+                row.forEach(cell => bodyHtml += `<td>${cell}</td>`);
+                bodyHtml += '</tr>';
+            });
+        }
+        tableBody.innerHTML = bodyHtml;
+
+        // Update Info
+        const startRecord = totalRows > 0 ? startIndex + 1 : 0;
+        const endRecord = Math.min(endIndex, totalRows);
+        recordInfo.textContent = `Menampilkan ${startRecord}-${endRecord} dari ${totalRows} data.`;
+
+        // Render Paginasi
+        renderPagination(totalRows, limit);
+    }
+
+    function renderPagination(totalItems, limit) {
+        const totalPages = Math.ceil(totalItems / limit);
+        paginationControls.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        const createPageLink = (page, text, isDisabled = false, isActive = false) => {
+            const li = document.createElement('li');
+            li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
+            li.innerHTML = `<a class="page-link" href="#">${text}</a>`;
+            li.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!isDisabled) {
+                    currentState.currentPage = page;
+                    updateView();
+                }
+            });
+            return li;
+        };
+
+        paginationControls.appendChild(createPageLink(currentState.currentPage - 1, 'Previous', currentState.currentPage === 1));
+        for (let i = 1; i <= totalPages; i++) {
+            paginationControls.appendChild(createPageLink(i, i, false, currentState.currentPage === i));
+        }
+        paginationControls.appendChild(createPageLink(currentState.currentPage + 1, 'Next', currentState.currentPage === totalPages));
+    }
+
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-
-            // Hapus kelas 'active' dari semua link
             navLinks.forEach(l => l.classList.remove('active'));
-            // Tambahkan kelas 'active' ke link yang diklik
             this.classList.add('active');
-
-            const category = this.getAttribute('data-content');
-            renderTable(category);
+            currentState.category = this.getAttribute('data-content');
+            currentState.currentPage = 1;
+            updateView();
         });
     });
 
-    // Render tabel awal saat halaman dimuat
-    renderTable('jurnal');
+    sortFilter.addEventListener('change', function() {
+        currentState.sortOrder = this.value;
+        currentState.currentPage = 1;
+        updateView();
+    });
+
+    itemsPerPageFilter.addEventListener('change', function() {
+        currentState.itemsPerPage = this.value;
+        currentState.currentPage = 1;
+        updateView();
+    });
+
+    searchInput.addEventListener('keyup', function() {
+        currentState.searchTerm = this.value.toLowerCase();
+        currentState.currentPage = 1;
+        updateView();
+    });
+
+    exportPdfBtn.addEventListener('click', function() {
+        window.print();
+    });
+
+    updateView();
 });
 </script>
