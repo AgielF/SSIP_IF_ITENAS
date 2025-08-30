@@ -10,7 +10,7 @@ $routes->get('/', 'Home::index');
 
 $routes->get('/agenda', 'Home::agenda');
 
-$routes->get('/asisten', 'Home::asisten');
+$routes->get('/asisten', 'AnggotaController::index');
 $routes->get('/asisten_admin', 'Home::asisten_admin');
 
 $routes->get('/jadwal', 'Home::jadwal');
@@ -31,3 +31,12 @@ $routes->get('/repositori_admin','Home::repositori_admin');
 
 $routes->get('/rekrutmen', 'Home::rekrutmen');
 $routes->get('/rekrutmen_admin','Home::rekrutmen_admin');
+
+// $routes->get('/user_profile', 'Home::user_profile');
+
+$routes->get('/topic_detail', 'Home::topic_detail');
+
+// Rute untuk Penelitian & Proyek
+$routes->get('/penelitian/(:segment)', 'TopicController::detail/$1');
+
+$routes->get('/profil/(:num)', 'AnggotaController::profil/$1');

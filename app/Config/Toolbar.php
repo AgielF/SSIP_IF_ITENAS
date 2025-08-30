@@ -37,7 +37,9 @@ class Toolbar extends BaseConfig
         Timers::class,
         Database::class,
         Logs::class,
-        Views::class,
+        //troubleshooting looping terus menerus pada routes lokal comentkan Views::class dan ubah CI_ENVIRONMENT = PRODUCTION pada .env
+ 
+        //Views::class,
         // \CodeIgniter\Debug\Toolbar\Collectors\Cache::class,
         Files::class,
         Routes::class,

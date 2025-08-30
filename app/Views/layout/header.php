@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $title ?? 'Lab. SSIP' ?></title>
     
+
+
+    
+    
     <!-- Bootstrap CSS -->
     <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
     <!-- Font Awesome untuk Ikon -->
