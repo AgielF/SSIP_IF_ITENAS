@@ -10,26 +10,77 @@ use App\Models\ProyekRisetModel;
 use App\Models\PublikasiModel;
 use App\Models\GaleriUmumModel;
 use App\Models\VisiMisiModel;
+use App\Models\EventsModel;
 // use App\Models\RekrutmenModel; // Asumsi ada model ini
 // use App\Models\RepositoriModel; // Asumsi ada model ini
 
 class Home extends BaseController
 {
-    // ===================================================================
-    // HELPER METHODS (PRIBADI)
-    // Logika pengambilan data dipusatkan di sini untuk menghindari duplikasi
-    // ===================================================================
 
     /**
      * Mengambil dan memproses data jadwal.
      */
-    private function getProcessedJadwalData(): array
+    private function getProcessedJadwalData($limit = null): array
     {
-        $data = [
-            'title'     => 'Agenda & Acara | Lab. Fisika Dasar',
-            'schedules' => $this->getProcessedJadwalData()
-        ];
-        return view('acara_list_view', $data);
+        // Initialize models
+        $jadwalModel = new JadwalModel();
+        $asistenJadwalModel = new AsistenJadwalModel();
+        
+        // Get schedule data with limit if specified
+        if ($limit) {
+            $databaseData = $jadwalModel->select('jadwal.*, events.nama_event')
+                ->join('events', 'events.id_event = jadwal.id_event')
+                ->orderBy('jadwal.tanggal', 'DESC')
+                ->limit($limit)
+                ->findAll();
+        } else {
+            $databaseData = $jadwalModel->getJadwalWithDetails();
+        }
+        
+        // Extract all schedule IDs to fetch assistants in a single query
+        $scheduleIds = array_column($databaseData, 'id_jadwal');
+        $allAsisten = [];
+        
+        if (!empty($scheduleIds)) {
+            // Fetch all assistants for all schedules in one query
+            $allAsisten = $asistenJadwalModel->db->table('asisten_jadwal')
+                ->join('users', 'users.id = asisten_jadwal.id_user')
+                ->whereIn('asisten_jadwal.id_jadwal', $scheduleIds)
+                ->select('asisten_jadwal.id_jadwal, users.nama, users.nomor')
+                ->get()->getResultArray();
+            
+            // Group assistants by schedule ID for easier access
+            $asistenBySchedule = [];
+            foreach ($allAsisten as $asisten) {
+                $asistenBySchedule[$asisten['id_jadwal']][] = $asisten;
+            }
+        }
+        
+        $processedSchedules = [];
+        $today = new \DateTime('today');
+
+        foreach ($databaseData as $item) {
+            $scheduleDate = new \DateTime($item['tanggal']);
+            if ($scheduleDate > $today) {
+                $status = 'Upcoming'; $status_color = 'success';
+            } elseif ($scheduleDate < $today) {
+                $status = 'Completed'; $status_color = 'primary';
+            } else {
+                $status = 'Today'; $status_color = 'warning';
+            }
+            
+            // Get assistants for this schedule from our pre-fetched data
+            $asisten = $asistenBySchedule[$item['id_jadwal']] ?? [];
+            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
+            
+            $processedSchedules[] = [
+                'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
+                'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
+                'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor' => $instructor
+            ];
+        }
+        return $processedSchedules;
     }
 
     /**
@@ -50,7 +101,34 @@ class Home extends BaseController
         $jadwalModel = new JadwalModel();
         $eventsModel = new EventsModel();
         $asistenJadwalModel = new AsistenJadwalModel();
-        $databaseData = $jadwalModel->getJadwalWithDetails();
+        
+        // Get schedule data with pagination
+        $offset = ($page - 1) * $limit;
+        $databaseData = $jadwalModel->select('jadwal.*, events.nama_event')
+            ->join('events', 'events.id_event = jadwal.id_event')
+            ->orderBy('jadwal.tanggal', 'DESC')
+            ->limit($limit, $offset)
+            ->findAll();
+        
+        // Extract all schedule IDs to fetch assistants in a single query
+        $scheduleIds = array_column($databaseData, 'id_jadwal');
+        $allAsisten = [];
+        
+        if (!empty($scheduleIds)) {
+            // Fetch all assistants for all schedules in one query
+            $allAsisten = $asistenJadwalModel->db->table('asisten_jadwal')
+                ->join('users', 'users.id = asisten_jadwal.id_user')
+                ->whereIn('asisten_jadwal.id_jadwal', $scheduleIds)
+                ->select('asisten_jadwal.id_jadwal, users.nama, users.nomor')
+                ->get()->getResultArray();
+            
+            // Group assistants by schedule ID for easier access
+            $asistenBySchedule = [];
+            foreach ($allAsisten as $asisten) {
+                $asistenBySchedule[$asisten['id_jadwal']][] = $asisten;
+            }
+        }
+        
         $processedSchedules = [];
         $today = new \DateTime('today');
 
@@ -63,8 +141,11 @@ class Home extends BaseController
             } else {
                 $status = 'Today'; $status_color = 'warning';
             }
-            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
+            
+            // Get assistants for this schedule from our pre-fetched data
+            $asisten = $asistenBySchedule[$item['id_jadwal']] ?? [];
             $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
+            
             $processedSchedules[] = [
                 'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
                 'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
@@ -78,12 +159,20 @@ class Home extends BaseController
     /**
      * Mengambil dan memproses data anggota lab (personnel).
      */
-    private function getProcessedPersonnelData(): array
+    private function getProcessedPersonnelData($limit = null): array
     {
         $userModel = new UserModel();
-        $asisten = $userModel->getAsistenLab();
-        $dosen = $userModel->getDosenLab();
-        $praktikan = $userModel->praktikan();
+        
+        // Fetch personnel data with limits if specified
+        if ($limit) {
+            $asisten = $userModel->where('role_id', 2)->limit($limit)->findAll();
+            $dosen = $userModel->where('role_id', 4)->limit($limit)->findAll();
+            $praktikan = $userModel->where('role_id', 3)->limit($limit)->findAll();
+        } else {
+            $asisten = $userModel->getAsistenLab();
+            $dosen = $userModel->getDosenLab();
+            $praktikan = $userModel->praktikan();
+        }
         
         $allPersonnel = [];
         foreach ($dosen as $d) { $d['role'] = 'dosen'; $allPersonnel[] = $d; }
@@ -103,7 +192,7 @@ class Home extends BaseController
         $visiMisiModel = new VisiMisiModel();
         $data = [
             'title'     => 'Beranda | Lab. Fisika Dasar',
-            'schedules' => $this->getProcessedJadwalData(),
+            'schedules' => $this->getProcessedJadwalData(10), // Limit to 10 schedules on homepage
             'visi'      => $visiMisiModel->where('judul', 'Visi')->first()['isi'] ?? '',
             'misi'      => $visiMisiModel->where('judul', 'Misi')->first()['isi'] ?? '',
         ];
@@ -113,32 +202,32 @@ class Home extends BaseController
     // --- Jadwal & Agenda ---
     public function jadwal()
     {
-        $data = ['title' => 'Daftar Jadwal Lab', 'schedules' => $this->getProcessedJadwalData()];
-        return view('jadwal_card_view', $data); 
+        $data = ['title' => 'Daftar Jadwal Lab', 'schedules' => $this->getProcessedJadwalData(20)]; // Limit to 20 schedules
+        return view('jadwal_card_view', $data);
     }
 
     public function jadwal_admin()
     {
-        $data = ['title' => 'Admin: Kelola Jadwal Lab', 'schedules' => $this->getProcessedJadwalData()];
-        return view('jadwal_admin_view', $data); 
+        $data = ['title' => 'Admin: Kelola Jadwal Lab', 'schedules' => $this->getProcessedJadwalData()]; // No limit for admin
+        return view('jadwal_admin_view', $data);
     }
 
     public function agenda()
     {
-        $data = ['title' => 'Agenda & Acara', 'schedules' => $this->getProcessedJadwalData()];
+        $data = ['title' => 'Agenda & Acara', 'schedules' => $this->getProcessedJadwalData(15)]; // Limit to 15 schedules
         return view('acara_list_view', $data);
     }
 
     // --- Anggota Lab ---
     public function asisten()
     {
-        $data = ['title' => 'Anggota Laboratorium', 'asisten' => $this->getProcessedPersonnelData()];
+        $data = ['title' => 'Anggota Laboratorium', 'asisten' => $this->getProcessedPersonnelData(20)]; // Limit to 20 personnel
         return view('asisten_list_view', $data);
     }
 
     public function asisten_admin()
     {
-        $data = ['title' => 'Admin: Kelola Anggota', 'asisten' => $this->getProcessedPersonnelData()];
+        $data = ['title' => 'Admin: Kelola Anggota', 'asisten' => $this->getProcessedPersonnelData()]; // No limit for admin
         return view('asisten_admin_list_view', $data);
     }
 
@@ -146,8 +235,8 @@ class Home extends BaseController
     public function penelitian_proyek()
     {
         $proyekModel = new ProyekRisetModel();
-        $data = ['title' => 'Penelitian & Proyek', 'projects' => $proyekModel->findAll()];
-        return view('penelitian_proyek_list_view', $data); 
+        $data = ['title' => 'Penelitian & Proyek', 'projects' => $proyekModel->limit(20)->findAll()]; // Limit to 20 projects
+        return view('penelitian_proyek_list_view', $data);
     }
     
     public function penelitian_proyek_admin()
@@ -161,8 +250,8 @@ class Home extends BaseController
     public function publikasi_ilmiah()
     {
         $publikasiModel = new PublikasiModel();
-        $data = ['title' => 'Publikasi Ilmiah', 'publications' => $publikasiModel->findAll()];
-        return view('publikasi_ilmiah_list_view', $data); 
+        $data = ['title' => 'Publikasi Ilmiah', 'publications' => $publikasiModel->limit(20)->findAll()]; // Limit to 20 publications
+        return view('publikasi_ilmiah_list_view', $data);
     }
 
     public function publikasi_ilmiah_admin()
@@ -176,8 +265,8 @@ class Home extends BaseController
     public function galeri()
     {
         $galeriModel = new GaleriUmumModel();
-        $data = ['title' => 'Galeri', 'gallery' => $galeriModel->findAll()];
-        return view('galeri_list_view', $data); 
+        $data = ['title' => 'Galeri', 'gallery' => $galeriModel->limit(20)->findAll()]; // Limit to 20 gallery items
+        return view('galeri_list_view', $data);
     }
 
     public function galeri_admin()
@@ -191,14 +280,14 @@ class Home extends BaseController
     public function repositori()
     {
         // $repositoriModel = new RepositoriModel();
-        $data = ['title' => 'Repositori', 'repos'];
+        $data = ['title' => 'Repositori', 'repos' => []]; // Fixed incomplete assignment
         return view('repositori_list_view', $data);
     }
 
     public function repositori_admin()
     {
         // $repositoriModel = new RepositoriModel();
-        $data = ['title' => 'Admin: Kelola Repositori', 'repos'];
+        $data = ['title' => 'Admin: Kelola Repositori', 'repos' => []]; // Fixed incomplete assignment
         return view('repositori_admin_list_view', $data);
     }
 
@@ -206,14 +295,14 @@ class Home extends BaseController
     public function rekrutmen()
     {
         // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'Rekrutmen', 'rekrutmen'];
+        $data = ['title' => 'Rekrutmen', 'rekrutmen' => []]; // Fixed incomplete assignment
         return view('rekrutmen_view', $data);
     }
 
     public function rekrutmen_admin()
     {
         // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'Admin: Kelola Rekrutmen', 'rekrutmen'];
+        $data = ['title' => 'Admin: Kelola Rekrutmen', 'rekrutmen' => []]; // Fixed incomplete assignment
         return view('rekrutmen_admin_view', $data);
     }
 }
