@@ -82,6 +82,40 @@ class Home extends BaseController
         }
         return $processedSchedules;
     }
+    private function getTopicData():array{
+         return [
+            [
+                'title' => 'Machine Learning',
+                'description' => 'Supervised & unsupervised learning, evaluation models, ensemble models.',
+                'icon' => 'fa-brain'
+            ],
+            [
+                'title' => 'Data Mining',
+                'description' => 'Clustering, classification, association, anomalies.',
+                'icon' => 'fa-database'
+            ],
+            [
+                'title' => 'Deep Learning',
+                'description' => 'Deep Learning for NLP, Deep Learning for Image & Visual, and Time Series & Signal.',
+                'icon' => 'fa-layer-group'
+            ],
+            [
+                'title' => 'Artificial Intelligence',
+                'description' => 'Fuzzy logic, symbolic AI, heuristics, intelligent agents.',
+                'icon' => 'fa-robot'
+            ],
+            [
+                'title' => 'Expert Systems',
+                'description' => 'Rule-based systems, inference engines, knowledge bases.',
+                'icon' => 'fa-cogs'
+            ],
+            [
+                'title' => 'Smart Systems',
+                'description' => 'Predictive systems, recommendation systems, adaptive systems.',
+                'icon' => 'fa-lightbulb'
+            ],
+        ];
+    }
 
     /**
      * Method untuk menampilkan halaman Agenda & Acara dengan filter dan pagination.
@@ -155,32 +189,44 @@ class Home extends BaseController
         }
         return $processedSchedules;
     }
+    private function getTopicData():array{
+         return [
+            [
+                'title' => 'Machine Learning',
+                'description' => 'Supervised & unsupervised learning, evaluation models, ensemble models.',
+                'icon' => 'fa-brain'
+            ],
+            [
+                'title' => 'Data Mining',
+                'description' => 'Clustering, classification, association, anomalies.',
+                'icon' => 'fa-database'
+            ],
+            [
+                'title' => 'Deep Learning',
+                'description' => 'Deep Learning for NLP, Deep Learning for Image & Visual, and Time Series & Signal.',
+                'icon' => 'fa-layer-group'
+            ],
+            [
+                'title' => 'Artificial Intelligence',
+                'description' => 'Fuzzy logic, symbolic AI, heuristics, intelligent agents.',
+                'icon' => 'fa-robot'
+            ],
+            [
+                'title' => 'Expert Systems',
+                'description' => 'Rule-based systems, inference engines, knowledge bases.',
+                'icon' => 'fa-cogs'
+            ],
+            [
+                'title' => 'Smart Systems',
+                'description' => 'Predictive systems, recommendation systems, adaptive systems.',
+                'icon' => 'fa-lightbulb'
+            ],
+        ];
+    }
 
     /**
      * Mengambil dan memproses data anggota lab (personnel).
      */
-    private function getProcessedPersonnelData($limit = null): array
-    {
-        $userModel = new UserModel();
-        
-        // Fetch personnel data with limits if specified
-        if ($limit) {
-            $asisten = $userModel->where('role_id', 2)->limit($limit)->findAll();
-            $dosen = $userModel->where('role_id', 4)->limit($limit)->findAll();
-            $praktikan = $userModel->where('role_id', 3)->limit($limit)->findAll();
-        } else {
-            $asisten = $userModel->getAsistenLab();
-            $dosen = $userModel->getDosenLab();
-            $praktikan = $userModel->praktikan();
-        }
-        
-        $allPersonnel = [];
-        foreach ($dosen as $d) { $d['role'] = 'dosen'; $allPersonnel[] = $d; }
-        foreach ($asisten as $a) { $a['role'] = 'asisten'; $allPersonnel[] = $a; }
-        foreach ($praktikan as $p) { $p['role'] = 'praktikan'; $allPersonnel[] = $p; }
-        
-        return $allPersonnel;
-    }
 
     // ===================================================================
     // PUBLIC METHODS (Dapat diakses melalui Routes)
@@ -195,6 +241,7 @@ class Home extends BaseController
             'schedules' => $this->getProcessedJadwalData(10), // Limit to 10 schedules on homepage
             'visi'      => $visiMisiModel->where('judul', 'Visi')->first()['isi'] ?? '',
             'misi'      => $visiMisiModel->where('judul', 'Misi')->first()['isi'] ?? '',
+            'fields'    => $this->getTopicData(),           // Data untuk section topic
         ];
         return view('home_view', $data);
     }
@@ -216,13 +263,6 @@ class Home extends BaseController
     {
         $data = ['title' => 'Agenda & Acara', 'schedules' => $this->getProcessedJadwalData(15)]; // Limit to 15 schedules
         return view('acara_list_view', $data);
-    }
-
-    // --- Anggota Lab ---
-    public function asisten()
-    {
-        $data = ['title' => 'Anggota Laboratorium', 'asisten' => $this->getProcessedPersonnelData(20)]; // Limit to 20 personnel
-        return view('asisten_list_view', $data);
     }
 
     public function asisten_admin()
@@ -305,4 +345,17 @@ class Home extends BaseController
         $data = ['title' => 'Admin: Kelola Rekrutmen', 'rekrutmen' => []]; // Fixed incomplete assignment
         return view('rekrutmen_admin_view', $data);
     }
+     public function user_profile()
+    {
+        // $rekrutmenModel = new RekrutmenModel();
+        $data = ['title' => 'user profile', 'profile'];
+        return view('user_profile_view', $data);
+    }
+     public function topic_detail()
+    {
+        // $rekrutmenModel = new RekrutmenModel();
+        $data = ['title' => 'topic detail', 'topic'];
+        return view('topic_view', $data);
+    }
+
 }

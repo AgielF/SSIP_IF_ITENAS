@@ -1,37 +1,6 @@
 <?php
-// Data sekarang didefinisikan langsung di dalam file view ini.
-$fields = [
-    [
-        'title' => 'Machine Learning',
-        'description' => 'Supervised & unsupervised learning, evaluation models, ensemble models.',
-        'icon' => 'fa-brain' // Ikon untuk Machine Learning
-    ],
-    [
-        'title' => 'Data Mining',
-        'description' => 'Clustering, classification, association, anomalies.',
-        'icon' => 'fa-database' // Ikon untuk Data Mining
-    ],
-    [
-        'title' => 'Deep Learning',
-        'description' => 'Deep Learning for NLP, Deep Learning for Image & Visual, and Time Series & Signal.',
-        'icon' => 'fa-layer-group' // Ikon untuk Deep Learning
-    ],
-    [
-        'title' => 'Artificial Intelligence',
-        'description' => 'Fuzzy logic, symbolic AI, heuristics, intelligent agents.',
-        'icon' => 'fa-robot' // Ikon untuk AI
-    ],
-    [
-        'title' => 'Expert Systems',
-        'description' => 'Rule-based systems, inference engines, knowledge bases.',
-        'icon' => 'fa-cogs' // Ikon untuk Expert Systems
-    ],
-    [
-        'title' => 'Smart Systems',
-        'description' => 'Predictive systems, recommendation systems, adaptive systems.',
-        'icon' => 'fa-lightbulb' // Ikon untuk Smart Systems
-    ],
-];
+// Memuat helper untuk membuat URL-friendly slug
+helper('url');
 ?>
 
 <!-- Section Field of Study -->
@@ -45,18 +14,20 @@ $fields = [
         <?php if (!empty($fields)): ?>
             <?php foreach ($fields as $field): ?>
                 <div class="col-md-4">
-                    <div class="d-flex">
-                        <div class="me-3">
-                            <!-- Ikon sekarang dinamis berdasarkan data dari array di atas -->
-                            <i class="fas <?= esc($field['icon']) ?> fa-2x text-primary"></i>
+                    <!-- SETIAP ITEM SEKARANG ADALAH LINK -->
+                    <a href="/penelitian/<?= url_title($field['title'], '-', true) ?>" class="text-decoration-none text-dark">
+                        <div class="d-flex">
+                            <div class="me-3">
+                                <i class="fas <?= esc($field['icon']) ?> fa-2x text-primary"></i>
+                            </div>
+                            <div>
+                                <h4 class="h5"><?= esc($field['title']) ?></h4>
+                                <p class="text-muted small">
+                                    <?= esc($field['description']) ?>
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h4 class="h5"><?= esc($field['title']) ?></h4>
-                            <p class="text-muted small">
-                                <?= esc($field['description']) ?>
-                            </p>
-                        </div>
-                    </div>
+                    </a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

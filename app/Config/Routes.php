@@ -14,6 +14,7 @@ $routes->get('/visi-misi', 'Home::visi_misi');
 
 $routes->get('/asisten', 'Home::asisten');
 $routes->get('/asisten_paginated', 'Home::asisten_paginated');
+$routes->get('/asisten', 'AnggotaController::index');
 $routes->get('/asisten_admin', 'Home::asisten_admin');
 
 $routes->get('/jadwal', 'Home::jadwal');

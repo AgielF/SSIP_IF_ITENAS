@@ -5,7 +5,14 @@
 <main>
     <!-- Anda bisa menambahkan section berita di sini -->
     <?= $this->include('sections/agenda') ?>
-    <?= $this->include('sections/topic') ?>
+
+    <?php
+        // Kirimkan variabel $fields ke dalam section 'topic'
+        // Pastikan variabel $fields ada (didefinisikan di controller)
+        if (isset($fields)) {
+            echo $this->include('sections/topic', ['fields' => $fields]);
+        }
+    ?>
     
     <!-- TAMBAHKAN BARIS INI -->
     <?= $this->include('sections/visi_misi') ?>

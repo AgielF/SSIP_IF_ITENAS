@@ -229,3 +229,28 @@ Gunakan server pengembangan bawaan CodeIgniter untuk menjalankan aplikasi.
 php spark serve
 
 Sekarang, buka browser Anda dan kunjungi http://localhost:8080 untuk melihat aplikasi berjalan.
+
+**Week 5 Status: progress**  
+
+
+## 🏗️ Struktur Proyek
+
+Berikut adalah file-file utama yang menjadi inti dari aplikasi ini:
+
+  - `app/Controllers/AnggotaController.php`: Mengatur logika untuk halaman daftar anggota dan profil.
+  - `app/Models/UserModel.php`: Mengelola semua query dan logika yang berhubungan dengan data pengguna di database.
+  - `app/Views/asisten_list_view.php`: File tampilan untuk halaman daftar semua anggota.
+  - `app/Views/user_profile_view.php`: File tampilan untuk halaman profil detail per anggota.
+  - `app/Config/Routes.php`: Mendefinisikan URL endpoint aplikasi.
+
+## 🌐 Rute (Endpoints)
+
+  - `GET /`: Menampilkan halaman utama berisi daftar semua anggota laboratorium.
+  - `GET /profil/{id}`: Menampilkan halaman profil detail untuk anggota dengan `:num` sebagai ID unik. Contoh: `/profil/1`.
+
+-----
+
+
+
+
+
