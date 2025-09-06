@@ -1,32 +1,8 @@
 <?php
-// Data dummy untuk setiap kategori. Seharusnya ini diambil dari database.
-$data = [
-    'jurnal' => [
-        'headers' => ['Judul Artikel', 'Penulis Utama', 'Penulis Pendamping', 'Nama Jurnal', 'Volume', 'Tahun', 'Link GDrive', 'Link DOI'],
-        'rows' => [
-            ['AI in Medical Imaging: A Review', 'Dr. Smith', 'Dr. Anne', 'Journal of Medical Technology', 'Vol. 5, No. 2', '2023', '<a href="#" class="btn btn-sm btn-info">GDrive</a>', '<a href="#" class="btn btn-sm btn-warning">DOI</a>'],
-            ['IoT for Precision Agriculture', 'Prof. Johnson', 'Dr. Lee', 'IEEE Internet of Things Journal', 'Vol. 9, No. 4', '2024', '<a href="#" class="btn btn-sm btn-info">GDrive</a>', '<a href="#" class="btn btn-sm btn-warning">DOI</a>'],
-            ['Big Data for Stock Market Prediction', 'Dr. Williams', 'Dr. Chen', 'Journal of Finance and Data Science', 'Vol. 2, No. 1', '2022', '<a href="#" class="btn btn-sm btn-info">GDrive</a>', '<a href="#" class="btn btn-sm btn-warning">DOI</a>'],
-            ['Cybersecurity in 5G Networks', 'Dr. Angela', 'Prof. Ben', 'International Journal of Network Security', 'Vol. 11, No. 3', '2024', '<a href="#" class="btn btn-sm btn-info">GDrive</a>', '<a href="#" class="btn btn-sm btn-warning">DOI</a>'],
-            ['Graphene-based Material Innovations', 'Dr. Lee', 'Dr. Smith', 'Journal of Material Science', 'Vol. 15, No. 1', '2021', '<a href="#" class="btn btn-sm btn-info">GDrive</a>', '<a href="#" class="btn btn-sm btn-warning">DOI</a>'],
-        ]
-    ],
-    'prosiding' => [
-        'headers' => ['Judul Makalah', 'Konferensi', 'Lokasi', 'Penerbit', 'Tahun'],
-        'rows' => [
-            ['A Novel Approach to IoT Security', 'IEEE ICON-SONICS', 'Bandung, Indonesia', 'IEEE Xplore', '2023'],
-            ['Deep Learning for NLP', 'International Conference on AI', 'Virtual', 'ACM Digital Library', '2024'],
-            ['Efficient Data Indexing in Cloud Storage', 'IEEE Big Data', 'Online', 'IEEE Xplore', '2022'],
-        ]
-    ],
-    'paten' => [
-        'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan'],
-        'rows' => [
-            ['Sistem Deteksi Dini Penyakit Tanaman', 'P00202300123', 'Prof. Johnson', '15/06/2023'],
-            ['Alat Ukur Kualitas Udara Portabel', 'P00202200456', 'Dr. Williams', '21/11/2022'],
-            ['Metode Enkripsi Data Berbasis DNA', 'P00202400789', 'Dr. Angela', '01/03/2024'],
-        ]
-    ]
+$publicationData = $publicationData ?? [
+    'jurnal'    => ['headers' => [], 'rows' => []],
+    'prosiding' => ['headers' => [], 'rows' => []],
+    'paten'     => ['headers' => [], 'rows' => []],
 ];
 ?>
 <style>
@@ -160,7 +136,7 @@ $data = [
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const publicationData = <?= json_encode($data) ?>;
+    const publicationData = <?= json_encode($publicationData) ?>;
 
     const navLinks = document.querySelectorAll('#publication-nav .nav-link');
     const contentTitle = document.getElementById('content-title');

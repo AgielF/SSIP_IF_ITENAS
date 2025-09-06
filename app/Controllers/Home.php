@@ -107,6 +107,45 @@ class Home extends BaseController
         ];
         return view('home_view', $data);
     }
+        public function agenda_paginated()
+    {
+        // Get query parameters for filtering and pagination
+        $page = (int)($this->request->getVar('page') ?? 1);
+        $limit = (int)($this->request->getVar('limit') ?? 15);
+        $search = $this->request->getVar('search');
+        $event = $this->request->getVar('event');
+        $dateFrom = $this->request->getVar('date_from');
+        $dateTo = $this->request->getVar('date_to');
+
+        // Initialize models
+        $jadwalModel = new JadwalModel();
+        $eventsModel = new EventsModel();
+        $asistenJadwalModel = new AsistenJadwalModel();
+        $databaseData = $jadwalModel->getJadwalWithDetails();
+        $processedSchedules = [];
+        $today = new \DateTime('today');
+
+        foreach ($databaseData as $item) {
+            $scheduleDate = new \DateTime($item['tanggal']);
+            if ($scheduleDate > $today) {
+                $status = 'Upcoming'; $status_color = 'success';
+            } elseif ($scheduleDate < $today) {
+                $status = 'Completed'; $status_color = 'primary';
+            } else {
+                $status = 'Today'; $status_color = 'warning';
+            }
+            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
+            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
+            $processedSchedules[] = [
+                'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
+                'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
+                'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor' => $instructor
+            ];
+        }
+        return $processedSchedules;
+    }
+
 
     // --- Jadwal & Agenda ---
     public function jadwal()
@@ -127,41 +166,11 @@ class Home extends BaseController
         return view('acara_list_view', $data);
     }
 
-    public function asisten_admin()
-    {
-        $data = ['title' => 'Admin: Kelola Anggota', 'asisten' => $this->getProcessedPersonnelData()];
-        return view('asisten_admin_list_view', $data);
-    }
+    //penelitian-proyek
+    //publikasi 
+    //anggota 
+    //dipindahkan sehingga mempunya controller masing-masing
 
-    // --- Penelitian & Proyek ---
-    public function penelitian_proyek()
-    {
-        $proyekModel = new ProyekRisetModel();
-        $data = ['title' => 'Penelitian & Proyek', 'projects' => $proyekModel->findAll()];
-        return view('penelitian_proyek_list_view', $data); 
-    }
-    
-    public function penelitian_proyek_admin()
-    {
-        $proyekModel = new ProyekRisetModel();
-        $data = ['title' => 'Admin: Kelola Proyek', 'projects' => $proyekModel->findAll()];
-        return view('penelitian_proyek_admin_list_view', $data); 
-    }
-
-    // --- Publikasi Ilmiah ---
-    public function publikasi_ilmiah()
-    {
-        $publikasiModel = new PublikasiModel();
-        $data = ['title' => 'Publikasi Ilmiah', 'publications' => $publikasiModel->findAll()];
-        return view('publikasi_ilmiah_list_view', $data); 
-    }
-
-    public function publikasi_ilmiah_admin()
-    {
-        $publikasiModel = new PublikasiModel();
-        $data = ['title' => 'Admin: Kelola Publikasi', 'publications' => $publikasiModel->findAll()];
-        return view('publikasi_ilmiah_admin_list_view', $data); 
-    }
     
     // --- Galeri ---
     public function galeri()
@@ -177,6 +186,7 @@ class Home extends BaseController
         $data = ['title' => 'Admin: Kelola Galeri', 'gallery' => $galeriModel->findAll()];
         return view('galeri_admin_list_view', $data); 
     }
+
 
     // --- Repositori ---
     public function repositori()

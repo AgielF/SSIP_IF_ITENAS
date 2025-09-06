@@ -1,32 +1,4 @@
-<?php
-// Data dummy untuk setiap kategori. Seharusnya ini diambil dari database.
-$data = [
-    'riset' => [
-        'headers' => ['Nama Proyek', 'Ketua Peneliti', 'Status', 'Tahun'],
-        'rows' => [
-            ['Pengembangan AI untuk Analisis Citra Medis', 'Dr. Smith', 'Selesai', '2023'],
-            ['Sistem IoT untuk Smart Agriculture', 'Prof. Johnson', 'Berjalan', '2024'],
-            ['Analisis Big Data untuk Prediksi Pasar Saham', 'Dr. Williams', 'Selesai', '2022'],
-        ]
-    ],
-    'kolaborasi' => [
-        'headers' => ['Nama Mitra', 'Jenis Kolaborasi', 'Proyek Terkait', 'Durasi'],
-        'rows' => [
-            ['PT. Teknologi Maju', 'Riset Bersama', 'Sistem IoT', '2023-2025'],
-            ['Universitas Sebelah', 'Pertukaran Peneliti', 'AI Medis', '2024'],
-            ['GovTech Indonesia', 'Pengembangan Produk', 'Aplikasi Layanan Publik', '2023-2024'],
-        ]
-    ],
-    'pendanaan' => [
-        'headers' => ['Sumber Dana', 'Nama Hibah', 'Jumlah', 'Periode'],
-        'rows' => [
-            ['DIKTI', 'Hibah Penelitian Dasar', 'Rp 150.000.000', '2023'],
-            ['LPDP', 'Riset Inovatif Produktif (RISPRO)', 'Rp 300.000.000', '2024-2026'],
-            ['Industri XYZ', 'Dana Riset Terapan', 'Rp 75.000.000', '2023'],
-        ]
-    ]
-];
-?>
+
 <style>
     .fm-content {
         padding: 30px;
@@ -62,7 +34,7 @@ $data = [
             top: 0;
             width: 100%;
         }
-        .btn, .nav-tabs, #search-input, #sort-filter, #items-per-page-filter, #pagination-controls, label, #record-info { 
+        .btn, .nav-tabs, #search-input, #sort-filter, #items-per-page-filter, #pagination-controls, label, #record-info, .non-printable { 
             display: none !important; /* Sembunyikan semua elemen interaktif di PDF */
         }
     }
@@ -73,12 +45,6 @@ $data = [
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
             <a class="nav-link active" href="#" data-content="riset">Daftar Proyek Riset</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" data-content="kolaborasi">Kolaborasi Mitra</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" data-content="pendanaan">Pendanaan Riset</a>
         </li>
     </ul>
 
@@ -91,7 +57,7 @@ $data = [
                         <h4 class="mb-0" id="content-title">Daftar Proyek Riset</h4>
                     </div>
                     
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <div class="d-flex align-items-center gap-2 flex-wrap non-printable">
                         <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
                         
                         <div class="d-flex align-items-center">
@@ -110,7 +76,10 @@ $data = [
                             </select>
                         </div>
                         <button id="export-pdf-btn" class="btn btn-sm btn-danger">
-                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                            <i class="fas fa-file-pdf me-1"></i> PDF
+                        </button>
+                        <button id="add-data-btn" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDataModal">
+                            <i class="fas fa-plus me-1"></i> Tambah Data
                         </button>
                     </div>
                 </div>
@@ -134,9 +103,31 @@ $data = [
     </main>
 </div>
 
+<!-- Modal untuk Tambah Data -->
+<div class="modal fade" id="addDataModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Tambah Data Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="add-data-form">
+                    <!-- Input form akan dirender oleh JavaScript di sini -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="save-data-btn">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const projectData = <?= json_encode($data) ?>;
+   const projectData = <?= json_encode($data ?? ['riset' => ['headers' => [], 'rows' => []]]) ?>;
 
     const navLinks = document.querySelectorAll('#project-nav .nav-link');
     const contentTitle = document.getElementById('content-title');
@@ -148,6 +139,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
     const paginationControls = document.getElementById('pagination-controls');
     const exportPdfBtn = document.getElementById('export-pdf-btn');
+    const addDataBtn = document.getElementById('add-data-btn');
+    const addDataModal = new bootstrap.Modal(document.getElementById('addDataModal'));
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('add-data-form');
+    const saveDataBtn = document.getElementById('save-data-btn');
 
     let currentState = {
         category: 'riset',
@@ -164,13 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const linkText = document.querySelector(`.nav-link[data-content="${currentState.category}"]`).textContent;
         contentTitle.textContent = linkText;
 
-        // 1. Filter
         let processedRows = data.rows.filter(row => 
             row.some(cell => String(cell).toLowerCase().includes(currentState.searchTerm))
         );
 
-        // 2. Sortir
-        const dateColumnIndex = data.headers.length - 1; // Asumsi kolom terakhir adalah Tahun/Durasi/Periode
+        const dateColumnIndex = data.headers.length - 1;
         processedRows.sort((a, b) => {
             const yearA = String(a[dateColumnIndex]).match(/\d{4}/g)?.pop() || 0;
             const yearB = String(b[dateColumnIndex]).match(/\d{4}/g)?.pop() || 0;
@@ -178,37 +172,38 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         const totalRows = processedRows.length;
-
-        // 3. Paginasi
         const limit = currentState.itemsPerPage === 'all' ? totalRows : parseInt(currentState.itemsPerPage, 10);
         const startIndex = (currentState.currentPage - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        // Render Header
         let headerHtml = '<tr><th>No.</th>';
         data.headers.forEach(header => headerHtml += `<th>${header}</th>`);
-        tableHeader.innerHTML = headerHtml + '</tr>';
+        headerHtml += '<th class="non-printable">Aksi</th></tr>';
+        tableHeader.innerHTML = headerHtml;
         
-        // Render Body
         let bodyHtml = '';
         if (paginatedRows.length === 0) {
-            bodyHtml = `<tr><td colspan="${data.headers.length + 1}" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            bodyHtml = `<tr><td colspan="${data.headers.length + 2}" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
                 bodyHtml += `<tr><td>${startIndex + index + 1}</td>`;
                 row.forEach(cell => bodyHtml += `<td>${cell}</td>`);
+                bodyHtml += `
+                    <td class="non-printable">
+                        <a href="#" class="btn btn-sm btn-outline-secondary me-1" title="Edit"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="#" class="btn btn-sm btn-outline-danger" title="Hapus"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                `;
                 bodyHtml += '</tr>';
             });
         }
         tableBody.innerHTML = bodyHtml;
 
-        // Update Info
         const startRecord = totalRows > 0 ? startIndex + 1 : 0;
         const endRecord = Math.min(endIndex, totalRows);
         recordInfo.textContent = `Menampilkan ${startRecord}-${endRecord} dari ${totalRows} data.`;
 
-        // Render Paginasi
         renderPagination(totalRows, limit);
     }
 
@@ -238,6 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationControls.appendChild(createPageLink(currentState.currentPage + 1, 'Next', currentState.currentPage === totalPages));
     }
 
+    // Event Listeners
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -249,25 +245,46 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    sortFilter.addEventListener('change', function() {
-        currentState.sortOrder = this.value;
-        updateView();
+    sortFilter.addEventListener('change', () => { currentState.sortOrder = sortFilter.value; updateView(); });
+    itemsPerPageFilter.addEventListener('change', () => { currentState.itemsPerPage = itemsPerPageFilter.value; currentState.currentPage = 1; updateView(); });
+    searchInput.addEventListener('keyup', () => { currentState.searchTerm = searchInput.value.toLowerCase(); currentState.currentPage = 1; updateView(); });
+    exportPdfBtn.addEventListener('click', () => window.print());
+    
+    // Event listener untuk tombol "Tambah Data"
+    addDataBtn.addEventListener('click', () => {
+        const category = currentState.category;
+        const headers = projectData[category].headers;
+        modalTitle.textContent = `Tambah Data ${document.querySelector(`.nav-link[data-content="${category}"]`).textContent}`;
+        
+        let formHtml = '';
+        headers.forEach(header => {
+            formHtml += `
+                <div class="mb-3">
+                    <label for="form-${header.replace(/\s+/g, '')}" class="form-label">${header}</label>
+                    <input type="text" class="form-control" id="form-${header.replace(/\s+/g, '')}" required>
+                </div>
+            `;
+        });
+        modalForm.innerHTML = formHtml;
     });
 
-    itemsPerPageFilter.addEventListener('change', function() {
-        currentState.itemsPerPage = this.value;
-        currentState.currentPage = 1;
-        updateView();
-    });
+    // Event listener untuk tombol "Simpan" di modal
+    saveDataBtn.addEventListener('click', () => {
+        const formInputs = modalForm.querySelectorAll('input');
+        const newRow = [];
+        let isValid = true;
+        formInputs.forEach(input => {
+            if (!input.value) isValid = false;
+            newRow.push(input.value);
+        });
 
-    searchInput.addEventListener('keyup', function() {
-        currentState.searchTerm = this.value.toLowerCase();
-        currentState.currentPage = 1;
-        updateView();
-    });
-
-    exportPdfBtn.addEventListener('click', function() {
-        window.print();
+        if (isValid) {
+            projectData[currentState.category].rows.push(newRow);
+            updateView();
+            addDataModal.hide();
+        } else {
+            alert('Semua field harus diisi!');
+        }
     });
 
     updateView();

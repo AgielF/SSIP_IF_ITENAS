@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 
-class AnggotaController extends BaseController
+class UserController extends BaseController
 {
     /**
      * Menampilkan daftar semua anggota laboratorium.
@@ -20,7 +20,15 @@ class AnggotaController extends BaseController
         ];
         return view('asisten_list_view', $data); // Asumsi ini view untuk daftar anggota
     }
-    
+    public function getDataAdmin(){
+        $userModel = new UserModel();
+        $allPersonnel = $userModel->getProcessedPersonnelData();
+        $data = [
+            'title'   => 'Anggota Laboratorium',
+            'asisten' => $allPersonnel 
+        ];
+        return view('asisten_admin_list_view', $data); // Asumsi ini view untuk daftar anggota
+    }
     // --- FUNGSI BARU UNTUK MENANGANI HALAMAN PROFIL ---
     /**
      * Menampilkan halaman profil untuk satu anggota.
