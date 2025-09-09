@@ -23,14 +23,14 @@ $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
 $routes->get('/publikasi-ilmiah', 'PublikasiController::index');
 $routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
 
-$routes->get('/galeri', 'Home::galeri');
-$routes->get('/galeri_admin', 'Home::galeri_admin');
+$routes->get('/galeri', 'GaleriUmumController::index');
+$routes->get('/galeri_admin', 'GaleriUmumController::getDataAdmin');
 
 $routes->get('/repositori', 'Home::repositori');
 $routes->get('/repositori_admin','Home::repositori_admin');
 
-$routes->get('/rekrutmen', 'Home::rekrutmen');
-$routes->get('/rekrutmen_admin','Home::rekrutmen_admin');
+$routes->get('/rekrutmen', 'RekrutController::index');
+$routes->get('/rekrutmen_admin','RekrutController::admin');
 
 // $routes->get('/user_profile', 'Home::user_profile');
 
@@ -39,7 +39,7 @@ $routes->get('/topic_detail', 'Home::topic_detail');
 // Rute untuk Penelitian & Proyek
 $routes->get('/penelitian/(:segment)', 'TopicController::detail/$1');
 
-$routes->get('/asisten/(:num)', 'AnggotaController::profil/$1');
+$routes->get('/asisten/(:num)', 'UserController::profil/$1');
 
 
 
