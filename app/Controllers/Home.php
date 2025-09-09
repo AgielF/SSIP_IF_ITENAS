@@ -172,21 +172,6 @@ class Home extends BaseController
     //dipindahkan sehingga mempunya controller masing-masing
 
     
-    // --- Galeri ---
-    public function galeri()
-    {
-        $galeriModel = new GaleriUmumModel();
-        $data = ['title' => 'Galeri', 'gallery' => $galeriModel->findAll()];
-        return view('galeri_list_view', $data); 
-    }
-
-    public function galeri_admin()
-    {
-        $galeriModel = new GaleriUmumModel();
-        $data = ['title' => 'Admin: Kelola Galeri', 'gallery' => $galeriModel->findAll()];
-        return view('galeri_admin_list_view', $data); 
-    }
-
 
     // --- Repositori ---
     public function repositori()
@@ -201,33 +186,6 @@ class Home extends BaseController
         // $repositoriModel = new RepositoriModel();
         $data = ['title' => 'Admin: Kelola Repositori', 'repos'];
         return view('repositori_admin_list_view', $data);
-    }
-
-    // --- Rekrutmen ---
-    public function rekrutmen()
-    {
-        // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'Rekrutmen', 'rekrutmen'];
-        return view('rekrutmen_view', $data);
-    }
-
-    public function rekrutmen_admin()
-    {
-        // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'Admin: Kelola Rekrutmen', 'rekrutmen'];
-        return view('rekrutmen_admin_view', $data);
-    }
-     public function user_profile()
-    {
-        // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'user profile', 'profile'];
-        return view('user_profile_view', $data);
-    }
-     public function topic_detail()
-    {
-        // $rekrutmenModel = new RekrutmenModel();
-        $data = ['title' => 'topic detail', 'topic'];
-        return view('topic_view', $data);
     }
 
 }
