@@ -12,35 +12,32 @@ $routes->get('/agenda', 'Home::agenda');
 $routes->get('/agenda_paginated', 'Home::agenda_paginated');
 $routes->get('/visi-misi', 'Home::visi_misi');
 
-$routes->get('/asisten', 'Home::asisten');
-$routes->get('/asisten_paginated', 'Home::asisten_paginated');
-$routes->get('/asisten', 'AnggotaController::index');
-$routes->get('/asisten_admin', 'Home::asisten_admin');
+$routes->get('/asisten', 'UserController::index');
 
 $routes->get('/jadwal', 'Home::jadwal');
 $routes->get('/jadwal-list', 'Home::jadwal_card');
-$routes->get('/jadwal_paginated', 'Home::jadwal_paginated');
-$routes->get('/jadwal_admin', 'Home::jadwal_admin');
 
-$routes->get('/penelitian-proyek', 'Home::penelitian_proyek');
-$routes->get('/penelitian-proyek_paginated', 'Home::penelitian_proyek_paginated');
-$routes->get('/penelitian-proyek_admin', 'Home::penelitian_proyek_admin');
+$routes->get('/penelitian-proyek', 'ProyekRisetController::index');
 
-$routes->get('/publikasi-ilmiah', 'Home::publikasi_ilmiah');
-$routes->get('/publikasi-ilmiah_paginated', 'Home::publikasi_ilmiah_paginated');
-$routes->get('/publikasi-ilmiah_admin', 'Home::publikasi_ilmiah_admin');
+$routes->get('/publikasi-ilmiah', 'PublikasiController::index');
 
-$routes->get('/galeri', 'Home::galeri');
-$routes->get('/galeri_paginated', 'Home::galeri_paginated');
-$routes->get('/galeri_admin', 'Home::galeri_admin');
+$routes->get('/galeri', 'GaleriUmumController::index');
 
 $routes->get('/repositori', 'Home::repositori');
-$routes->get('/repositori_paginated', 'Home::repositori_paginated');
-$routes->get('/repositori_admin','Home::repositori_admin');
 
-$routes->get('/rekrutmen', 'Home::rekrutmen');
-$routes->get('/rekrutmen_paginated', 'Home::rekrutmen_paginated');
-$routes->get('/rekrutmen_admin','Home::rekrutmen_admin');
+$routes->get('/rekrutmen', 'RekrutController::index');
+
+// $routes->get('/user_profile', 'Home::user_profile');
+
+$routes->get('/topic_detail', 'Home::topic_detail');
+
+// Rute untuk Penelitian & Proyek
+$routes->get('/penelitian/(:segment)', 'TopicController::detail/$1');
+
+$routes->get('/asisten/(:num)', 'UserController::profil/$1');
+
+
+
 
 // routes API Content
 $routes->get('/api/visi-misi', 'Api\Content::visiMisi');
@@ -66,6 +63,26 @@ $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($rou
     $routes->post('login', 'Auth::login');
     $routes->get('profile', 'Auth::profile');
 });
+
+
+// UI untuk login & profile
+$routes->get('login', 'AuthUi::login');
+$routes->get('profile', 'AuthUi::profile');
+
+// routes khusus admin, dilindungi filter admin
+$routes->group('', ['filter' => 'admin'], function($routes) {
+    $routes->get('/asisten_admin', 'UserController::getDataAdmin');
+    $routes->get('/jadwal_admin', 'Home::jadwal_admin');
+    $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
+    $routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
+    $routes->get('/galeri_admin', 'GaleriUmumController::getDataAdmin');
+    $routes->get('/repositori_admin','Home::repositori_admin');
+    $routes->get('/rekrutmen_admin','RekrutController::admin');
+});
+
+
+
+
 
 // Admin CRUD route web
 // 1. Rekrutmen

@@ -8,22 +8,10 @@ class UserModel extends Model
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan', 'role_id', 'created_at', 'updated_at'];
-<<<<<<< HEAD
-
-    public function getUserByRole($roleId)
-    {
-        return $this->select('users.*, roles.role_name')
-            ->join('roles', 'roles.id = users.role_id')
-            ->findAll();
-    }
-
-    public function getAsistenLab () 
-=======
+    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'created_at', 'updated_at'];
     
     // FUNGSI YANG SUDAH ADA (TIDAK DIUBAH)
     public function getAsistenLab() 
->>>>>>> agiel
     {
         return $this->where('role_id', 2)->findAll();
     }
@@ -37,14 +25,6 @@ class UserModel extends Model
     {
         return $this->where('role_id', 3)->findAll();
     }
-<<<<<<< HEAD
-    
-    public function getUsersWithRoles()
-    {
-        return $this->select('users.*, roles.role_name')
-                    ->join('roles', 'roles.id = users.role_id')
-                    ->findAll();
-=======
 
     // FUNGSI YANG DIINTEGRASIKAN DAN DIPERBAIKI
     /**
@@ -73,6 +53,5 @@ class UserModel extends Model
         }
         
         return $allPersonnel;
->>>>>>> agiel
     }
 }

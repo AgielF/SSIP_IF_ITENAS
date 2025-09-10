@@ -33,161 +33,111 @@ class Auth extends ResourceController
 
     /**
      * Login endpoint
-     * 
-     * @return mixed
      */
     public function login()
-    {
-        $nomor = $this->request->getPost('nomor');
+{
+    try {
+        $nomor    = $this->request->getPost('nomor');
         $password = $this->request->getPost('password');
 
-        // Validate input
         if (!$nomor || !$password) {
-            return $this->fail('Nomor dan password harus diisi', 400);
+            return redirect()->back()->with('error', 'Nomor dan password harus diisi');
         }
 
-        // Find user by nomor
         $user = $this->userModel->where('nomor', $nomor)->first();
-        
+
         if (!$user) {
-            return $this->fail('User tidak ditemukan', 404);
+            return redirect()->back()->with('error', 'User tidak ditemukan');
         }
 
-        // Verify password (in a real app, you would hash the password)
-        // For now, we'll just check if password field is not empty
-        if (empty($user['password'])) {
-            return $this->fail('Password belum diatur', 400);
+        if ($user['password'] !== $password) {
+            return redirect()->back()->with('error', 'Password salah');
         }
 
-        // In a real app, you would use password_verify() here
-        if ($password !== $user['password']) {
-            return $this->fail('Password salah', 401);
-        }
-
-        // Generate JWT token
+        // Generate JWT
         $key = getenv('JWT_SECRET') ?: 'your-secret-key';
-        $iat = time();
-        $exp = $iat + (60 * 60 * 24); // Token valid for 24 hours
-
         $payload = [
-            'iat' => $iat,
-            'exp' => $exp,
-            'uid' => $user['id'],
-            'nomor' => $user['nomor'],
-            'nama' => $user['nama'],
+            'iat'     => time(),
+            'exp'     => time() + 86400, // 24 jam
+            'uid'     => $user['id'],
+            'nomor'   => $user['nomor'],
+            'nama'    => $user['nama'],
             'role_id' => $user['role_id']
         ];
-
         $token = JWT::encode($payload, $key, 'HS256');
 
-        return $this->respond([
-            'status' => 'success',
-            'message' => 'Login berhasil',
-            'data' => [
-                'token' => $token,
-                'user' => [
-                    'id' => $user['id'],
-                    'nomor' => $user['nomor'],
-                    'nama' => $user['nama'],
-                    'no_telp' => $user['no_telp'],
-                    'jurusan' => $user['jurusan'],
-                    'role_id' => $user['role_id']
-                ]
-            ]
+        // Simpan token ke session
+        session()->set('token', $token);
+        session()->set('user', [
+            'id'      => $user['id'],
+            'nomor'   => $user['nomor'],
+            'nama'    => $user['nama'],
+            'role_id' => $user['role_id']
         ]);
+
+        // Redirect sesuai role
+        if ($user['role_id'] == 1) {
+            return redirect()->to('/asisten_admin');
+        } else {
+            return redirect()->to('/dashboard');
+        }
+
+    } catch (\Throwable $e) {
+        return redirect()->back()->with('error', 'Login gagal: ' . $e->getMessage());
     }
+}
+
+
+    public function logout()
+    {
+        session()->destroy();
+        return redirect()->to('/login');
+    }
+
 
     /**
      * Profile endpoint
-     * 
-     * @return mixed
      */
+   use ResponseTrait;
+
     public function profile()
     {
-        // Get token from header
-        $header = $this->request->getHeaderLine('Authorization');
-        $token = null;
-        
-        if (!empty($header) && preg_match('/Bearer\s+(.*)$/i', $header, $matches)) {
-            $token = $matches[1];
+        $authHeader = $this->request->getHeaderLine('Authorization');
+
+        if (!$authHeader) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Authorization header missing'
+            ], 401);
         }
 
-        if (empty($token)) {
-            return $this->failUnauthorized('Token tidak ditemukan');
+        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Invalid Authorization header format'
+            ], 401);
         }
+
+        $jwt = $matches[1];
 
         try {
             $key = getenv('JWT_SECRET') ?: 'your-secret-key';
-            $decoded = JWT::decode($token, new Key($key, 'HS256'));
-            
-            // Get user data
-            $user = $this->userModel->find($decoded->uid);
-            
-            if (!$user) {
-                return $this->failNotFound('User tidak ditemukan');
-            }
-
-            // Get user role
-            $role = $this->roleModel->find($user['role_id']);
-            $user['role'] = $role ? $role['role_name'] : 'Unknown';
-
-            // Get schedule data for assistants
-            $schedules = [];
-            if ($user['role_id'] == 2 || $user['role_id'] == 4) { // asisten or dosen
-                $asistenJadwal = $this->asistenJadwalModel
-                    ->where('id_user', $user['id'])
-                    ->findAll();
-                
-                foreach ($asistenJadwal as $aj) {
-                    $jadwal = $this->jadwalModel->find($aj['id_jadwal']);
-                    if ($jadwal) {
-                        $schedules[] = $jadwal;
-                    }
-                }
-            }
-
-            // Get publications for lecturers/assistants
-            $publications = [];
-            if ($user['role_id'] == 2 || $user['role_id'] == 4) { // asisten or dosen
-                // Get publications where user is the main author
-                $mainAuthorPublications = $this->publikasiModel
-                    ->where('id_user', $user['id'])
-                    ->findAll();
-                
-                // Get publications where user is listed as co-author
-                $coAuthorPublications = $this->publikasiModel
-                    ->like('penulis_pendamping', $user['nama'])
-                    ->findAll();
-                
-                // Merge both arrays
-                $publications = array_merge($mainAuthorPublications, $coAuthorPublications);
-                
-                // Remove duplicates based on id_publikasi
-                $uniquePublications = [];
-                $seenIds = [];
-                foreach ($publications as $publication) {
-                    if (!in_array($publication['id_publikasi'], $seenIds)) {
-                        $uniquePublications[] = $publication;
-                        $seenIds[] = $publication['id_publikasi'];
-                    }
-                }
-                
-                $publications = $uniquePublications;
-            }
-
-            // Prepare response data
-            $responseData = [
-                'user' => $user,
-                'schedules' => $schedules,
-                'publications' => $publications
-            ];
+            $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
 
             return $this->respond([
                 'status' => 'success',
-                'data' => $responseData
+                'user' => [
+                    'id' => $decoded->uid,
+                    'nomor' => $decoded->nomor,
+                    'nama' => $decoded->nama,
+                    'role_id' => $decoded->role_id,
+                ]
             ]);
         } catch (\Exception $e) {
-            return $this->failUnauthorized('Token tidak valid: ' . $e->getMessage());
+            return $this->respond([
+                'status' => 'error',
+                'message' => 'Token invalid: ' . $e->getMessage()
+            ], 401);
         }
     }
 }

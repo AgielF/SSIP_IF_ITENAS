@@ -1,17 +1,8 @@
 <?php
-$data = isset($publicationData) ? $publicationData : [
-    'jurnal' => [
-        'headers' => ['Judul Artikel', 'Penulis Utama', 'Penulis Pendamping', 'Nama Jurnal', 'Tahun', 'DOI', 'Link'],
-        'rows' => []
-    ],
-    'prosiding' => [
-        'headers' => ['Judul Makalah', 'Konferensi', 'Kategori', 'Tahun', 'Link'],
-        'rows' => []
-    ],
-    'paten' => [
-        'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan', 'Link'],
-        'rows' => []
-    ]
+$publicationData = $publicationData ?? [
+    'jurnal'    => ['headers' => [], 'rows' => []],
+    'prosiding' => ['headers' => [], 'rows' => []],
+    'paten'     => ['headers' => [], 'rows' => []],
 ];
 ?>
 <style>
@@ -145,7 +136,7 @@ $data = isset($publicationData) ? $publicationData : [
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const publicationData = <?= json_encode($data) ?>;
+    const publicationData = <?= json_encode($publicationData) ?>;
 
     const navLinks = document.querySelectorAll('#publication-nav .nav-link');
     const contentTitle = document.getElementById('content-title');

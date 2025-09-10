@@ -1,38 +1,11 @@
 <?php
-$data = isset($publicationData) ? $publicationData : [
-    'jurnal' => [
-        'headers' => ['Judul Artikel', 'Penulis Utama', 'Penulis Pendamping', 'Nama Jurnal', 'Tahun', 'DOI', 'Link'],
-        'rows' => []
-    ],
-    'prosiding' => [
-        'headers' => ['Judul Makalah', 'Konferensi', 'Kategori', 'Tahun', 'Link'],
-        'rows' => []
-    ],
-    'paten' => [
-        'headers' => ['Judul Invensi', 'Nomor Paten', 'Inventor Utama', 'Tanggal Diberikan', 'Link'],
-        'rows' => []
-    ]
+// Pastikan variabel ada, jika tidak, buat struktur kosong untuk mencegah error
+$publicationData = $publicationData ?? [
+    'jurnal'    => ['headers' => [], 'rows' => []],
+    'prosiding' => ['headers' => [], 'rows' => []],
+    'paten'     => ['headers' => [], 'rows' => []],
 ];
-
-// Get pagination data if available
-$pagination = isset($pagination) ? $pagination : null;
 ?>
-<!-- Debug information - you can remove this after testing -->
-<pre>
-<?php
-echo "Publication data debug:\n";
-echo "Jurnal count: " . count($data['jurnal']['rows']) . "\n";
-echo "Prosiding count: " . count($data['prosiding']['rows']) . "\n";
-echo "Paten count: " . count($data['paten']['rows']) . "\n";
-if (isset($pagination)) {
-    echo "Pagination info:\n";
-    echo "  Page: " . $pagination['page'] . "\n";
-    echo "  Limit: " . $pagination['limit'] . "\n";
-    echo "  Total: " . $pagination['total'] . "\n";
-    echo "  Pages: " . $pagination['pages'] . "\n";
-}
-?>
-</pre>
 <style>
     .fm-content {
         padding: 30px;
@@ -198,7 +171,7 @@ if (isset($pagination)) {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const publicationData = <?= json_encode($data) ?>;
+    const publicationData = <?= json_encode($publicationData) ?>;
 
     const navLinks = document.querySelectorAll('#publication-nav .nav-link');
     const contentTitle = document.getElementById('content-title');
