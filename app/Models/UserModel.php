@@ -8,7 +8,7 @@ class UserModel extends Model
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan', 'role_id', 'created_at', 'updated_at'];
+    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'created_at', 'updated_at'];
     
     // FUNGSI YANG SUDAH ADA (TIDAK DIUBAH)
     public function getAsistenLab() 

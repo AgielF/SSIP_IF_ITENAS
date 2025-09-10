@@ -11,26 +11,19 @@ $routes->get('/', 'Home::index');
 $routes->get('/agenda', 'Home::agenda');
 
 $routes->get('/asisten', 'UserController::index');
-$routes->get('/asisten_admin', 'UserController::getDataAdmin');
 
 $routes->get('/jadwal', 'Home::jadwal');
 $routes->get('/jadwal-list', 'Home::jadwal_card');
-$routes->get('/jadwal_admin', 'Home::jadwal_admin');
 
 $routes->get('/penelitian-proyek', 'ProyekRisetController::index');
-$routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
 
 $routes->get('/publikasi-ilmiah', 'PublikasiController::index');
-$routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
 
 $routes->get('/galeri', 'GaleriUmumController::index');
-$routes->get('/galeri_admin', 'GaleriUmumController::getDataAdmin');
 
 $routes->get('/repositori', 'Home::repositori');
-$routes->get('/repositori_admin','Home::repositori_admin');
 
 $routes->get('/rekrutmen', 'RekrutController::index');
-$routes->get('/rekrutmen_admin','RekrutController::admin');
 
 // $routes->get('/user_profile', 'Home::user_profile');
 
@@ -68,6 +61,26 @@ $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($rou
     $routes->post('login', 'Auth::login');
     $routes->get('profile', 'Auth::profile');
 });
+
+
+// UI untuk login & profile
+$routes->get('login', 'AuthUi::login');
+$routes->get('profile', 'AuthUi::profile');
+
+// routes khusus admin, dilindungi filter admin
+$routes->group('', ['filter' => 'admin'], function($routes) {
+    $routes->get('/asisten_admin', 'UserController::getDataAdmin');
+    $routes->get('/jadwal_admin', 'Home::jadwal_admin');
+    $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
+    $routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
+    $routes->get('/galeri_admin', 'GaleriUmumController::getDataAdmin');
+    $routes->get('/repositori_admin','Home::repositori_admin');
+    $routes->get('/rekrutmen_admin','RekrutController::admin');
+});
+
+
+
+
 
 // Admin CRUD route web
 // 1. Rekrutmen

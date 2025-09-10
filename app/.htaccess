@@ -4,3 +4,15 @@
 <IfModule !authz_core_module>
 	Deny from all
 </IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pastikan Authorization header diteruskan
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+    # CI4 default rewrite
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
