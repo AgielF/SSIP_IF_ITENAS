@@ -27,41 +27,31 @@ class RekrutModel extends Model
                     ->findAll();
     }
     public function getDataAdmin(){
-        // 1. Ambil semua data dari database dengan join yang diperlukan
+    $semuaRekrutmen = $this->select('rekrut.id_rekrut, rekrut.deskripsi, rekrut.status, rekrut.syarat')
+                           ->join('users', 'users.id = rekrut.id_user', 'left')
+                           ->join('jadwal', 'jadwal.id_jadwal = rekrut.id_jadwal', 'left')
+                           ->join('events', 'events.id_event = jadwal.id_event', 'left')
+                           ->findAll();
 
-    $semuaRekrutmen = $this->select('rekrut.*, users.nama as nama_user, jadwal.tanggal, jadwal.waktu_mulai, events.nama_event')
+    $headers = [ 'Deskripsi', 'Status', 'Syarat' ];
+    $rows = [];
 
-                            ->join('users', 'users.id = rekrut.id_user', 'left')
-
-                            ->join('jadwal', 'jadwal.id_jadwal = rekrut.id_jadwal', 'left')
-                            ->join('events', 'events.id_event = jadwal.id_event', 'left')
-                            ->findAll();
-
-
-                     $headers = [ 'Deskripsi', 'Status', 'Syarat'];
-
-                     $rows = [];
-
-
-     foreach ($semuaRekrutmen as $rekrut) {
-
-                 $rows[] = [
-               
-                $rekrut['deskripsi'],
-                $rekrut['status'],
-                $rekrut['syarat'],
-                 ];
-
-                }
+    foreach ($semuaRekrutmen as $rekrut) {
+        $rows[] = [
+            'id'        => $rekrut['id_rekrut'],  // simpan id
+            'deskripsi' => $rekrut['deskripsi'],
+            'status'    => $rekrut['status'],
+            'syarat'    => $rekrut['syarat']
+        ];
+    }
 
     return [
-
-            'rekrutmen' => [
+        'rekrutmen' => [
             'headers' => $headers,
             'rows' => $rows
-            ]
+        ]
+    ];
+}
 
-            ];
-    }
 
 }

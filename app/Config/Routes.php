@@ -78,7 +78,10 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/rekrutmen_admin','RekrutController::admin');
 });
 
-
+// CRUD action (POST) – tidak perlu filter admin kalau sudah dicek di controller
+$routes->post('/rekrutmen/store', 'RekrutController::store');
+$routes->post('/rekrutmen/update/(:num)', 'RekrutController::update/$1');
+$routes->post('/rekrutmen/delete/(:num)', 'RekrutController::delete/$1');
 
 
 
