@@ -328,6 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: method,
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
                 body: new URLSearchParams(data)
             });
@@ -377,6 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: new URLSearchParams({
                         [csrfTokenName]: csrfTokenValue

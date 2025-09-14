@@ -470,6 +470,11 @@ class PublikasiSeeder extends Seeder
 
         // Check if publikasi already exist
         foreach ($data as $publikasi) {
+            // Ensure id_user is within valid range (1-12)
+            if ($publikasi['id_user'] > 12) {
+                $publikasi['id_user'] = rand(1, 12);
+            }
+
             $existing = $this->db->table('publikasi')->where('link_publikasi', $publikasi['link_publikasi'])->get()->getRow();
             if (!$existing) {
                 $this->db->table('publikasi')->insert($publikasi);
