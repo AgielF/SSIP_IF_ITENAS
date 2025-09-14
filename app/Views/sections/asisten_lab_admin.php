@@ -48,7 +48,9 @@
                     <button id="export-pdf-btn" class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> Export PDF
                     </button>
-                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-plus me-2"></i>Tambah Anggota</a>
+                    <button id="add-data-btn" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#dataModal">
+                        <i class="fas fa-plus me-1"></i> Tambah Anggota
+                    </button>
                 </div>
             </div>
         </div>
@@ -70,24 +72,24 @@
                 </thead>
                 <tbody>
                     <?php if (!empty($asisten)): ?>
-                        <?php foreach ($asisten as $person): ?>
-                            <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>">
+                        <?php foreach ($asisten as $i => $person): ?>
+                            <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>" data-user-id="<?= esc($person['id']) ?>">
                                 <td></td> <!-- Nomor diisi oleh JS -->
                                 <td><?= esc($person['nomor'] ?? '') ?></td>
                                 <td><?= esc($person['nama']) ?></td>
-                                <td><?= esc($person['jurusan']) ?></td>
-                                <td><?= esc($person['no_telp']) ?></td>
+                                <td><?= esc($person['jurusan'] ?? '') ?></td>
+                                <td>-</td> <!-- No phone field in current data -->
                                 <td>
-                                    <span class="badge bg-secondary"><?= esc(ucfirst($person['role'])) ?></span>
+                                    <span class="badge bg-secondary"><?= esc(ucfirst($person['role'] ?? 'user')) ?></span>
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="#" class="btn btn-light btn-sm" title="Edit">
+                                        <button class="btn btn-light btn-sm edit-btn" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-light btn-sm text-danger" title="Hapus">
+                                        </button>
+                                        <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
                                             <i class="fas fa-trash-alt"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -116,6 +118,27 @@
     </div>
 </div>
 
+<!-- Modal untuk Tambah/Edit Data -->
+<div class="modal fade" id="dataModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-title">Form Data</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="data-form">
+                    <!-- Input form akan dirender oleh JavaScript di sini -->
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="save-data-btn">Simpan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const tableBody = document.querySelector('#adminTable tbody');
@@ -126,42 +149,50 @@ document.addEventListener('DOMContentLoaded', function () {
     const paginationControls = document.getElementById('pagination-controls');
     const recordInfo = document.querySelector('.record-info');
     const exportPdfBtn = document.getElementById('export-pdf-btn');
+    const dataModal = new bootstrap.Modal(document.getElementById('dataModal'));
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('data-form');
+    const saveDataBtn = document.getElementById('save-data-btn');
+
+    const csrfTokenName = '<?= csrf_token() ?>';
+    const csrfTokenValue = '<?= csrf_hash() ?>';
 
     let currentState = {
         sortOrder: 'newest',
         itemsPerPage: 5,
         currentPage: 1,
-        searchTerm: ''
+        searchTerm: '',
+        editingIndex: null // For tracking edit mode
     };
 
     function updateView() {
         // 1. Filter
-        let processedRows = allRows.filter(row => 
+        let processedRows = allRows.filter(row =>
             row.textContent.toLowerCase().includes(currentState.searchTerm)
         );
 
-        // 2. Sortir
+        // 2. Sort
         processedRows.sort((a, b) => {
             const timeA = parseInt(a.dataset.timestamp, 10);
             const timeB = parseInt(b.dataset.timestamp, 10);
             return (currentState.sortOrder === 'newest') ? timeB - timeA : timeA - timeB;
         });
-        
+
         const totalRows = processedRows.length;
 
-        // 3. Paginasi
+        // 3. Pagination
         const limit = currentState.itemsPerPage === 'all' ? totalRows : parseInt(currentState.itemsPerPage, 10);
         const startIndex = (currentState.currentPage - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        // Render Body & Penomoran
-        tableBody.innerHTML = ''; // Kosongkan tabel
+        // Render Body & Numbering
+        tableBody.innerHTML = ''; // Clear table
         if (paginatedRows.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
-                row.cells[0].textContent = startIndex + index + 1; // Isi nomor
+                row.cells[0].textContent = startIndex + index + 1; // Fill number
                 tableBody.appendChild(row);
             });
         }
@@ -171,7 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const endRecord = Math.min(endIndex, totalRows);
         recordInfo.textContent = `Menampilkan ${startRecord}-${endRecord} dari ${totalRows} data.`;
 
-        // Render Paginasi
+        // Render Pagination
         renderPagination(totalRows, limit);
     }
 
@@ -220,6 +251,188 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     exportPdfBtn.addEventListener('click', () => window.print());
+
+    // Add new data button
+    document.getElementById('add-data-btn').addEventListener('click', () => {
+        currentState.editingIndex = null;
+        modalTitle.textContent = 'Tambah Anggota Baru';
+        const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
+            <div class="mb-3"><label class="form-label">Nomor <span class="text-danger">*</span></label><input type="text" class="form-control" name="nomor" required></div>
+            <div class="mb-3"><label class="form-label">Nama <span class="text-danger">*</span></label><input type="text" class="form-control" name="nama" required></div>
+            <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" name="password" required></div>
+            <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan"></div>
+            <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
+                <select class="form-select" name="role_id" required>
+                    <option value="1">Admin</option>
+                    <option value="2">Dosen</option>
+                    <option value="3">Mahasiswa</option>
+                </select>
+            </div>`;
+        modalForm.innerHTML = formHtml;
+        dataModal.show();
+    });
+
+    // Save data button
+    saveDataBtn.addEventListener('click', async () => {
+        const form = modalForm;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        // Basic validation
+        let isValid = true;
+        if (!data.nomor || !data.nama || !data.password || !data.role_id) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            alert('Semua field yang wajib diisi harus diisi!');
+            return;
+        }
+
+        try {
+            let url = '/admin/users/create';
+            let method = 'POST';
+
+            if (currentState.editingIndex !== null) {
+                // For edit, we need to get the user ID from the data
+                const rowIndex = currentState.editingIndex;
+                const userData = allRows[rowIndex];
+                const userId = userData.dataset.userId; // Get user ID from data attribute
+                url = `/admin/users/update/${userId}`;
+                method = 'POST';
+                data['_method'] = 'PUT';
+                console.log('Update URL:', url, 'User ID:', userId);
+            } else {
+                console.log('Create URL:', url);
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: new URLSearchParams(data)
+            });
+
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            console.log('Response content-type:', response.headers.get('content-type'));
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response error:', errorText);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            let result;
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                result = await response.json();
+                console.log('Response result:', result);
+            } else {
+                const textResult = await response.text();
+                console.log('Response text:', textResult);
+                // Try to parse as JSON anyway
+                try {
+                    result = JSON.parse(textResult);
+                    console.log('Parsed JSON result:', result);
+                } catch (e) {
+                    console.error('Failed to parse response as JSON:', e);
+                    throw new Error('Response is not valid JSON');
+                }
+            }
+
+            if (result && result.success) {
+                location.reload();
+            } else {
+                alert((result && result.message) || 'Terjadi kesalahan');
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('Network error: ' + error.message);
+        }
+    });
+
+    // Table action buttons
+    tableBody.addEventListener('click', function(e) {
+        const target = e.target.closest('button');
+        if (!target) return;
+
+        const userId = target.dataset.userId;
+        const rowIndex = parseInt(target.dataset.index);
+
+        if (target.classList.contains('edit-btn')) {
+            currentState.editingIndex = rowIndex;
+            const rowData = allRows[rowIndex];
+            modalTitle.textContent = 'Edit Anggota';
+
+            const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
+                <div class="mb-3"><label class="form-label">Nomor <span class="text-danger">*</span></label><input type="text" class="form-control" name="nomor" value="${rowData.cells[1].textContent}" required></div>
+                <div class="mb-3"><label class="form-label">Nama <span class="text-danger">*</span></label><input type="text" class="form-control" name="nama" value="${rowData.cells[2].textContent}" required></div>
+                <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" name="password" placeholder="Kosongkan jika tidak ingin mengubah"></div>
+                <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan" value="${rowData.cells[3].textContent}"></div>
+                <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
+                    <select class="form-select" name="role_id" required>
+                        <option value="1" ${rowData.cells[5].textContent.toLowerCase().includes('admin') ? 'selected' : ''}>Admin</option>
+                        <option value="2" ${rowData.cells[5].textContent.toLowerCase().includes('dosen') ? 'selected' : ''}>Dosen</option>
+                        <option value="3" ${rowData.cells[5].textContent.toLowerCase().includes('mahasiswa') ? 'selected' : ''}>Mahasiswa</option>
+                    </select>
+                </div>`;
+            modalForm.innerHTML = formHtml;
+            dataModal.show();
+        }
+
+        if (target.classList.contains('delete-btn')) {
+            if (confirm('Apakah Anda yakin ingin menghapus anggota ini?')) {
+                fetch(`/admin/users/delete/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: new URLSearchParams({
+                        [csrfTokenName]: csrfTokenValue
+                    })
+                }).then(async response => {
+                    console.log('Delete response status:', response.status);
+                    console.log('Delete response content-type:', response.headers.get('content-type'));
+
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Delete response error:', errorText);
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    let result;
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        result = await response.json();
+                        console.log('Delete response result:', result);
+                    } else {
+                        const textResult = await response.text();
+                        console.log('Delete response text:', textResult);
+                        try {
+                            result = JSON.parse(textResult);
+                            console.log('Delete parsed JSON result:', result);
+                        } catch (e) {
+                            console.error('Failed to parse delete response as JSON:', e);
+                            throw new Error('Response is not valid JSON');
+                        }
+                    }
+
+                    if (result && result.success) {
+                        location.reload();
+                    } else {
+                        alert((result && result.message) || 'Gagal menghapus data');
+                    }
+                }).catch(error => {
+                    console.error('Delete fetch error:', error);
+                    alert('Network error: ' + error.message);
+                });
+            }
+        }
+    });
 
     // Initial render
     updateView();

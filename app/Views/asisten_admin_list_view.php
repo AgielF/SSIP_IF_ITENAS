@@ -2,6 +2,9 @@
 
 <?= $this->include('sections/slider') ?>
 
-<?= $this->include('sections/asisten_lab_admin') ?>
+<?php
+// Pass the asisten data to the included section
+echo $this->include('sections/asisten_lab_admin', ['asisten' => $asisten]);
+?>
 
 <?= $this->include('layout/footer') ?>

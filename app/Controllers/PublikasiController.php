@@ -19,7 +19,6 @@ class PublikasiController extends BaseController
         //    Kunci 'data' di sini harus cocok dengan yang diharapkan oleh file view.
         $publicationData = ['publicationData' => $formattedData];
         return view('publikasi_ilmiah_list_view', $publicationData); // Asumsi ini view untuk daftar anggota
-
         }
     
      public function getDataAdmin()

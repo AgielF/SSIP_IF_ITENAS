@@ -20,14 +20,59 @@ class Publikasi extends BaseController
     //Menampilkan daftar publikasi
     public function index()
     {
-        $data = [
-            'title' => 'Manajemen Publikasi',
-            'publikasis' => $this->publikasiModel->select('publikasi.*, users.nama as creator')
-                ->join('users', 'users.id = publikasi.id_user')
-                ->findAll()
+        $publikasis = $this->publikasiModel->findAll();
+
+        // Format data sesuai dengan yang diharapkan JavaScript
+        $publicationData = [
+            'jurnal' => ['headers' => [], 'rows' => []],
+            'prosiding' => ['headers' => [], 'rows' => []],
+            'paten' => ['headers' => [], 'rows' => []]
         ];
 
-        return view('admin/publikasi/index', $data);
+        // Set headers
+        $headers = ['Kategori', 'Judul', 'Link Publikasi', 'Tanggal Publikasi', 'Penulis Pendamping', 'Volume', 'Nomor', 'Tahun', 'Conference', 'Deskripsi', 'Link DOI', 'Link GDrive'];
+        $publicationData['jurnal']['headers'] = $headers;
+        $publicationData['prosiding']['headers'] = $headers;
+        $publicationData['paten']['headers'] = $headers;
+
+        // Group data by jenis_publikasi
+        foreach ($publikasis as $pub) {
+            // Clean up any HTML that might be in the database from previous operations
+            $cleanLinkPublikasi = $this->cleanHtmlFromUrl($pub['link_publikasi'] ?? '');
+            $cleanLinkDoi = $this->cleanHtmlFromUrl($pub['link_doi'] ?? '');
+            $cleanLinkGdrive = $this->cleanHtmlFromUrl($pub['link_gdrive'] ?? '');
+
+            $row = [
+                $pub['kategori'] ?? '',
+                $pub['judul'] ?? '',
+                $cleanLinkPublikasi,
+                $pub['tanggal_publikasi'] ?? '',
+                $pub['penulis_pendamping'] ?? '',
+                $pub['volume'] ?? '',
+                $pub['nomor'] ?? '',
+                $pub['tahun'] ?? '',
+                $pub['conference'] ?? '',
+                $pub['deskripsi'] ?? '',
+                $cleanLinkDoi,
+                $cleanLinkGdrive
+            ];
+
+            $jenis = $pub['jenis_publikasi'] ?? 'jurnal';
+            if (isset($publicationData[$jenis])) {
+                $row[] = $pub['id_publikasi']; // Add ID for editing/deleting
+                $publicationData[$jenis]['rows'][] = $row;
+            }
+        }
+
+        // Debug: Log the data structure
+        log_message('debug', 'Publication Data: ' . json_encode($publicationData));
+
+        $data = [
+            'title' => 'Manajemen Publikasi',
+            'publicationData' => $publicationData
+        ];
+
+        return view('publikasi_ilmiah_admin_list_view', $data);
     }
 
     //Menampilkan form untuk membuat publikasi baru
@@ -46,17 +91,32 @@ class Publikasi extends BaseController
     {
         $data = [
             'jenis_publikasi' => $this->request->getPost('jenis_publikasi'),
-            'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
+            'judul' => $this->request->getPost('judul'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-            'id_user' => $this->request->getPost('id_user'),
+            'penulis_pendamping' => $this->request->getPost('penulis_pendamping'),
+            'volume' => $this->request->getPost('volume'),
+            'nomor' => $this->request->getPost('nomor'),
+            'tahun' => $this->request->getPost('tahun'),
+            'link_publikasi' => $this->cleanHtmlFromUrl($this->request->getPost('link_publikasi')),
+            'link_doi' => $this->cleanHtmlFromUrl($this->request->getPost('link_doi')),
+            'link_gdrive' => $this->cleanHtmlFromUrl($this->request->getPost('link_gdrive')),
+            'conference' => $this->request->getPost('conference'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'id_user' => $this->request->getPost('id_user') ?: 1, // Default to admin user
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->save($data)) {
-            return redirect()->to('/admin/publikasi')->with('success', 'Publikasi berhasil ditambahkan');
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => true, 'message' => 'Publikasi berhasil ditambahkan']);
+            }
+            return redirect()->to('/admin/publikasi-ilmiah')->with('success', 'Publikasi berhasil ditambahkan');
         } else {
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => false, 'message' => 'Gagal menambahkan publikasi']);
+            }
             return redirect()->back()->with('error', 'Gagal menambahkan publikasi')->withInput();
         }
     }
@@ -66,7 +126,7 @@ class Publikasi extends BaseController
     {
         $publikasi = $this->publikasiModel->find($id);
         if (!$publikasi) {
-            return redirect()->to('/admin/publikasi')->with('error', 'Publikasi tidak ditemukan');
+            return redirect()->to('/admin/publikasi-ilmiah')->with('error', 'Publikasi tidak ditemukan');
         }
 
         $data = [
@@ -83,16 +143,31 @@ class Publikasi extends BaseController
     {
         $data = [
             'jenis_publikasi' => $this->request->getPost('jenis_publikasi'),
-            'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
+            'judul' => $this->request->getPost('judul'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-            'id_user' => $this->request->getPost('id_user'),
+            'penulis_pendamping' => $this->request->getPost('penulis_pendamping'),
+            'volume' => $this->request->getPost('volume'),
+            'nomor' => $this->request->getPost('nomor'),
+            'tahun' => $this->request->getPost('tahun'),
+            'link_publikasi' => $this->cleanHtmlFromUrl($this->request->getPost('link_publikasi')),
+            'link_doi' => $this->cleanHtmlFromUrl($this->request->getPost('link_doi')),
+            'link_gdrive' => $this->cleanHtmlFromUrl($this->request->getPost('link_gdrive')),
+            'conference' => $this->request->getPost('conference'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
+            'id_user' => $this->request->getPost('id_user') ?: 1,
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->update($id, $data)) {
-            return redirect()->to('/admin/publikasi')->with('success', 'Publikasi berhasil diperbarui');
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => true, 'message' => 'Publikasi berhasil diperbarui']);
+            }
+            return redirect()->to('/admin/publikasi-ilmiah')->with('success', 'Publikasi berhasil diperbarui');
         } else {
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => false, 'message' => 'Gagal memperbarui publikasi']);
+            }
             return redirect()->back()->with('error', 'Gagal memperbarui publikasi')->withInput();
         }
     }
@@ -101,9 +176,38 @@ class Publikasi extends BaseController
     public function delete($id)
     {
         if ($this->publikasiModel->delete($id)) {
-            return redirect()->to('/admin/publikasi')->with('success', 'Publikasi berhasil dihapus');
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => true, 'message' => 'Publikasi berhasil dihapus']);
+            }
+            return redirect()->to('/admin/publikasi-ilmiah')->with('success', 'Publikasi berhasil dihapus');
         } else {
-            return redirect()->to('/admin/publikasi')->with('error', 'Gagal menghapus publikasi');
+            if ($this->request->isAJAX()) {
+                return \Config\Services::response()->setJSON(['success' => false, 'message' => 'Gagal menghapus publikasi']);
+            }
+            return redirect()->to('/admin/publikasi-ilmiah')->with('error', 'Gagal menghapus publikasi');
         }
+    }
+
+    // Helper method to clean HTML from URLs
+    private function cleanHtmlFromUrl($url)
+    {
+        if (empty($url)) {
+            return '';
+        }
+
+        // If it contains HTML link tags, extract the URL
+        if (preg_match('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>/i', $url, $matches)) {
+            return $matches[1];
+        }
+
+        // If it contains HTML entities, decode them
+        $decoded = html_entity_decode($url, ENT_QUOTES | ENT_HTML5);
+
+        // If it still contains HTML, strip it
+        if (strip_tags($decoded) !== $decoded) {
+            return strip_tags($decoded);
+        }
+
+        return $url;
     }
 }

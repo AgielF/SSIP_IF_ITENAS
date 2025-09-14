@@ -136,7 +136,13 @@ $publicationData = $publicationData ?? [
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const publicationData = <?= json_encode($publicationData) ?>;
+    const publicationData = <?= json_encode($publicationData ?? []) ?>;
+    const csrfTokenName = '<?= csrf_token() ?>';
+    const csrfTokenValue = '<?= csrf_hash() ?>';
+
+    // Debug: Check if data is loaded
+    console.log('Publication Data:', publicationData);
+    console.log('CSRF Token:', csrfTokenName, csrfTokenValue);
 
     const navLinks = document.querySelectorAll('#publication-nav .nav-link');
     const contentTitle = document.getElementById('content-title');
@@ -206,13 +212,17 @@ document.addEventListener('DOMContentLoaded', function() {
             bodyHtml = `<tr><td colspan="${data.headers.length + 2}" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
-                const originalIndex = data.rows.indexOf(row); // Dapatkan indeks asli untuk edit/hapus
+                const actualIndex = data.rows.indexOf(row); // Get actual index in original data
+                const recordId = row[row.length - 1]; // Get ID from last column
                 bodyHtml += `<tr><td>${startIndex + index + 1}</td>`;
-                row.forEach(cell => bodyHtml += `<td>${cell}</td>`);
+                // Display all columns except the ID
+                for (let i = 0; i < row.length - 1; i++) {
+                    bodyHtml += `<td>${row[i]}</td>`;
+                }
                 bodyHtml += `
                     <td class="non-printable">
-                        <button class="btn btn-sm btn-outline-secondary me-1 edit-btn" title="Edit" data-index="${originalIndex}"><i class="fas fa-pencil-alt"></i></button>
-                        <button class="btn btn-sm btn-outline-danger delete-btn" title="Hapus" data-index="${originalIndex}"><i class="fas fa-trash-alt"></i></button>
+                        <button class="btn btn-sm btn-outline-secondary me-1 edit-btn" title="Edit" data-id="${recordId}"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="btn btn-sm btn-outline-danger delete-btn" title="Hapus" data-id="${recordId}"><i class="fas fa-trash-alt"></i></button>
                     </td>
                 `;
                 bodyHtml += '</tr>';
@@ -273,35 +283,63 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-data-btn').addEventListener('click', () => {
         currentState.editingIndex = null;
         modalTitle.textContent = `Tambah Data ${document.querySelector(`.nav-link[data-content="${currentState.category}"]`).textContent}`;
-        const headers = projectData[currentState.category].headers;
-        let formHtml = '';
-        headers.forEach(header => {
-            formHtml += `<div class="mb-3"><label class="form-label">${header}</label><input type="text" class="form-control" required></div>`;
+        const headers = publicationData[currentState.category].headers;
+        let formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">`;
+        formHtml += `<input type="hidden" name="jenis_publikasi" value="${currentState.category}">`;
+        formHtml += `<input type="hidden" name="id_user" value="1">`;
+        headers.forEach((header, i) => {
+            const fieldName = header.toLowerCase().replace(/\s+/g, '_');
+            formHtml += `<div class="mb-3"><label class="form-label">${header}</label><input type="text" class="form-control" name="${fieldName}" value="${rowData ? rowData[i] : ''}" required></div>`;
         });
         modalForm.innerHTML = formHtml;
     });
 
-    saveDataBtn.addEventListener('click', () => {
-        const formInputs = modalForm.querySelectorAll('input');
-        const newRow = [];
-        let isValid = true;
-        formInputs.forEach(input => {
-            if (!input.value) isValid = false;
-            newRow.push(input.value);
-        });
+    saveDataBtn.addEventListener('click', async () => {
+        const form = modalForm;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
-        if (isValid) {
-            if (currentState.editingIndex !== null) {
-                // Mode Edit
-                publicationData[currentState.category].rows[currentState.editingIndex] = newRow;
-            } else {
-                // Mode Tambah
-                publicationData[currentState.category].rows.push(newRow);
+        // Basic validation
+        let isValid = true;
+        for (const key in data) {
+            if (key !== csrfTokenName && key !== 'id_user' && !data[key]) {
+                isValid = false;
+                break;
             }
-            updateView();
-            dataModal.hide();
-        } else {
+        }
+
+        if (!isValid) {
             alert('Semua field harus diisi!');
+            return;
+        }
+
+        try {
+            let url = '/admin/publikasi-ilmiah/create';
+            let method = 'POST';
+
+            if (currentState.editingIndex !== null) {
+                url = `/admin/publikasi-ilmiah/update/${data.id_publikasi}`;
+                method = 'POST';
+                // Add _method field to simulate PUT request
+                data['_method'] = 'PUT';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams(data)
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                location.reload();
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            alert('Network error: ' + error.message);
         }
     });
     
@@ -309,26 +347,50 @@ document.addEventListener('DOMContentLoaded', function() {
         const target = e.target.closest('button');
         if (!target) return;
 
-        const index = parseInt(target.dataset.index);
+        const recordId = target.dataset.id;
 
         if (target.classList.contains('edit-btn')) {
-            currentState.editingIndex = index;
-            const rowData = publicationData[currentState.category].rows[index];
+            // Find the row data by ID
+            const rows = publicationData[currentState.category].rows;
+            const rowData = rows.find(row => row[row.length - 1] == recordId);
             const headers = publicationData[currentState.category].headers;
-            modalTitle.textContent = `Edit Data ${document.querySelector(`.nav-link[data-content="${currentState.category}"]`).textContent}`;
-            
-            let formHtml = '';
-            headers.forEach((header, i) => {
-                formHtml += `<div class="mb-3"><label class="form-label">${header}</label><input type="text" class="form-control" value="${rowData[i]}" required></div>`;
-            });
-            modalForm.innerHTML = formHtml;
-            dataModal.show();
+
+            if (rowData) {
+                modalTitle.textContent = `Edit Data ${document.querySelector(`.nav-link[data-content="${currentState.category}"]`).textContent}`;
+
+                let formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">`;
+                formHtml += `<input type="hidden" name="jenis_publikasi" value="${currentState.category}">`;
+                formHtml += `<input type="hidden" name="id_publikasi" value="${recordId}">`;
+                formHtml += `<input type="hidden" name="id_user" value="1">`;
+                headers.forEach((header, i) => {
+                    const fieldName = header.toLowerCase().replace(/\s+/g, '_');
+                    formHtml += `<div class="mb-3"><label class="form-label">${header}</label><input type="text" class="form-control" name="${fieldName}" value="${rowData[i]}" required></div>`;
+                });
+                modalForm.innerHTML = formHtml;
+                dataModal.show();
+            }
         }
 
         if (target.classList.contains('delete-btn')) {
             if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                publicationData[currentState.category].rows.splice(index, 1);
-                updateView();
+                fetch(`/admin/publikasi-ilmiah/delete/${recordId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        [csrfTokenName]: csrfTokenValue
+                    })
+                }).then(async response => {
+                    const result = await response.json();
+                    if (result.success) {
+                        location.reload();
+                    } else {
+                        alert(result.message);
+                    }
+                }).catch(error => {
+                    alert('Network error: ' + error.message);
+                });
             }
         }
     });

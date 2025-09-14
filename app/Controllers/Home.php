@@ -134,8 +134,7 @@ class Home extends BaseController
             'schedules' => $this->getProcessedJadwalData(10), // Limit to 10 schedules on homepage
             'visi'      => $visiMisiModel->where('judul', 'Visi')->first()['isi'] ?? '',
             'misi'      => $visiMisiModel->where('judul', 'Misi')->first()['isi'] ?? '',
-            'fields'    => $this->getTopicData(),           // Data untuk section topic
-            'fields'    => $this->getTopicData(),           // Data untuk section topic
+            'fields'    => $this->getTopicData()           // Data untuk section topik           // Data untuk section topic
         ];
         return view('home_view', $data);
     }
@@ -203,21 +202,26 @@ class Home extends BaseController
     //anggota 
     //dipindahkan sehingga mempunya controller masing-masing
 
-    
-
     // --- Repositori ---
     public function repositori()
     {
-        // $repositoriModel = new RepositoriModel();
-        $data = ['title' => 'Repositori', 'repos' => []]; // Fixed incomplete assignment
+        // TODO: Implement RepositoriModel when available
+        $data = [
+            'title' => 'Repositori',
+            'repos' => [] // Placeholder for repository data
+        ];
         return view('repositori_list_view', $data);
     }
 
     public function repositori_admin()
     {
-        // $repositoriModel = new RepositoriModel();
-        $data = ['title' => 'Admin: Kelola Repositori', 'repos' => []]; // Fixed incomplete assignment
+        // TODO: Implement RepositoriModel when available
+        $data = [
+            'title' => 'Admin: Kelola Repositori',
+            'repos' => [] // Placeholder for repository data
+        ];
         return view('repositori_admin_list_view', $data);
     }
 
+    
 }
