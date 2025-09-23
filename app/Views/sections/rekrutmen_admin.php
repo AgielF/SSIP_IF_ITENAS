@@ -68,44 +68,59 @@
                     <table class="table fm-table table-hover">
                         <thead>
                             <tr>
-                                <th>No</th>
+                                <th>ID rekrut</th>
                                 <th>Deskripsi</th>
                                 <th>Status</th>
                                 <th>Syarat</th>
+                                <th>Jadwal</th>
                                 <th class="non-printable">Aksi</th>
                             </tr>
-                        </thead>
-                        <tbody id="rekrutmen-table-body">
-                            <?php if (!empty($rekrutmen['rows'])): ?>
-                                <?php foreach ($rekrutmen['rows'] as $i => $row): ?>
-                                    <tr data-id="<?= $row['id'] ?>" data-date="<?= esc($row['id']) ?>">
-                                        <td><?= $i+1 ?></td>
-                                        <td><?= esc($row['deskripsi']) ?></td>
-                                        <td><?= esc($row['status']) ?></td>
-                                        <td><?= esc($row['syarat']) ?></td>
-                                        <td class="non-printable">
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-outline-secondary me-1 edit-btn"
-                                                    data-id="<?= $row['id'] ?>"
-                                                    data-deskripsi="<?= esc($row['deskripsi']) ?>"
-                                                    data-status="<?= esc($row['status']) ?>"
-                                                    data-syarat="<?= esc($row['syarat']) ?>"
-                                                    data-bs-toggle="modal" 
-                                                    data-bs-target="#editDataModal">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </button>
-                                            <form action="/rekrutmen/delete/<?= $row['id'] ?>" method="post" class="d-inline" onsubmit="return confirm('Yakin hapus data ini?')">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr><td colspan="5" class="text-center text-muted">Belum ada data</td></tr>
-                            <?php endif; ?>
-                        </tbody>
+                        </thead> 
+                        
+                        
+
+                   <tbody id="rekrutmen-table-body">
+    <?php if (!empty($rekrutmen['rows'])) : ?>
+        <?php foreach ($rekrutmen['rows'] as $row) : ?>
+            <tr data-id="<?= esc($row['id_rekrut']) ?>">
+                <td><?= esc($row['id_rekrut']) ?></td>
+                <td><?= esc($row['deskripsi']) ?></td>
+                <td><?= esc($row['status']) ?></td>
+                <td><?= esc($row['syarat']) ?></td>
+                <td><?= esc($row['jadwal']) ?></td>
+                <td class="non-printable">
+
+                    <!-- form edit -->
+                    <button 
+                        class="btn btn-sm btn-outline-secondary btn-edit"
+                        data-id="<?= $row['id_rekrut'] ?>"
+                        data-deskripsi="<?= esc($row['deskripsi']) ?>"
+                        data-status="<?= esc($row['status']) ?>"
+                        data-syarat="<?= esc($row['syarat']) ?>"
+                        data-jadwal="<?= $row['id_jadwal'] ?>"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editDataModal">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+
+                    <!-- Tombol Hapus -->
+    <form action="<?= site_url('rekrutmen/delete/'.$row['id_rekrut']) ?>" 
+          method="post" 
+          class="d-inline delete-form">
+        <?= csrf_field() ?>
+        <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+            <i class="fas fa-trash"></i>
+        </button>
+    </form>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php else : ?>
+        <tr>
+            <td colspan="6" class="text-center text-muted">Data tidak ditemukan.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
                     </table>
                 </div>
 
@@ -208,70 +223,92 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('search-input');
-    const exportPdfBtn = document.getElementById('export-pdf-btn');
-    const sortFilter = document.getElementById('sort-filter');
-    const itemsPerPageFilter = document.getElementById('items-per-page-filter');
-    const tableBody = document.getElementById('rekrutmen-table-body');
-    const rows = Array.from(tableBody.querySelectorAll('tr'));
-    const recordInfo = document.getElementById('record-info');
-    const paginationControls = document.getElementById('pagination-controls');
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    const sortFilter = document.getElementById("sort-filter");
+    const itemsPerPageFilter = document.getElementById("items-per-page-filter");
+    const tableBody = document.getElementById("rekrutmen-table-body");
+    const recordInfo = document.getElementById("record-info");
+    const paginationControls = document.getElementById("pagination-controls");
 
     let currentPage = 1;
-    let itemsPerPage = parseInt(itemsPerPageFilter.value);
 
-    function renderTable() {
-        let filtered = rows.filter(row => {
-            const term = searchInput.value.toLowerCase();
-            return row.textContent.toLowerCase().includes(term);
-        });
+    function getRows() {
+        return Array.from(tableBody.querySelectorAll("tr[data-id]"));
+    }
 
-        // Sorting
-        filtered.sort((a, b) => {
-            let idA = parseInt(a.dataset.id);
-            let idB = parseInt(b.dataset.id);
-            return sortFilter.value === 'asc' ? idA - idB : idB - idA;
-        });
+    function renderPagination(totalRows, perPage) {
+        let totalPages = Math.ceil(totalRows / perPage);
+        paginationControls.innerHTML = "";
 
-        // Pagination
-        if (itemsPerPageFilter.value !== 'all') {
-            itemsPerPage = parseInt(itemsPerPageFilter.value);
-            let start = (currentPage - 1) * itemsPerPage;
-            let end = start + itemsPerPage;
-            filtered.forEach((row, idx) => row.style.display = (idx >= start && idx < end) ? '' : 'none');
-        } else {
-            filtered.forEach(row => row.style.display = '');
-        }
-
-        // Info & Pagination
-        recordInfo.textContent = `Menampilkan ${filtered.length} data`;
-        paginationControls.innerHTML = '';
-        if (itemsPerPageFilter.value !== 'all') {
-            let totalPages = Math.ceil(filtered.length / itemsPerPage);
+        if (totalPages > 1) {
             for (let i = 1; i <= totalPages; i++) {
-                let btn = document.createElement('button');
-                btn.className = 'btn btn-sm ' + (i === currentPage ? 'btn-primary' : 'btn-outline-primary');
+                let btn = document.createElement("button");
+                btn.className = "btn btn-sm " + (i === currentPage ? "btn-primary" : "btn-outline-primary");
                 btn.textContent = i;
-                btn.onclick = () => { currentPage = i; renderTable(); };
+                btn.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
                 paginationControls.appendChild(btn);
             }
         }
     }
 
-    searchInput.addEventListener('keyup', renderTable);
-    sortFilter.addEventListener('change', () => { currentPage = 1; renderTable(); });
-    itemsPerPageFilter.addEventListener('change', () => { currentPage = 1; renderTable(); });
-    exportPdfBtn.addEventListener('click', () => window.print());
+    function renderTable() {
+        let rows = getRows();
+        let term = searchInput.value.toLowerCase();
+
+        // Filter hanya kolom isi, bukan tombol
+        let filtered = rows.filter(row => {
+            let cells = row.querySelectorAll("td");
+            let teks = Array.from(cells).slice(1, 5).map(td => td.innerText.toLowerCase()).join(" ");
+            return teks.includes(term);
+        });
+
+        // Sort berdasarkan id_rekrut
+        filtered.sort((a, b) => {
+            let idA = parseInt(a.dataset.id);
+            let idB = parseInt(b.dataset.id);
+            return sortFilter.value === "asc" ? idA - idB : idB - idA;
+        });
+
+        // Pagination
+        let perPage = itemsPerPageFilter.value === "all" ? filtered.length : parseInt(itemsPerPageFilter.value);
+        let totalRows = filtered.length;
+        let totalPages = Math.max(1, Math.ceil(totalRows / perPage));
+
+        if (currentPage > totalPages) currentPage = 1;
+
+        let start = (currentPage - 1) * perPage;
+        let end = Math.min(start + perPage, totalRows);
+
+        rows.forEach(row => row.style.display = "none");
+        filtered.forEach((row, idx) => {
+            row.style.display = (idx >= start && idx < end) ? "" : "none";
+        });
+
+        // Info jumlah data
+        recordInfo.textContent = totalRows > 0
+            ? `Menampilkan ${start + 1}–${end} dari ${totalRows} data`
+            : "Tidak ada data ditemukan";
+
+        renderPagination(totalRows, perPage);
+    }
+
+    // Event listener
+    searchInput.addEventListener("keyup", () => { currentPage = 1; renderTable(); });
+    sortFilter.addEventListener("change", () => { currentPage = 1; renderTable(); });
+    itemsPerPageFilter.addEventListener("change", () => { currentPage = 1; renderTable(); });
 
     // Modal Edit
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            let id = btn.dataset.id;
-            document.getElementById('edit-form').action = `/rekrutmen/update/${id}`;
-            document.getElementById('edit-deskripsi').value = btn.dataset.deskripsi;
-            document.getElementById('edit-status').value = btn.dataset.status;
-            document.getElementById('edit-syarat').value = btn.dataset.syarat;
+    document.querySelectorAll(".btn-edit").forEach(btn => {
+        btn.addEventListener("click", function () {
+            document.getElementById("edit-form").action = "<?= site_url('rekrutmen/update/') ?>" + this.dataset.id;
+            document.getElementById("edit-deskripsi").value = this.dataset.deskripsi;
+            document.getElementById("edit-status").value = this.dataset.status;
+            document.getElementById("edit-syarat").value = this.dataset.syarat;
+            document.getElementById("edit-jadwal").value = this.dataset.jadwal;
         });
     });
 

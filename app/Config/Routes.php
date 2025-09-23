@@ -8,11 +8,11 @@ use CodeIgniter\Router\RouteCollection;
 // Rekomendasi untuk konsistensi
 $routes->get('/', 'Home::index');
 
-$routes->get('/agenda', 'Home::agenda');
+$routes->get('/berita', 'beritaController::index');
 
 $routes->get('/asisten', 'UserController::index');
 
-$routes->get('/jadwal', 'Home::jadwal');
+$routes->get('/jadwal', 'JadwalController::index');
 $routes->get('/jadwal-list', 'Home::jadwal_card');
 
 $routes->get('/penelitian-proyek', 'ProyekRisetController::index');
@@ -24,6 +24,8 @@ $routes->get('/galeri', 'GaleriUmumController::index');
 $routes->get('/repositori', 'Home::repositori');
 
 $routes->get('/rekrutmen', 'RekrutController::index');
+
+$routes->get('/modul_praktikum', 'modulPraktikumController::index');
 
 // $routes->get('/user_profile', 'Home::user_profile');
 
@@ -70,18 +72,82 @@ $routes->get('profile', 'AuthUi::profile');
 // routes khusus admin, dilindungi filter admin
 $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/asisten_admin', 'UserController::getDataAdmin');
-    $routes->get('/jadwal_admin', 'Home::jadwal_admin');
+    $routes->get('/jadwal_admin', 'JadwalController::admin');
     $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
     $routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
-    $routes->get('/galeri_admin', 'GaleriUmumController::getDataAdmin');
+    $routes->get('/galeri_admin', 'GaleriUmumController::admin');
     $routes->get('/repositori_admin','Home::repositori_admin');
     $routes->get('/rekrutmen_admin','RekrutController::admin');
+    $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
+    $routes->get('/berita_admin','beritaController::admin');
+    $routes->get('/peserta-praktikum_admin','PesertaPraktikumController::admin');
+    
 });
 
 // CRUD action (POST) – tidak perlu filter admin kalau sudah dicek di controller
 $routes->post('/rekrutmen/store', 'RekrutController::store');
 $routes->post('/rekrutmen/update/(:num)', 'RekrutController::update/$1');
 $routes->post('/rekrutmen/delete/(:num)', 'RekrutController::delete/$1');
+
+
+//CRUD galeri
+$routes->post('galeri_admin/store', 'GaleriUmumController::create');
+$routes->post('galeri_admin/update/(:num)', 'GaleriUmumController::update/$1');
+$routes->get('galeri_admin/delete/(:num)', 'GaleriUmumController::delete/$1');
+
+//CRUD modul
+$routes->post('modul-praktikum/create', 'modulPraktikumController::create');
+$routes->post('modul-praktikum/update/(:num)', 'modulPraktikumController::update/$1');
+$routes->get('modul-praktikum/delete/(:num)', 'modulPraktikumController::delete/$1');
+
+
+// PENELITIAN PROYEK RISET
+// CRUD Proyek Riset (non API style)3e
+$routes->post('proyek-riset/store', 'ProyekRisetController::create');
+$routes->post('proyek-riset/update/(:num)', 'ProyekRisetController::update/$1');
+$routes->get('proyek-riset/delete/(:num)', 'ProyekRisetController::delete/$1');
+
+// Ambil detail satu proyek (edit form)
+$routes->get('proyek-riset/(:num)', 'ProyekRisetController::edit/$1');
+
+// Jika mau ambil detail satu proyek
+$routes->get('proyek-riset/(:num)', 'ProyekRisetController::edit/$1');
+
+
+// CRUD
+$routes->get('rekrutmen/create', 'RekrutController::create');     // Form tambah
+$routes->post('rekrutmen/store', 'RekrutController::store');      // Proses tambah
+
+$routes->get('rekrutmen/edit/(:num)', 'RekrutController::edit/$1');   // Form edit
+$routes->post('rekrutmen/update/(:num)', 'RekrutController::update/$1'); // Proses update
+
+$routes->get('rekrutmen/delete/(:num)', 'RekrutController::delete/$1'); // Hapus
+
+
+//CRUD jadwal
+$routes->post('/jadwal/store', 'JadwalController::store');
+$routes->post('/jadwal/update/(:num)', 'JadwalController::update/$1');
+$routes->get('/jadwal/delete/(:num)', 'JadwalController::delete/$1');
+
+
+$routes->post('asisten/store', 'UserController::store');   // Tambah data
+$routes->post('asisten/update/(:num)', 'UserController::update/$1'); // Update data
+$routes->get('asisten/delete/(:num)', 'UserController::delete/$1'); // Hapus data
+
+$routes->post('publikasi-ilmiah/store', 'PublikasiController::store');   // Tambah data
+$routes->post('publikasi-ilmiah/update/(:num)', 'PublikasiController::update/$1'); // Update data
+$routes->get('publikasi-ilmiah/delete/(:num)', 'PublikasiController::delete/$1'); // Hapus data
+
+$routes->post('berita/store', 'beritaController::store');   // Tambah data
+$routes->post('berita/update/(:num)', 'beritaController::update/$1'); // Update data
+$routes->get('berita/delete/(:num)', 'beritaController::delete/$1'); // Hapus data
+
+$routes->get('peserta-praktikum','PesertaPraktikumController::index');
+$routes->post('peserta-praktikum/store', 'PesertaPraktikumController::create');   // Tambah data
+$routes->post('peserta-praktikum/update/(:num)', 'PesertaPraktikumController::update/$1'); // Update data
+$routes->get('peserta-praktikum/delete/(:num)', 'PesertaPraktikumController::delete/$1'); // Hapus data
+
+
 
 
 

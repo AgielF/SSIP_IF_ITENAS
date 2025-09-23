@@ -1,4 +1,3 @@
-
 <style>
     .admin-container {
         background-color: #ffffff;
@@ -17,7 +16,6 @@
     #adminTable .btn-group .btn {
         border-radius: 6px;
     }
-    /* Style untuk Print/Export PDF */
     @media print {
         body * { visibility: hidden; }
         .printable-area, .printable-area * { visibility: visible; }
@@ -26,7 +24,7 @@
             display: none !important;
         }
         th:last-child, td:last-child {
-             display: none !important; /* Sembunyikan kolom Aksi saat print */
+             display: none !important;
         }
     }
 </style>
@@ -48,7 +46,10 @@
                     <button id="export-pdf-btn" class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> Export PDF
                     </button>
-                    <a href="#" class="btn btn-sm btn-primary"><i class="fas fa-plus me-2"></i>Tambah Anggota</a>
+                    <!-- Tombol Tambah -->
+                    <a href="#" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                        <i class="fas fa-plus me-2"></i>Tambah Anggota
+                    </a>
                 </div>
             </div>
         </div>
@@ -72,7 +73,7 @@
                     <?php if (!empty($asisten)): ?>
                         <?php foreach ($asisten as $person): ?>
                             <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>">
-                                <td></td> <!-- Nomor diisi oleh JS -->
+                                <td></td>
                                 <td><?= esc($person['nomor'] ?? '') ?></td>
                                 <td><?= esc($person['nama']) ?></td>
                                 <td><?= esc($person['jurusan']) ?></td>
@@ -82,11 +83,15 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="#" class="btn btn-light btn-sm" title="Edit">
+                                        <button type="button" 
+                                                class="btn btn-light btn-sm btn-edit" 
+                                                data-user='<?= json_encode($person) ?>'>
                                             <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-light btn-sm text-danger" title="Hapus">
-                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                        <a href="<?= base_url('asisten/delete/'.$person['id']) ?>" 
+                                           class="btn btn-light btn-sm text-danger"
+                                           onclick="return confirm('Hapus user ini?')">
+                                           <i class="fas fa-trash-alt"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -108,12 +113,103 @@
                 </select>
             </div>
             <nav>
-                <ul class="pagination pagination-sm mb-0" id="pagination-controls">
-                    <!-- Tombol paginasi akan dirender oleh JavaScript -->
-                </ul>
+                <ul class="pagination pagination-sm mb-0" id="pagination-controls"></ul>
             </nav>
         </div>
     </div>
+</div>
+
+<!-- Modal Tambah User -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form action="<?= base_url('asisten/store') ?>" method="post" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tambah Anggota</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body row g-3">
+        <div class="col-md-6">
+          <label class="form-label">NRP/NIDN</label>
+          <input type="text" name="nomor" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Nama</label>
+          <input type="text" name="nama" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Jurusan</label>
+          <input type="text" name="jurusan" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">No. Telp</label>
+          <input type="text" name="no_telp" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Password</label>
+          <input type="text" name="password" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Role</label>
+          <select name="role_id" class="form-select" required>
+            <option value="2">Asisten</option>
+            <option value="3">Praktikan</option>
+            <option value="4">Dosen</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edit User -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form id="editUserForm" method="post" class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Anggota</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body row g-3">
+        <input type="hidden" name="id" id="edit_id">
+        <div class="col-md-6">
+          <label class="form-label">NRP/NIDN</label>
+          <input type="text" name="nomor" id="edit_nomor" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Nama</label>
+          <input type="text" name="nama" id="edit_nama" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Jurusan</label>
+          <input type="text" name="jurusan" id="edit_jurusan" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">No. Telp</label>
+          <input type="text" name="no_telp" id="edit_no_telp" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Password (opsional)</label>
+          <input type="text" name="password" id="edit_password" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Role</label>
+          <select name="role_id" id="edit_role_id" class="form-select" required>
+            <option value="2">Asisten</option>
+            <option value="3">Praktikan</option>
+            <option value="4">Dosen</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="submit" class="btn btn-success">Update</button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>
@@ -135,12 +231,9 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function updateView() {
-        // 1. Filter
         let processedRows = allRows.filter(row => 
             row.textContent.toLowerCase().includes(currentState.searchTerm)
         );
-
-        // 2. Sortir
         processedRows.sort((a, b) => {
             const timeA = parseInt(a.dataset.timestamp, 10);
             const timeB = parseInt(b.dataset.timestamp, 10);
@@ -148,30 +241,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
         const totalRows = processedRows.length;
-
-        // 3. Paginasi
         const limit = currentState.itemsPerPage === 'all' ? totalRows : parseInt(currentState.itemsPerPage, 10);
         const startIndex = (currentState.currentPage - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        // Render Body & Penomoran
-        tableBody.innerHTML = ''; // Kosongkan tabel
+        tableBody.innerHTML = '';
         if (paginatedRows.length === 0) {
             tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
-                row.cells[0].textContent = startIndex + index + 1; // Isi nomor
+                row.cells[0].textContent = startIndex + index + 1;
                 tableBody.appendChild(row);
             });
         }
 
-        // Update Info
         const startRecord = totalRows > 0 ? startIndex + 1 : 0;
         const endRecord = Math.min(endIndex, totalRows);
         recordInfo.textContent = `Menampilkan ${startRecord}-${endRecord} dari ${totalRows} data.`;
 
-        // Render Paginasi
         renderPagination(totalRows, limit);
     }
 
@@ -179,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const totalPages = Math.ceil(totalItems / limit);
         paginationControls.innerHTML = '';
         if (totalPages <= 1) return;
-
         const createPageLink = (page, text, isDisabled = false, isActive = false) => {
             const li = document.createElement('li');
             li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
@@ -193,7 +280,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             return li;
         };
-
         paginationControls.appendChild(createPageLink(currentState.currentPage - 1, 'Previous', currentState.currentPage === 1));
         for (let i = 1; i <= totalPages; i++) {
             paginationControls.appendChild(createPageLink(i, i, false, currentState.currentPage === i));
@@ -201,27 +287,37 @@ document.addEventListener('DOMContentLoaded', function () {
         paginationControls.appendChild(createPageLink(currentState.currentPage + 1, 'Next', currentState.currentPage === totalPages));
     }
 
-    // Event Listeners
     searchInput.addEventListener('keyup', () => {
         currentState.searchTerm = searchInput.value.toLowerCase();
         currentState.currentPage = 1;
         updateView();
     });
-
     sortFilter.addEventListener('change', () => {
         currentState.sortOrder = sortFilter.value;
         updateView();
     });
-
     itemsPerPageFilter.addEventListener('change', () => {
         currentState.itemsPerPage = itemsPerPageFilter.value;
         currentState.currentPage = 1;
         updateView();
     });
-
     exportPdfBtn.addEventListener('click', () => window.print());
 
-    // Initial render
+    // === Edit Modal Handling ===
+    document.querySelectorAll('.btn-edit').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const user = JSON.parse(btn.getAttribute('data-user'));
+            document.getElementById('edit_id').value = user.id;
+            document.getElementById('edit_nomor').value = user.nomor;
+            document.getElementById('edit_nama').value = user.nama;
+            document.getElementById('edit_jurusan').value = user.jurusan;
+            document.getElementById('edit_no_telp').value = user.no_telp;
+            document.getElementById('edit_role_id').value = user.role_id;
+            document.getElementById('editUserForm').action = "<?= base_url('asisten/update/') ?>" + user.id;
+            new bootstrap.Modal(document.getElementById('editUserModal')).show();
+        });
+    });
+
     updateView();
 });
 </script>

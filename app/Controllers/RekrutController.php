@@ -8,50 +8,42 @@ use App\Models\JadwalModel;
 
 class RekrutController extends BaseController
 {
-    /**
-     * Menampilkan halaman rekrutmen publik.
-     */
+    protected $rekrutModel;
+    protected $jadwalModel;
+
+    public function __construct()
+    {
+        $this->rekrutModel = new RekrutModel();
+        $this->jadwalModel = new JadwalModel();
+    }
+
+    // Halaman publik
     public function index()
     {
-        $rekrutModel = new RekrutModel();
-
-        $data = [
+        return view('rekrutmen_view', [
             'title'     => 'Informasi Rekrutmen',
-            'rekrutmen' => $rekrutModel->index()
-        ];
-
-        return view('rekrutmen_view', $data);
+            'rekrutmen' => $this->rekrutModel->getDataPublik()
+        ]);
     }
 
-    /**
-     * Halaman admin untuk kelola rekrutmen.
-     */
+    // Halaman admin
     public function admin()
     {
-        $rekrutModel = new RekrutModel();
-        $jadwalModel = new JadwalModel();
-
-        $data = [
-            'title'     => 'Admin: Kelola Rekrutmen',
-            'rekrutmen' => $rekrutModel->getDataAdmin()['rekrutmen'],
-            'jadwal'    => $jadwalModel
-                            ->select('jadwal.*, events.nama_event')
-                            ->join('events', 'events.id_event = jadwal.id_event', 'left')
-                            ->findAll()
-        ];
-
-        return view('rekrutmen_admin_view', $data);
+        return view('rekrutmen_admin_view', [
+            'title'     => 'Kelola Rekrutmen',
+            'rekrutmen' => $this->rekrutModel->getDataAdminFormatted()['rekrutmen'],
+            'jadwal'    => $this->jadwalModel
+                                ->select('jadwal.*, events.nama_event')
+                                ->join('events', 'events.id_event = jadwal.id_event', 'left')
+                                ->findAll()
+        ]);
     }
 
-    /**
-     * Tambah data.
-     */
+    // Tambah data
     public function store()
     {
-        $rekrutModel = new RekrutModel();
-
         $data = [
-            'id_user'    => 1, // sementara hardcode user
+            'id_user'    => 1, // sementara hardcode admin
             'id_jadwal'  => $this->request->getPost('id_jadwal'),
             'deskripsi'  => $this->request->getPost('deskripsi'),
             'status'     => $this->request->getPost('status'),
@@ -59,18 +51,14 @@ class RekrutController extends BaseController
             'created_at' => date('Y-m-d H:i:s')
         ];
 
-        $rekrutModel->insert($data);
+        $this->rekrutModel->insert($data);
 
-        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil ditambahkan.');
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil ditambahkan');
     }
 
-    /**
-     * Update data.
-     */
+    // Update data
     public function update($id)
     {
-        $rekrutModel = new RekrutModel();
-
         $data = [
             'id_user'    => 1,
             'id_jadwal'  => $this->request->getPost('id_jadwal'),
@@ -80,19 +68,15 @@ class RekrutController extends BaseController
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        $rekrutModel->update($id, $data);
+        $this->rekrutModel->update($id, $data);
 
-        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil diperbarui.');
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil diperbarui');
     }
 
-    /**
-     * Hapus data.
-     */
+    // Hapus data
     public function delete($id)
     {
-        $rekrutModel = new RekrutModel();
-        $rekrutModel->delete($id);
-
-        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil dihapus.');
+        $this->rekrutModel->delete($id);
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil dihapus');
     }
 }

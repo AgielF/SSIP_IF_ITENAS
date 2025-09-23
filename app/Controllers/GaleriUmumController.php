@@ -3,58 +3,69 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
-use App\Models\GaleriUmumModel; // Import RekrutModel
+use App\Models\GaleriUmumModel;
 
 class GaleriUmumController extends BaseController
 {
-    /**
-     * Menampilkan halaman rekrutmen publik.
-     */
-    //tampil data rekrutmen
+    protected $galeriUmumModel;
+
+    public function __construct()
+    {
+        $this->galeriUmumModel = new GaleriUmumModel();
+    }
+
+    // Untuk user publik
     public function index()
     {
-        $galeriModel = new GaleriUmumModel();
-
-        // Ambil data galeri + user uploader
-        $gallery_items = $galeriModel->getDataWithUser();
-        $data = [
+        $gallery_items = $this->galeriUmumModel->getDataWithUser();
+        return view('galeri_list_view', [
             'title' => 'Galeri & Media',
             'gallery_items' => $gallery_items
-        ];
-
-        return view('galeri_list_view', $data);
+        ]);
     }
 
+    // Untuk admin
+    public function admin()
+    {
+        $galerimodelall = $this->galeriUmumModel->getDataAdminFormatted();
+        return view('galeri_admin_list_view', [
+            'title' => 'Kelola Galeri & Media',
+            'media_items' => $galerimodelall['galeri']
+        ]);
+    }
 
-    //tampil data rekrutmen admin
-   public function admin()
-{
-     $galeriModel = new GaleriUmumModel();
-
-        // Ambil semua data galeri (DESC biar terbaru duluan)
-        $media_items = $galeriModel->orderBy('tanggal_upload', 'DESC')->findAll();
-
+    // CREATE
+    public function create()
+    {
         $data = [
-            'title' => 'Kelola Galeri & Media',
-            'media_items' => $media_items
+            'kategori'       => $this->request->getPost('kategori'),
+            'keterangan'     => $this->request->getPost('keterangan'),
+            'file_url'       => $this->request->getPost('file_url'),
+            'tanggal_upload' => date('Y-m-d H:i:s'),
+            'id_user'        => 1 // default admin
         ];
 
-        return view('galeri_admin_list_view', $data);
+        $this->galeriUmumModel->insert($data);
+        return redirect()->to('/galeri_admin')->with('success', 'Data berhasil ditambahkan');
     }
 
-    public function getDataAdmin(){
-         $galeriModel = new GaleriUmumModel();
-
-         $galerimodelall=$galeriModel->getDataAdmin();
-         
-         $data = [
-            'title' => 'Kelola Galeri & Media',
-            'media_items' => $galerimodelall['galeri'] // ✅ langsung ambil
+    // UPDATE
+    public function update($id)
+    {
+        $data = [
+            'kategori'   => $this->request->getPost('kategori'),
+            'keterangan' => $this->request->getPost('keterangan'),
+            'file_url'   => $this->request->getPost('file_url'),
         ];
 
-          return view('galeri_admin_list_view', $data);
-
+        $this->galeriUmumModel->update($id, $data);
+        return redirect()->to('/galeri_admin')->with('success', 'Data berhasil diupdate');
     }
-    
+
+    // DELETE
+    public function delete($id)
+    {
+        $this->galeriUmumModel->delete($id);
+        return redirect()->to('/galeri_admin')->with('success', 'Data berhasil dihapus');
+    }
 }
-

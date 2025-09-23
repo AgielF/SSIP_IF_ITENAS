@@ -6,61 +6,108 @@ use App\Models\UserModel;
 
 class UserController extends BaseController
 {
+    protected $userModel;
+
+    public function __construct()
+    {
+        $this->userModel = new UserModel();
+    }
+
     /**
-     * Menampilkan daftar semua anggota laboratorium.
-     * (Fungsi ini tidak diubah, sudah benar)
+     * Menampilkan daftar semua anggota laboratorium (untuk user biasa).
      */
     public function index()
     {
-        $userModel = new UserModel();
-        $allPersonnel = $userModel->getProcessedPersonnelData();
-        $data = [
+        return view('asisten_list_view', [
             'title'   => 'Anggota Laboratorium',
-            'asisten' => $allPersonnel 
-        ];
-        return view('asisten_list_view', $data); // Asumsi ini view untuk daftar anggota
+            'asisten' => $this->userModel->getProcessedPersonnelData()
+        ]);
     }
-    public function getDataAdmin(){
-        $userModel = new UserModel();
-        $allPersonnel = $userModel->getProcessedPersonnelData();
-        $data = [
-            'title'   => 'Anggota Laboratorium',
-            'asisten' => $allPersonnel 
-        ];
-        return view('asisten_admin_list_view', $data); // Asumsi ini view untuk daftar anggota
-    }
-    // --- FUNGSI BARU UNTUK MENANGANI HALAMAN PROFIL ---
+
     /**
-     * Menampilkan halaman profil untuk satu anggota.
-     * @param int $id - ID pengguna dari URL.
+     * Menampilkan daftar semua anggota (untuk admin).
+     */
+    public function getDataAdmin()
+    {
+        return view('asisten_admin_list_view', [
+            'title'   => 'Anggota Laboratorium',
+            'asisten' => $this->userModel->getProcessedPersonnelData()
+        ]);
+    }
+
+    /**
+     * Menampilkan profil anggota berdasarkan ID
      */
     public function profil($id)
     {
-        $userModel = new UserModel();
+        $user = $this->userModel->find($id);
 
-        // 1. Cari pengguna di database berdasarkan ID
-        $user = $userModel->find($id);
-
-        // 2. Jika pengguna tidak ditemukan, tampilkan halaman error 404
         if (!$user) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // 3. Tambahkan key 'role' berupa string berdasarkan 'role_id'
         $roleMap = [
             4 => 'dosen',
             2 => 'asisten',
             3 => 'praktikan'
         ];
         $user['role'] = $roleMap[$user['role_id']] ?? 'tidak diketahui';
-        
-        // 4. Siapkan data untuk dikirim ke view profil
-        $data = [
+
+        return view('user_profile_view', [
             'title' => 'Profil Anggota | ' . $user['nama'],
             'user'  => $user
+        ]);
+    }
+
+    /**
+     * Tambah user baru
+     */
+    public function store()
+    {
+        $data = [
+            'nomor'     => $this->request->getPost('nomor'),
+            'nama'      => $this->request->getPost('nama'),
+            'no_telp'   => $this->request->getPost('no_telp'),
+            'jurusan'   => $this->request->getPost('jurusan'),
+            'password'  => $this->request->getPost('password'), // tanpa hash
+            'role_id'   => $this->request->getPost('role_id'),
+            'created_at'=> date('Y-m-d H:i:s'),
         ];
 
-        // 5. Tampilkan view profil dan kirim datanya
-        return view('user_profile_view', $data); // Ganti dengan nama file view profil Anda
+        $this->userModel->insert($data);
+
+        return redirect()->to('/asisten_admin')->with('success', 'User berhasil ditambahkan.');
+    }
+
+    /**
+     * Update data user
+     */
+    public function update($id)
+    {
+        $updateData = [
+            'nomor'     => $this->request->getPost('nomor'),
+            'nama'      => $this->request->getPost('nama'),
+            'no_telp'   => $this->request->getPost('no_telp'),
+            'jurusan'   => $this->request->getPost('jurusan'),
+            'role_id'   => $this->request->getPost('role_id'),
+            'updated_at'=> date('Y-m-d H:i:s'),
+        ];
+
+        if (!empty($this->request->getPost('password'))) {
+            $updateData['password'] = $this->request->getPost('password'); // langsung simpan
+        }
+
+        $this->userModel->update($id, $updateData);
+
+        return redirect()->to('/asisten_admin')->with('success', 'User berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus user
+     */
+    public function delete($id)
+    {
+        $this->userModel->delete($id);
+        return redirect()->to('/asisten_admin')->with('success', 'User berhasil dihapus.');
     }
 }

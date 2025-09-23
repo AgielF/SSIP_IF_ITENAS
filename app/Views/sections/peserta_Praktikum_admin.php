@@ -1,17 +1,17 @@
 <div class="container my-5">
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
-            <a class="nav-link active" href="#">Daftar Proyek Riset</a>
+            <a class="nav-link active" href="#">Daftar Peserta Praktikum</a>
         </li>
     </ul>
 
     <main class="fm-content card rounded-0 rounded-bottom border-top-0">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
-                <h4>Daftar Proyek Riset</h4>
+                <h4>Daftar Peserta Praktikum</h4>
                 <div class="d-flex gap-2 flex-wrap non-printable">
                     <input type="text" id="search-input" class="form-control form-control-sm"
-                        placeholder="Cari data..." style="width: auto;">
+                        placeholder="Cari peserta..." style="width: auto;">
                     <div class="d-flex align-items-center">
                         <label for="sort-filter" class="me-2 mb-0 small">Urutkan:</label>
                         <select id="sort-filter" class="form-select form-select-sm">
@@ -38,7 +38,7 @@
             </div>
 
             <p class="text-muted small mb-3">
-                Menampilkan <?= count($proyek) ?> data
+                Menampilkan <?= count($pesertaPraktikum) ?> data
             </p>
 
             <div class="table-responsive">
@@ -46,47 +46,41 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Judul</th>
-                            <th>Deskripsi</th>
-                            <th>Mitra</th>
-                            <th>Sumber Dana</th>
-                            <th>Tahun Mulai</th>
-                            <th>Tahun selesai</th>
+                            <th>Peserta</th>
+                            <th>Jadwal</th>
+                            <th>Status</th>
+                            <th>Nilai</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($proyek)) : ?>
-                            <?php foreach ($proyek as $i => $row) : ?>
+                        <?php if (!empty($pesertaPraktikum)) : ?>
+                            <?php foreach ($pesertaPraktikum as $i => $row) : ?>
                                 <tr>
                                     <td><?= esc($i + 1) ?></td>
-                                    <td><?= esc($row['judul']) ?></td>
-                                    <td><?= esc($row['deskripsi']) ?></td>
-                                    <td><?= esc($row['mitra']) ?></td>
-                                    <td><?= esc($row['sumber_dana']) ?></td>
-                                    <td><?= esc($row['tahun_mulai']) ?></td>
-                                    <td><?= esc($row['tahun_selesai']) ?></td>
+                                    <td><?= esc($row['peserta']) ?></td>
+                                    <td><?= esc($row['jadwal_tanggal']) ?></td>
+                                    <td><?= esc($row['status']) ?></td>
+                                    <td><?= esc($row['nilai']) ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-warning btn-edit"
-                                            data-id="<?= $row['id_proyek'] ?>"
-                                            data-judul="<?= esc($row['judul']) ?>"
-                                            data-deskripsi="<?= esc($row['deskripsi']) ?>"
-                                            data-mitra="<?= esc($row['mitra']) ?>"
-                                            data-sumber="<?= esc($row['sumber_dana']) ?>"
-                                            data-mulai="<?= esc($row['tahun_mulai']) ?>"
-                                            data-selesai="<?= esc($row['tahun_selesai']) ?>"
+                                            data-id="<?= $row['id_peserta_praktikum'] ?>"
+                                            data-user="<?= $row['id_user'] ?>"
+                                            data-jadwal="<?= $row['id_jadwal'] ?>"
+                                            data-status="<?= $row['status'] ?>"
+                                            data-nilai="<?= $row['nilai'] ?>"
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             Edit
                                         </button>
-                                        <a href="/proyek-riset/delete/<?= $row['id_proyek'] ?>"
+                                        <a href="/peserta-praktikum/delete/<?= $row['id_peserta_praktikum'] ?>"
                                             class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus data ini?')">Hapus</a>
+                                            onclick="return confirm('Hapus peserta ini?')">Hapus</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td>
+                                <td colspan="6" class="text-center text-muted">Data tidak ditemukan.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -99,31 +93,33 @@
 <!-- Modal Tambah -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form action="/proyek-riset/store" method="post" class="modal-content">
+        <form action="/peserta-praktikum/store" method="post" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Proyek Riset</h5>
+                <h5 class="modal-title">Tambah Peserta Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3"><label class="form-label">Judul</label>
-                    <input type="text" name="judul" class="form-control" required>
+                <div class="mb-3"><label class="form-label">Peserta</label>
+                    <select name="id_user" class="form-control" required>
+                        <option value="">-- Pilih Peserta --</option>
+                        <?php foreach ($users as $user): ?>
+                            <option value="<?= $user['id'] ?>"><?= esc($user['nama']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-                <div class="mb-3"><label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" required></textarea>
+                <div class="mb-3"><label class="form-label">Jadwal</label>
+                    <select name="id_jadwal" class="form-control" required>
+                        <option value="">-- Pilih Jadwal --</option>
+                        <?php foreach ($jadwal as $j): ?>
+                            <option value="<?= $j['id_jadwal'] ?>"><?= esc($j['tanggal']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-                <div class="mb-3"><label class="form-label">Mitra</label>
-                    <input type="text" name="mitra" class="form-control">
+                <div class="mb-3"><label class="form-label">Status</label>
+                    <input type="text" name="status" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Sumber Dana</label>
-                    <input type="text" name="sumber_dana" class="form-control">
-                </div>
-                <div class="row">
-                    <div class="col"><label class="form-label">Tahun Mulai</label>
-                        <input type="number" name="tahun_mulai" class="form-control">
-                    </div>
-                    <div class="col"><label class="form-label">Tahun Selesai</label>
-                        <input type="number" name="tahun_selesai" class="form-control">
-                    </div>
+                <div class="mb-3"><label class="form-label">Nilai</label>
+                    <input type="text" name="nilai" class="form-control">
                 </div>
             </div>
             <div class="modal-footer">
@@ -139,30 +135,30 @@
     <div class="modal-dialog modal-lg">
         <form id="formEdit" method="post" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Proyek Riset</h5>
+                <h5 class="modal-title">Edit Peserta Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" name="id_proyek" id="edit-id">
-                <div class="mb-3"><label class="form-label">Judul</label>
-                    <input type="text" name="judul" id="edit-judul" class="form-control" required>
+                <input type="hidden" name="id_peserta_praktikum" id="edit-id">
+                <div class="mb-3"><label class="form-label">Peserta</label>
+                    <select name="id_user" id="edit-user" class="form-control" required>
+                        <?php foreach ($users as $user): ?>
+                            <option value="<?= $user['id'] ?>"><?= esc($user['nama']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-                <div class="mb-3"><label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="edit-deskripsi" class="form-control" required></textarea>
+                <div class="mb-3"><label class="form-label">Jadwal</label>
+                    <select name="id_jadwal" id="edit-jadwal" class="form-control" required>
+                        <?php foreach ($jadwal as $j): ?>
+                            <option value="<?= $j['id_jadwal'] ?>"><?= esc($j['tanggal']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-                <div class="mb-3"><label class="form-label">Mitra</label>
-                    <input type="text" name="mitra" id="edit-mitra" class="form-control">
+                <div class="mb-3"><label class="form-label">Status</label>
+                    <input type="text" name="status" id="edit-status" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Sumber Dana</label>
-                    <input type="text" name="sumber_dana" id="edit-sumber" class="form-control">
-                </div>
-                <div class="row">
-                    <div class="col"><label class="form-label">Tahun Mulai</label>
-                        <input type="number" name="tahun_mulai" id="edit-mulai" class="form-control">
-                    </div>
-                    <div class="col"><label class="form-label">Tahun Selesai</label>
-                        <input type="number" name="tahun_selesai" id="edit-selesai" class="form-control">
-                    </div>
+                <div class="mb-3"><label class="form-label">Nilai</label>
+                    <input type="text" name="nilai" id="edit-nilai" class="form-control">
                 </div>
             </div>
             <div class="modal-footer">
@@ -212,14 +208,12 @@
     // Isi data ke modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.getElementById('formEdit').action = "/proyek-riset/update/" + this.dataset.id;
+            document.getElementById('formEdit').action = "/peserta-praktikum/update/" + this.dataset.id;
             document.getElementById('edit-id').value = this.dataset.id;
-            document.getElementById('edit-judul').value = this.dataset.judul;
-            document.getElementById('edit-deskripsi').value = this.dataset.deskripsi;
-            document.getElementById('edit-mitra').value = this.dataset.mitra;
-            document.getElementById('edit-sumber').value = this.dataset.sumber;
-            document.getElementById('edit-mulai').value = this.dataset.mulai;
-            document.getElementById('edit-selesai').value = this.dataset.selesai;
+            document.getElementById('edit-user').value = this.dataset.user;
+            document.getElementById('edit-jadwal').value = this.dataset.jadwal;
+            document.getElementById('edit-status').value = this.dataset.status;
+            document.getElementById('edit-nilai').value = this.dataset.nilai;
         });
     });
 </script>

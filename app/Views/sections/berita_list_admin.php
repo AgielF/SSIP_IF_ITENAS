@@ -1,14 +1,14 @@
 <div class="container my-5">
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
-            <a class="nav-link active" href="#">Daftar Proyek Riset</a>
+            <a class="nav-link active" href="#">Daftar Berita</a>
         </li>
     </ul>
 
     <main class="fm-content card rounded-0 rounded-bottom border-top-0">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
-                <h4>Daftar Proyek Riset</h4>
+                <h4>Daftar Berita</h4>
                 <div class="d-flex gap-2 flex-wrap non-printable">
                     <input type="text" id="search-input" class="form-control form-control-sm"
                         placeholder="Cari data..." style="width: auto;">
@@ -38,7 +38,7 @@
             </div>
 
             <p class="text-muted small mb-3">
-                Menampilkan <?= count($proyek) ?> data
+                Menampilkan <?= count($schedules) ?> data
             </p>
 
             <div class="table-responsive">
@@ -47,46 +47,42 @@
                         <tr>
                             <th>No.</th>
                             <th>Judul</th>
-                            <th>Deskripsi</th>
-                            <th>Mitra</th>
-                            <th>Sumber Dana</th>
-                            <th>Tahun Mulai</th>
-                            <th>Tahun selesai</th>
+                            <th>Konten</th>
+                            <th>Kategori</th>
+                            <th>Tanggal</th>
+                            <th>Pembuat</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($proyek)) : ?>
-                            <?php foreach ($proyek as $i => $row) : ?>
+                        <?php if (!empty($schedules)) : ?>
+                            <?php foreach ($schedules as $i => $row) : ?>
                                 <tr>
                                     <td><?= esc($i + 1) ?></td>
                                     <td><?= esc($row['judul']) ?></td>
-                                    <td><?= esc($row['deskripsi']) ?></td>
-                                    <td><?= esc($row['mitra']) ?></td>
-                                    <td><?= esc($row['sumber_dana']) ?></td>
-                                    <td><?= esc($row['tahun_mulai']) ?></td>
-                                    <td><?= esc($row['tahun_selesai']) ?></td>
+                                    <td><?= esc($row['konten']) ?></td>
+                                    <td><?= esc($row['kategori']) ?></td>
+                                    <td><?= esc($row['tanggal']) ?></td>
+                                    <td><?= esc($row['creator']) ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-warning btn-edit"
-                                            data-id="<?= $row['id_proyek'] ?>"
+                                            data-id="<?= $row['id_berita'] ?>"
                                             data-judul="<?= esc($row['judul']) ?>"
-                                            data-deskripsi="<?= esc($row['deskripsi']) ?>"
-                                            data-mitra="<?= esc($row['mitra']) ?>"
-                                            data-sumber="<?= esc($row['sumber_dana']) ?>"
-                                            data-mulai="<?= esc($row['tahun_mulai']) ?>"
-                                            data-selesai="<?= esc($row['tahun_selesai']) ?>"
+                                            data-konten="<?= esc($row['konten']) ?>"
+                                            data-kategori="<?= esc($row['kategori']) ?>"
+                                            data-tanggal="<?= esc($row['tanggal']) ?>"
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             Edit
                                         </button>
-                                        <a href="/proyek-riset/delete/<?= $row['id_proyek'] ?>"
+                                        <a href="/berita/delete/<?= $row['id_berita'] ?>"
                                             class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus data ini?')">Hapus</a>
+                                            onclick="return confirm('Hapus berita ini?')">Hapus</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td>
+                                <td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -99,31 +95,23 @@
 <!-- Modal Tambah -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form action="/proyek-riset/store" method="post" class="modal-content">
+        <form action="/berita/store" method="post" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Proyek Riset</h5>
+                <h5 class="modal-title">Tambah Berita</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3"><label class="form-label">Judul</label>
                     <input type="text" name="judul" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" required></textarea>
+                <div class="mb-3"><label class="form-label">Konten</label>
+                    <textarea name="konten" class="form-control" required></textarea>
                 </div>
-                <div class="mb-3"><label class="form-label">Mitra</label>
-                    <input type="text" name="mitra" class="form-control">
+                <div class="mb-3"><label class="form-label">Kategori</label>
+                    <input type="text" name="kategori" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Sumber Dana</label>
-                    <input type="text" name="sumber_dana" class="form-control">
-                </div>
-                <div class="row">
-                    <div class="col"><label class="form-label">Tahun Mulai</label>
-                        <input type="number" name="tahun_mulai" class="form-control">
-                    </div>
-                    <div class="col"><label class="form-label">Tahun Selesai</label>
-                        <input type="number" name="tahun_selesai" class="form-control">
-                    </div>
+                <div class="mb-3"><label class="form-label">Tanggal</label>
+                    <input type="date" name="tanggal" class="form-control" required>
                 </div>
             </div>
             <div class="modal-footer">
@@ -139,30 +127,22 @@
     <div class="modal-dialog modal-lg">
         <form id="formEdit" method="post" class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Proyek Riset</h5>
+                <h5 class="modal-title">Edit Berita</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" name="id_proyek" id="edit-id">
+                <input type="hidden" name="id_berita" id="edit-id">
                 <div class="mb-3"><label class="form-label">Judul</label>
                     <input type="text" name="judul" id="edit-judul" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" id="edit-deskripsi" class="form-control" required></textarea>
+                <div class="mb-3"><label class="form-label">Konten</label>
+                    <textarea name="konten" id="edit-konten" class="form-control" required></textarea>
                 </div>
-                <div class="mb-3"><label class="form-label">Mitra</label>
-                    <input type="text" name="mitra" id="edit-mitra" class="form-control">
+                <div class="mb-3"><label class="form-label">Kategori</label>
+                    <input type="text" name="kategori" id="edit-kategori" class="form-control" required>
                 </div>
-                <div class="mb-3"><label class="form-label">Sumber Dana</label>
-                    <input type="text" name="sumber_dana" id="edit-sumber" class="form-control">
-                </div>
-                <div class="row">
-                    <div class="col"><label class="form-label">Tahun Mulai</label>
-                        <input type="number" name="tahun_mulai" id="edit-mulai" class="form-control">
-                    </div>
-                    <div class="col"><label class="form-label">Tahun Selesai</label>
-                        <input type="number" name="tahun_selesai" id="edit-selesai" class="form-control">
-                    </div>
+                <div class="mb-3"><label class="form-label">Tanggal</label>
+                    <input type="date" name="tanggal" id="edit-tanggal" class="form-control" required>
                 </div>
             </div>
             <div class="modal-footer">
@@ -190,8 +170,8 @@
         const tbody = document.querySelector('#rekrutmen-table tbody');
         const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
         rows.sort((a, b) => {
-            const aVal = parseInt(a.cells[0].innerText);
-            const bVal = parseInt(b.cells[0].innerText);
+            const aVal = new Date(a.cells[4].innerText);
+            const bVal = new Date(b.cells[4].innerText);
             return this.value === 'newest' ? bVal - aVal : aVal - bVal;
         });
         rows.forEach(r => tbody.appendChild(r));
@@ -212,14 +192,12 @@
     // Isi data ke modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.getElementById('formEdit').action = "/proyek-riset/update/" + this.dataset.id;
+            document.getElementById('formEdit').action = "/berita/update/" + this.dataset.id;
             document.getElementById('edit-id').value = this.dataset.id;
             document.getElementById('edit-judul').value = this.dataset.judul;
-            document.getElementById('edit-deskripsi').value = this.dataset.deskripsi;
-            document.getElementById('edit-mitra').value = this.dataset.mitra;
-            document.getElementById('edit-sumber').value = this.dataset.sumber;
-            document.getElementById('edit-mulai').value = this.dataset.mulai;
-            document.getElementById('edit-selesai').value = this.dataset.selesai;
+            document.getElementById('edit-konten').value = this.dataset.konten;
+            document.getElementById('edit-kategori').value = this.dataset.kategori;
+            document.getElementById('edit-tanggal').value = this.dataset.tanggal;
         });
     });
 </script>
