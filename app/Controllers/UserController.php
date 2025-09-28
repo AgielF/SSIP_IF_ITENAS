@@ -39,25 +39,41 @@ class UserController extends BaseController
      * Menampilkan profil anggota berdasarkan ID
      */
     public function profil($id)
-    {
-        $user = $this->userModel->find($id);
+{
+    $user = $this->userModel->find($id);
 
-        if (!$user) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        }
-
-        $roleMap = [
-            4 => 'dosen',
-            2 => 'asisten',
-            3 => 'praktikan'
-        ];
-        $user['role'] = $roleMap[$user['role_id']] ?? 'tidak diketahui';
-
-        return view('user_profile_view', [
-            'title' => 'Profil Anggota | ' . $user['nama'],
-            'user'  => $user
-        ]);
+    if (!$user) {
+        throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
+
+    $roleMap = [
+        4 => 'dosen',
+        2 => 'asisten',
+        3 => 'praktikan'
+    ];
+    $user['role'] = $roleMap[$user['role_id']] ?? 'tidak diketahui';
+
+    // 🔹 Ambil data publikasi & proyek
+    $publikasiModel = new \App\Models\PublikasiModel();
+    $proyekModel    = new \App\Models\ProyekRisetModel();
+
+    $publicationData = $publikasiModel->where('id_user', $id)->findAll() ?? [];
+    $proyekData      = $proyekModel->where('id_user', $id)->findAll() ?? [];
+
+    // // 🔹 Debug sementara
+    // echo "<pre>";
+    // print_r($publicationData);
+    // echo "</pre>";
+    // exit; // berhenti di sini biar bisa lihat hasil
+
+    return view('user_profile_view', [
+        'title'           => 'Profil Anggota | ' . $user['nama'],
+        'user'            => $user,
+        'publicationData' => $publicationData,
+        'proyekData'      => $proyekData
+    ]);
+}
+
 
     /**
      * Tambah user baru

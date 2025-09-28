@@ -185,14 +185,14 @@
                 <li><a class="dropdown-item" href="#">Peraturan</a></li>
                 <li><a class="dropdown-item" href="#">Kelompok</a></li>
                 <li><a class="dropdown-item" href="/jadwal">Jadwal</a></li>
-                <li><a class="dropdown-item" href="#">Nilai</a></li>
-                <li><a class="dropdown-item" href="#">Modul</a></li>
+                <li><a class="dropdown-item" href="/peserta-praktikum">Nilai</a></li>
+                <li><a class="dropdown-item" href="/modul_praktikum">Modul</a></li>
                 <li><a class="dropdown-item" href="#">Perizinan</a></li>
             </ul>
         </li>
         <!-- === AKHIR STRUKTUR HTML BARU === -->
          <li class="nav-item">
-            <a class="nav-link" href="/agenda"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
+            <a class="nav-link" href="/berita"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/rekrutmen"><i class="fas fa-bullhorn"></i>Rekrutmen</a>

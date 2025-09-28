@@ -147,24 +147,6 @@ class Home extends BaseController
     }
 
 
-    // --- Jadwal & Agenda ---
-    public function jadwal()
-    {
-        $data = ['title' => 'Daftar Jadwal Lab', 'schedules' => $this->getProcessedJadwalData()];
-        return view('jadwal_card_view', $data); 
-    }
-
-    public function jadwal_admin()
-    {
-        $data = ['title' => 'Admin: Kelola Jadwal Lab', 'schedules' => $this->getProcessedJadwalData()];
-        return view('jadwal_admin_view', $data); 
-    }
-
-    public function agenda()
-    {
-        $data = ['title' => 'Agenda & Acara', 'schedules' => $this->getProcessedJadwalData()];
-        return view('acara_list_view', $data);
-    }
 
     //penelitian-proyek
     //publikasi 

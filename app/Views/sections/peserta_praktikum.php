@@ -43,7 +43,8 @@
                         <tr>
                             <th>No.</th>
                             <th>Peserta</th>
-                            <th>Jadwal</th>
+                            <th>Tanggal praktikum</th>
+                            <th>Praktikum </th>
                             <th>Status</th>
                             <th>Nilai</th>
                         </tr>
@@ -55,6 +56,7 @@
                                     <td><?= esc($i + 1) ?></td>
                                     <td><?= esc($row['peserta']) ?></td>
                                     <td><?= esc($row['jadwal_tanggal']) ?></td>
+                                    <td><?=esc($row['nama_event'])?></td>
                                     <td><?= esc($row['status']) ?></td>
                                     <td><?= esc($row['nilai']) ?></td>
                                 </tr>

@@ -26,7 +26,8 @@ class ProyekRisetController extends BaseController
     // 📋 LIST UNTUK ADMIN
     public function getDataAdmin()
     {
-        $semuaProyek = $this->proyekRisetModel->findAll();
+
+        $semuaProyek = $this->proyekRisetModel->getProyekWithUser();
 
         $data = [
             'title'  => 'Admin: Kelola Proyek Riset',
@@ -39,6 +40,15 @@ class ProyekRisetController extends BaseController
     // 🟢 CREATE
     public function create()
     {
+
+
+    $user = session()->get('user'); // ambil data user dari session
+    $userId = $user['id'] ?? null;  // kalau belum login, null
+
+    if (!$userId) {
+        return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
+    }
+
         $data = [
             'judul'         => $this->request->getPost('judul'),
             'deskripsi'     => $this->request->getPost('deskripsi'),
@@ -46,7 +56,7 @@ class ProyekRisetController extends BaseController
             'sumber_dana'   => $this->request->getPost('sumber_dana'),
             'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user'       => 1, // default admin
+            'id_user'       => $userId, // default admin
             'created_at'    => date('Y-m-d H:i:s')
         ];
 
@@ -59,6 +69,12 @@ class ProyekRisetController extends BaseController
     // 🟡 UPDATE
     public function update($id)
     {
+        $user = session()->get('user');
+        $userId = $user['id'] ?? null;
+
+         if (!$userId) {
+        return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
+         }
         $data = [
             'judul'         => $this->request->getPost('judul'),
             'deskripsi'     => $this->request->getPost('deskripsi'),
@@ -66,7 +82,7 @@ class ProyekRisetController extends BaseController
             'sumber_dana'   => $this->request->getPost('sumber_dana'),
             'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user'       => 1,
+            'id_user'       => $userId,
             'updated_at'    => date('Y-m-d H:i:s')
         ];
 

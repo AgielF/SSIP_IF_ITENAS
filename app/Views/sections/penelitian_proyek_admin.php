@@ -47,6 +47,7 @@
                         <tr>
                             <th>No.</th>
                             <th>Judul</th>
+                            <th>Admin</th>
                             <th>Deskripsi</th>
                             <th>Mitra</th>
                             <th>Sumber Dana</th>
@@ -61,6 +62,7 @@
                                 <tr>
                                     <td><?= esc($i + 1) ?></td>
                                     <td><?= esc($row['judul']) ?></td>
+                                    <td><?=esc($row['pembuat'])?></td>
                                     <td><?= esc($row['deskripsi']) ?></td>
                                     <td><?= esc($row['mitra']) ?></td>
                                     <td><?= esc($row['sumber_dana']) ?></td>

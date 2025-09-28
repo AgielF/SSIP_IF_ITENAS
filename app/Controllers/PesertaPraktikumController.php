@@ -27,9 +27,10 @@ class PesertaPraktikumController extends BaseController
         $status = $this->request->getVar('status');
 
         $builder = $this->pesertaPraktikumModel
-    ->select('peserta_praktikum.id as id_peserta_praktikum, peserta_praktikum.*, users.nama as peserta, jadwal.tanggal as jadwal_tanggal')
+    ->select('peserta_praktikum.id as id_peserta_praktikum, peserta_praktikum.*, users.nama as peserta, jadwal.tanggal as jadwal_tanggal, events.nama_event as nama_event')
     ->join('users', 'users.id = peserta_praktikum.id_user')
-    ->join('jadwal', 'jadwal.id_jadwal = peserta_praktikum.id_jadwal');
+    ->join('jadwal', 'jadwal.id_jadwal = peserta_praktikum.id_jadwal')
+    ->join('events', 'events.id_event = jadwal.id_event');  // 🔹 Join tambahan
 
 
         if ($search) {

@@ -25,6 +25,10 @@ class UserModel extends Model
     {
         return $this->where('role_id', 3)->findAll();
     }
+    
+    public function admin(){
+        return $this->where('role_id',1)->findAll();
+    }
 
     // FUNGSI YANG DIINTEGRASIKAN DAN DIPERBAIKI
     /**
@@ -37,6 +41,7 @@ class UserModel extends Model
         $asisten = $this->getAsistenLab();
         $dosen = $this->getDosenLab();
         $praktikan = $this->praktikan();
+        
         
         $allPersonnel = [];
         foreach ($dosen as $d) {

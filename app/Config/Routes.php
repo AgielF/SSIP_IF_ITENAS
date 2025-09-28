@@ -36,9 +36,6 @@ $routes->get('/penelitian/(:segment)', 'TopicController::detail/$1');
 
 $routes->get('/asisten/(:num)', 'UserController::profil/$1');
 
-
-
-
 // routes API Content
 $routes->get('/api/visi-misi', 'Api\Content::visiMisi');
 $routes->get('/api/proyek-riset', 'Api\Content::proyekRiset');
@@ -78,11 +75,19 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/galeri_admin', 'GaleriUmumController::admin');
     $routes->get('/repositori_admin','Home::repositori_admin');
     $routes->get('/rekrutmen_admin','RekrutController::admin');
-    $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
+    // $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
     $routes->get('/berita_admin','beritaController::admin');
     $routes->get('/peserta-praktikum_admin','PesertaPraktikumController::admin');
     
 });
+
+// Admin (1) dan Asisten (2)
+$routes->group('', ['filter' => 'role:1,2'], function($routes) {
+    $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
+});
+
+
+
 
 // CRUD action (POST) – tidak perlu filter admin kalau sudah dicek di controller
 $routes->post('/rekrutmen/store', 'RekrutController::store');

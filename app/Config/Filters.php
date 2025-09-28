@@ -35,6 +35,7 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
          'admin'    => \App\Filters\AdminFilter::class, // <-- tambahkan ini
+          'role'  => \App\Filters\RoleFilter::class, // filter baru
     ];
 
     /**

@@ -45,7 +45,11 @@
                                  alt="Foto <?= esc($a['nama']) ?>">
                         </div>
                         <div class="card-body text-center">
-                            <h5 class="card-title mb-1"><?= esc($a['nama']) ?></h5>
+                            <h5 class="card-title mb-1">
+                                <a href="<?= base_url('asisten/' . $a['id']) ?>" class="text-decoration-none text-dark">
+                                    <?= esc($a['nama']) ?>
+                                </a>
+                            </h5>
                             <p class="card-text text-muted small mb-2">
                                 <?= esc($a['jurusan'] ?? 'Jurusan tidak tersedia') ?>
                             </p>

@@ -17,23 +17,29 @@ class ProyekRisetModel extends Model
      *
      * @return array Data yang sudah diformat.
      */
+    protected $returnType = 'array'; // 🔹 tambahkan ini
     public function getProyekDataFormattedForView()
     {
         // 1. Ambil semua data dari database menggunakan instance model ini ($this)
-        $semuaProyek = $this->findAll();
+         $semuaProyek = $this->select('proyek_riset.*, users.nama as pembuat')
+                        ->join('users', 'users.id = proyek_riset.id_user', 'left')
+                        ->findAll();
+
 
         // 2. Siapkan header tabel dan array untuk baris data
-        $headers = ['Judul', 'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai'];
+        $headers = ['Judul','Pembuat', 'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai'];
         $rows = [];
 
         foreach ($semuaProyek as $proyek) {
             $rows[] = [
                 $proyek['judul'],
+                $proyek['pembuat'],
                 $proyek['deskripsi'],
                 $proyek['mitra'],
                 $proyek['sumber_dana'],
                 $proyek['tahun_mulai'],
                 $proyek['tahun_selesai']
+                
             ];
         }
 
@@ -45,4 +51,13 @@ class ProyekRisetModel extends Model
             ]
         ];
     }
+     // 🔹 Ambil semua proyek riset + nama pembuat
+    public function getProyekWithUser()
+    {
+        return $this->select('proyek_riset.*, users.nama as pembuat')
+                    ->join('users', 'users.id = proyek_riset.id_user', 'left')
+                    ->findAll();
+    }
+
+
 }

@@ -28,13 +28,17 @@ class PublikasiModel extends Model
 
     public function getPublikasiDataFormatedView()
     {
-        $semuaProyek = $this->findAll();
+        // Join ke tabel users supaya bisa ambil nama penulis utama
+    $semuaProyek = $this->select('publikasi.*, users.nama as penulis_utama')
+                        ->join('users', 'users.id = publikasi.id_user', 'left')
+                        ->findAll();
 
         $processedData = [
             'jurnal' => [
                 'headers' => [
                     'Kategori',
                     'Tanggal Publikasi',
+                    'Penulis Utama',
                     'Penulis Pendamping',
                     'Volume',
                     'Tahun',
@@ -51,6 +55,7 @@ class PublikasiModel extends Model
                 'headers' => [
                     'Kategori',
                     'Tanggal Publikasi',
+                     'Penulis Utama',
                     'Penulis Pendamping',
                     'Volume',
                     'Tahun',
@@ -67,6 +72,7 @@ class PublikasiModel extends Model
                 'headers' => [
                     'Kategori',
                     'Tanggal Publikasi',
+                     'Penulis Utama',
                     'Penulis Pendamping',
                     'Volume',
                     'Tahun',
@@ -89,6 +95,7 @@ class PublikasiModel extends Model
             $row = [
                 $pub['kategori'],
                 $pub['tanggal_publikasi'],
+                $pub['penulis_utama'],
                 $pub['penulis_pendamping'],
                 $pub['volume'],
                 $pub['tahun'],
