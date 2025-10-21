@@ -55,4 +55,19 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = service('session');
     }
+    protected function getUserIdOrRedirect()
+    {
+        $user = session()->get('user');
+        $userId = $user['id'] ?? null;
+
+        if (!$userId) {
+            // kalau belum login, langsung redirect ke login
+            redirect()->to('/login')
+                ->with('error', 'Silakan login terlebih dahulu.')
+                ->send();
+            exit; // pastikan proses stop di sini
+        }
+
+        return $userId;
+    }
 }

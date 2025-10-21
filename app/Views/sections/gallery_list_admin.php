@@ -47,11 +47,13 @@
                         <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
                         
                         <div class="d-flex align-items-center">
-                            <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
-                            <select class="form-select form-select-sm" id="sort-filter">
-                                <option value="newest">Terbaru</option>
-                                <option value="oldest">Terlama</option>
-                            </select>
+                            <label for="sort-filter">Urutkan:</label>
+<select id="sort-filter" class="form-select form-select-sm"
+        onchange="location.href='?sort=' + this.value">
+    <option value="DESC" <?= ($sort === 'DESC') ? 'selected' : '' ?>>Terbaru</option>
+    <option value="ASC" <?= ($sort === 'ASC') ? 'selected' : '' ?>>Terlama</option>
+</select>
+
                         </div>
                         <div class="d-flex align-items-center">
                             <label for="items-per-page-filter" class="form-label me-2 mb-0 small text-nowrap">Tampilkan:</label>
@@ -77,6 +79,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
+                                <th>admin penyunting</th>
                                 <th>Kategori</th>
                                 <th>Keterangan</th>
                                 <th>File</th>
@@ -94,6 +97,7 @@
                 <td><?= esc($row[2]) ?></td> <!-- Keterangan -->
                 <td><?= esc($row[3]) ?></td> <!-- File -->
                 <td><?= esc($row[4]) ?></td> <!-- Tanggal -->
+                <td><?= esc($row[5]) ?></td> <!-- Tanggal -->
                 <td class="non-printable">
                     <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"
                             data-id="<?= $row[0] ?>"

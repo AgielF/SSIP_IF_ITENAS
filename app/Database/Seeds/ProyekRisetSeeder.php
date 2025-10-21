@@ -38,7 +38,7 @@ class ProyekRisetSeeder extends Seeder
                 'sumber_dana' => 'DIKTI',
                 'tahun_mulai' => 2024,
                 'tahun_selesai' => 2027,
-                'id_user' => 3,
+                'id_user' => 4,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ],

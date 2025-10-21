@@ -40,14 +40,7 @@ class ProyekRisetController extends BaseController
     // 🟢 CREATE
     public function create()
     {
-
-
-    $user = session()->get('user'); // ambil data user dari session
-    $userId = $user['id'] ?? null;  // kalau belum login, null
-
-    if (!$userId) {
-        return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
-    }
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
 
         $data = [
             'judul'         => $this->request->getPost('judul'),
@@ -69,12 +62,8 @@ class ProyekRisetController extends BaseController
     // 🟡 UPDATE
     public function update($id)
     {
-        $user = session()->get('user');
-        $userId = $user['id'] ?? null;
+         $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
 
-         if (!$userId) {
-        return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
-         }
         $data = [
             'judul'         => $this->request->getPost('judul'),
             'deskripsi'     => $this->request->getPost('deskripsi'),

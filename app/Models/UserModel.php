@@ -59,4 +59,20 @@ class UserModel extends Model
         
         return $allPersonnel;
     }
+     protected function hashPassword(array $data){
+
+        if (isset($data['data']['password'])) {
+            $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
+        }
+        
+        return $data;
+    }
+
+    public function verifyPassword(string $password, string $hash): bool
+        {
+            return password_verify($password, $hash);
+        }
+
+    protected $beforeInsert = ['hashPassword'];
+    protected $beforeUpdate = ['hashPassword'];
 }

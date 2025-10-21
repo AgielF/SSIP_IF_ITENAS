@@ -1,3 +1,22 @@
+<?php
+$user = session('user');
+
+// Contoh mapping role_id ke nama role
+$roles = [
+    1 => 'Admin',
+    2 => 'Asisten',
+    3 => 'Mahasiswa'
+];
+
+// Ambil nama role dari mapping
+$roleName = $user && isset($roles[$user['role_id']]) ? $roles[$user['role_id']] : 'Tidak diketahui';
+
+// Cek apakah user admin
+$isAdmin = ($roleName === 'Admin');
+
+?>
+
+
 <!doctype html>
 <html lang="id">
 <head>
@@ -6,9 +25,6 @@
     <title><?= $title ?? 'Lab. SSIP' ?></title>
     
 
-
-    
-    
     <!-- Bootstrap CSS -->
     <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
     <!-- Font Awesome untuk Ikon -->
@@ -161,7 +177,6 @@
     </style>
 </head>
 <body>
-
 <!-- Sidebar Navigation (Hidden by default) -->
 <aside class="sidebar">
     <div class="sidebar-header">
@@ -191,20 +206,42 @@
             </ul>
         </li>
         <!-- === AKHIR STRUKTUR HTML BARU === -->
-         <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" href="/berita"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/rekrutmen"><i class="fas fa-bullhorn"></i>Rekrutmen</a>
         </li>
-         <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" href="/galeri"><i class="fa-solid fa-images"></i>Galeri</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/repositori"><i class="fa-solid fa-file-export"></i>Repo Project</a>
         </li>
+
+        <!-- === MENU KHUSUS ADMIN === -->
+        <?php if ($isAdmin): ?>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user-shield"></i> Admin
+            </a>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/asisten_admin">Kelola Users</a></li>
+                <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
+                <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
+                <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
+                <li><a class="dropdown-item" href="/penelitan-proyek_admin">Kelola Penelitian Proyek</a></li>
+                <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
+                <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
+                <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
+                 <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
+            </ul>
+        </li>
+        <?php endif; ?>
     </ul>
 </aside>
+
+
 
 <!-- Overlay for when sidebar is open -->
 <div class="overlay"></div>
@@ -222,11 +259,21 @@
             <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
         </li>
         <li class="nav-item">
+          <li class="nav-item">
+            <a class="nav-link" href="/profile"><i class="fas fa-user"></i>Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/login"><i class="fas fa-address-book me-1"></i>Login</a>
+      </li>
             <a class="nav-link" href="/asisten"><i class="fas fa-users me-1"></i>Anggota</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="#"><i class="fas fa-address-book me-1"></i>Contact</a>
         </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/organisasi"><i class="fas fa-address-book me-1"></i>Struktur Organisasi</a>
+        </li>
+
     </ul>
 </header>
 

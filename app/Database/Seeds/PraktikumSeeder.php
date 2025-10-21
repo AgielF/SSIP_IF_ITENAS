@@ -18,7 +18,7 @@ class PraktikumSeeder extends Seeder
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'id_user' => 3,
+                'id_user' => 3, // dosen
                 'id_jadwal' => 2,
                 'galeri_prak' => null,
                 'desc_aturan' => 'Praktikum Struktur Data - Wajib mengumpulkan laporan dalam format PDF',
@@ -27,6 +27,14 @@ class PraktikumSeeder extends Seeder
             ],
             [
                 'id_user' => 4,
+                'id_jadwal' => 2,
+                'galeri_prak' => null,
+                'desc_aturan' => 'Praktikum Struktur Data - Wajib mengumpulkan laporan dalam format PDF',
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'id_user' => 5,
                 'id_jadwal' => 3,
                 'galeri_prak' => null,
                 'desc_aturan' => 'Praktikum Basis Data - Menggunakan MySQL dan phpMyAdmin',

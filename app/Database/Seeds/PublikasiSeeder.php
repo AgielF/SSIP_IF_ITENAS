@@ -468,8 +468,13 @@ class PublikasiSeeder extends Seeder
             ],
         ];
 
+        // Valid user IDs: 1, 2, 4, 5
+        $validUserIds = [1, 2, 4, 5];
+
         // Check if publikasi already exist
-        foreach ($data as $publikasi) {
+        foreach ($data as $key => $publikasi) {
+            // Ensure id_user is valid
+            $publikasi['id_user'] = $validUserIds[$key % count($validUserIds)];
             $existing = $this->db->table('publikasi')->where('link_publikasi', $publikasi['link_publikasi'])->get()->getRow();
             if (!$existing) {
                 $this->db->table('publikasi')->insert($publikasi);

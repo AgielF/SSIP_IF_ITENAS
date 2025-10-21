@@ -34,6 +34,11 @@ class CreateRekrut extends Migration
             'syarat' => [
                 'type' => 'TEXT',
             ],
+            'link_gform' => [
+                'type' => 'VARCHAR',
+                'constraint' => 500,
+                'null' => true,
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

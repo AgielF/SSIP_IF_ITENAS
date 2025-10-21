@@ -64,7 +64,7 @@
                         </div>
                         <div class="card-footer bg-white border-0 pb-3">
                             <?php if($item['status'] === 'dibuka'): ?>
-                                <a href="#" class="btn btn-primary w-100">Daftar Sekarang (GForm)</a>
+                                <a href="<?= esc($item['link_gform']) ?>" class="btn btn-primary w-100">Daftar Sekarang (GForm)</a>
                             <?php else: ?>
                                 <a href="#" class="btn btn-outline-secondary w-100 disabled">Pendaftaran Ditutup</a>
                             <?php endif; ?>

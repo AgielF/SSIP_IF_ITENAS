@@ -30,91 +30,11 @@ class UsersSeeder extends Seeder
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
             [
-                'nomor' => '152022003',
-                'nama' => 'Ahmad Rizki',
-                'no_telp' => '08345678901',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022004',
-                'nama' => 'Siti Nurhaliza',
-                'no_telp' => '08456789012',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022005',
-                'nama' => 'Budi Santoso',
-                'no_telp' => '08567890123',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022006',
-                'nama' => 'Dewi Sartika',
-                'no_telp' => '08678901234',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022007',
-                'nama' => 'Rizki Pratama',
-                'no_telp' => '08789012345',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022008',
-                'nama' => 'Nina Safitri',
-                'no_telp' => '08890123456',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022009',
-                'nama' => 'Muhammad Fadli',
-                'no_telp' => '08901234567',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022010',
-                'nama' => 'Anisa Putri',
-                'no_telp' => '08912345678',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // mahasiswa
-                'password' => 'mahasiswa123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
                 'nomor' => 'D001',
                 'nama' => 'Dr. Sarah Wijaya',
                 'no_telp' => '08111222333',
                 'jurusan' => 'Informatika',
-                'role_id' => 4, // dosen
+                'role_id' => 3, // dosen
                 'password' => 'dosen123', // Delete kalau kebutuhan yang harus password unique
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
@@ -124,8 +44,18 @@ class UsersSeeder extends Seeder
                 'nama' => 'Prof. Bambang Sutrisno',
                 'no_telp' => '08222333444',
                 'jurusan' => 'Informatika',
-                'role_id' => 4, // dosen
+                'role_id' => 3, // dosen
                 'password' => 'dosen123', // Delete kalau kebutuhan yang harus password unique
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'nomor' => '152022005',
+                'nama' => 'Ahmad Fauzi',
+                'no_telp' => '08555666777',
+                'jurusan' => 'Informatika',
+                'role_id' => 2, // asisten
+                'password' => 'asisten123',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
             ],
@@ -135,14 +65,42 @@ class UsersSeeder extends Seeder
         foreach ($data as $user) {
             $existing = $this->db->table('users')->where('nomor', $user['nomor'])->get()->getRow();
             if ($existing) {
-                // Update password
-                $this->db->table('users')->where('nomor', $user['nomor'])->update([
-                    'password' => $user['password'],
+                // Update data kecuali password (jangan timpa password yang sudah di-hash)
+                $updateData = [
+                    'nama' => $user['nama'],
+                    'no_telp' => $user['no_telp'],
+                    'jurusan' => $user['jurusan'],
+                    'role_id' => $user['role_id'],
                     'updated_at' => date('Y-m-d H:i:s')
-                ]);
+                ];
+                $this->db->table('users')->where('nomor', $user['nomor'])->update($updateData);
             } else {
-                // Add user baru
+                // Add user baru - pastikan password di-hash
+                $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
                 $this->db->table('users')->insert($user);
+            }
+        }
+
+        // Pastikan semua password ter-hash setelah seeding
+        $this->ensureAllPasswordsHashed();
+    }
+
+    /**
+     * Pastikan semua password di database sudah ter-hash
+     */
+    private function ensureAllPasswordsHashed()
+    {
+        $users = $this->db->table('users')->get()->getResultArray();
+
+        foreach ($users as $user) {
+            $passwordInfo = password_get_info($user['password']);
+
+            // Jika password belum di-hash, hash sekarang
+            if ($passwordInfo['algo'] === 0) {
+                $hashed = password_hash($user['password'], PASSWORD_DEFAULT);
+                $this->db->table('users')
+                         ->where('id', $user['id'])
+                         ->update(['password' => $hashed]);
             }
         }
     }

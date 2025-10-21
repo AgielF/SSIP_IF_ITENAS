@@ -34,14 +34,54 @@ class Auth extends ResourceController
     /**
      * Login endpoint
      */
+//     public function login()
+// {
+//     $nomor = $this->request->getPost('nomor');
+//     $password = $this->request->getPost('password');
+
+//     log_message('debug', "Login attempt - Nomor: {$nomor}"); // debug only
+
+//     $user = $this->userModel->where('nomor', $nomor)->first();
+
+//     if (!$user) {
+//         log_message('debug', "User not found for nomor: {$nomor}");
+//         return redirect()->back()->with('error', 'User tidak ditemukan');
+//     }
+
+//     // Debug info (remove in production)
+//     log_message('debug', "DB hash for user {$user['nomor']}: " . substr($user['password'],0,60));
+//     log_message('debug', "password_get_info: " . json_encode(password_get_info($user['password'])));
+
+//     $ok = password_verify($password, $user['password']);
+//     log_message('debug', "password_verify result: " . ($ok ? "OK" : "FAILED"));
+
+//     if (!$ok) {
+//         return redirect()->back()->with('error', 'Password salah');
+//     }
+
+//     // jika ok -> buat token & session seperti sebelumnya
+//     // ...
+// }
+
+
+
     public function login()
 {
     try {
-        $nomor    = $this->request->getPost('nomor');
-        $password = $this->request->getPost('password');
+
+
+        $nomor    = trim($this->request->getPost('nomor'));
+        $password = trim($this->request->getPost('password'));
+
+          // 🧾 Tambahkan log di sini
+        log_message('debug', 'Nomor dikirim UI: ['.$nomor.'] length='.strlen($nomor));
+        log_message('debug', 'Password dikirim UI: ['.$password.'] length='.strlen($password));
+        log_message('debug', 'HEX Password: '.bin2hex($password));
+        
 
         if (!$nomor || !$password) {
-            return redirect()->back()->with('error', 'Nomor dan password harus diisi');
+            return redirect()->back()->with('error', 'Nomor dan password 
+            harus diisi');
         }
 
         $user = $this->userModel->where('nomor', $nomor)->first();
@@ -50,7 +90,7 @@ class Auth extends ResourceController
             return redirect()->back()->with('error', 'User tidak ditemukan');
         }
 
-        if ($user['password'] !== $password) {
+        if (!$this->userModel->verifyPassword($password, $user['password'])) {
             return redirect()->back()->with('error', 'Password salah');
         }
 
@@ -79,7 +119,7 @@ class Auth extends ResourceController
         if ($user['role_id'] == 1) {
             return redirect()->to('/asisten_admin');
         } else {
-            return redirect()->to('/dashboard');
+            return redirect()->to('/profile');
         }
 
     } catch (\Throwable $e) {
@@ -100,44 +140,29 @@ class Auth extends ResourceController
      */
    use ResponseTrait;
 
-    public function profile()
-    {
-        $authHeader = $this->request->getHeaderLine('Authorization');
+  public function profile()
+{
+    // Ambil data user dari session
+    $user = session()->get('user');
 
-        if (!$authHeader) {
-            return $this->respond([
-                'status' => 'error',
-                'message' => 'Authorization header missing'
-            ], 401);
-        }
-
-        if (!preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
-            return $this->respond([
-                'status' => 'error',
-                'message' => 'Invalid Authorization header format'
-            ], 401);
-        }
-
-        $jwt = $matches[1];
-
-        try {
-            $key = getenv('JWT_SECRET') ?: 'your-secret-key';
-            $decoded = JWT::decode($jwt, new Key($key, 'HS256'));
-
-            return $this->respond([
-                'status' => 'success',
-                'user' => [
-                    'id' => $decoded->uid,
-                    'nomor' => $decoded->nomor,
-                    'nama' => $decoded->nama,
-                    'role_id' => $decoded->role_id,
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return $this->respond([
-                'status' => 'error',
-                'message' => 'Token invalid: ' . $e->getMessage()
-            ], 401);
-        }
+    if (!$user) {
+        // Jika belum login, redirect ke login
+        return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
     }
+
+    // Mapping role
+    $roles = [
+        1 => 'Admin',
+        2 => 'Asisten',
+        3 => 'Mahasiswa',
+        4 => 'Dosen',
+    ];
+
+    // Pastikan array user aman
+    $user['role'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
+
+    return view('auth/profile', ['user' => $user]);
+}
+
+
 }

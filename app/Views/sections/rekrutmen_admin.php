@@ -46,10 +46,12 @@
 
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
-                        <select id="sort-filter" class="form-select form-select-sm">
-                            <option value="desc">Terbaru</option>
-                            <option value="asc">Terlama</option>
-                        </select>
+                        <select id="sort-filter" class="form-select form-select-sm"
+        onchange="window.location='?sort='+this.value">
+    <option value="desc" <?= $sort == 'desc' ? 'selected' : '' ?>>Terbaru</option>
+    <option value="asc"  <?= $sort == 'asc' ? 'selected' : '' ?>>Terlama</option>
+</select>
+
                         <select id="items-per-page-filter" class="form-select form-select-sm">
                             <option value="5">5</option>
                             <option value="10" selected>10</option>
@@ -69,6 +71,7 @@
                         <thead>
                             <tr>
                                 <th>ID rekrut</th>
+                                <th>Admin penyunting</th>
                                 <th>Deskripsi</th>
                                 <th>Status</th>
                                 <th>Syarat</th>
@@ -82,8 +85,9 @@
                    <tbody id="rekrutmen-table-body">
     <?php if (!empty($rekrutmen['rows'])) : ?>
         <?php foreach ($rekrutmen['rows'] as $row) : ?>
-            <tr data-id="<?= esc($row['id_rekrut']) ?>">
+              <tr data-id="<?= $row['id_rekrut'] ?>" data-created="<?= $row['created_at'] ? strtotime($row['created_at']) : 0 ?>">
                 <td><?= esc($row['id_rekrut']) ?></td>
+                <td><?= esc($row['pembuat']) ?></td>
                 <td><?= esc($row['deskripsi']) ?></td>
                 <td><?= esc($row['status']) ?></td>
                 <td><?= esc($row['syarat']) ?></td>
@@ -259,21 +263,23 @@ document.addEventListener("DOMContentLoaded", function () {
         let rows = getRows();
         let term = searchInput.value.toLowerCase();
 
-        // Filter hanya kolom isi, bukan tombol
+        // 🔎 Filter data
         let filtered = rows.filter(row => {
             let cells = row.querySelectorAll("td");
             let teks = Array.from(cells).slice(1, 5).map(td => td.innerText.toLowerCase()).join(" ");
             return teks.includes(term);
         });
 
-        // Sort berdasarkan id_rekrut
-        filtered.sort((a, b) => {
-            let idA = parseInt(a.dataset.id);
-            let idB = parseInt(b.dataset.id);
-            return sortFilter.value === "asc" ? idA - idB : idB - idA;
-        });
+        // ↕️ Sort berdasarkan created_at (lebih akurat daripada ID)
+        // ↕️ Sort berdasarkan created_at
+filtered.sort((a, b) => {
+    let tA = Number(a.dataset.created) || 0;
+    let tB = Number(b.dataset.created) || 0;
+    return sortFilter.value === "asc" ? tA - tB : tB - tA;
+});
 
-        // Pagination
+
+        // 📄 Pagination
         let perPage = itemsPerPageFilter.value === "all" ? filtered.length : parseInt(itemsPerPageFilter.value);
         let totalRows = filtered.length;
         let totalPages = Math.max(1, Math.ceil(totalRows / perPage));
@@ -288,7 +294,7 @@ document.addEventListener("DOMContentLoaded", function () {
             row.style.display = (idx >= start && idx < end) ? "" : "none";
         });
 
-        // Info jumlah data
+        // ℹ️ Info jumlah data
         recordInfo.textContent = totalRows > 0
             ? `Menampilkan ${start + 1}–${end} dari ${totalRows} data`
             : "Tidak ada data ditemukan";
@@ -313,5 +319,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     renderTable();
+});
+document.getElementById('export-pdf-btn').addEventListener('click', function() {
+    window.print();
 });
 </script>

@@ -22,45 +22,45 @@ class PublikasiController extends BaseController
     public function getDataAdmin()
 {
     $search   = $this->request->getVar('search');
-    $kategori = $this->request->getVar('kategori');
-    $sort     = $this->request->getVar('sort') ?? 'newest';
-    $limit    = $this->request->getVar('limit') ?? 10;
+        $kategori = $this->request->getVar('kategori');
+        $sort     = $this->request->getVar('sort') ?? 'newest';
+        $limit    = $this->request->getVar('limit') ?? 10;
 
-    $builder = $this->publikasiModel;
+        // ✅ Panggil function join dari model
+        $builder = $this->publikasiModel->getDataWithUser();
 
-    if ($search) {
-        $builder->groupStart()
-            ->like('kategori', $search)
-            ->orLike('penulis_pendamping', $search)
-            ->orLike('deskripsi', $search)
-            ->groupEnd();
-    }
+        if ($search) {
+            $builder->groupStart()
+                ->like('publikasi.kategori', $search)
+                ->orLike('publikasi.penulis_pendamping', $search)
+                ->orLike('publikasi.deskripsi', $search)
+                ->orLike('users.nama', $search)
+                ->groupEnd();
+        }
 
-    if ($kategori) {
-        $builder->where('jenis_publikasi', $kategori);
-    }
+        if ($kategori) {
+            $builder->where('publikasi.jenis_publikasi', $kategori);
+        }
 
-    if ($sort === 'newest') {
-        $builder->orderBy('tanggal_publikasi', 'DESC');
-    } else {
-        $builder->orderBy('tanggal_publikasi', 'ASC');
-    }
+        $builder->orderBy('publikasi.tanggal_publikasi', $sort === 'newest' ? 'DESC' : 'ASC');
 
-    $data = [
-        'publicationData' => $builder->paginate($limit),
-        'pager'           => $this->publikasiModel->pager,
-        'search'          => $search,
-        'kategori'        => $kategori,
-        'sort'            => $sort,
-        'limit'           => $limit,
-    ];
+        $data = [
+            'publicationData' => $builder->paginate($limit),
+            'pager'           => $this->publikasiModel->pager,
+            'search'          => $search,
+            'kategori'        => $kategori,
+            'sort'            => $sort,
+            'limit'           => $limit,
+        ];
 
-    return view('publikasi_ilmiah_admin_list_view', $data);
+        return view('publikasi_ilmiah_admin_list_view', $data);
 }
 
 
     public function store()
     {
+         $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+
         $data = [
             'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
             'link_publikasi'    => $this->request->getPost('link_publikasi'),
@@ -74,7 +74,7 @@ class PublikasiController extends BaseController
             'link_gdrive'       => $this->request->getPost('link_gdrive'),
             'conference'        => $this->request->getPost('conference'),
             'deskripsi'         => $this->request->getPost('deskripsi'),
-            'id_user'           => 1, // Default admin
+            'id_user'           => $userId, // Default admin
             'created_at'        => date('Y-m-d H:i:s'),
             'updated_at'        => date('Y-m-d H:i:s')
         ];
@@ -85,6 +85,8 @@ class PublikasiController extends BaseController
 
     public function update($id_publikasi)
 {
+     $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+
     $data = [
         'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
         'link_publikasi'    => $this->request->getPost('link_publikasi'),
@@ -98,7 +100,7 @@ class PublikasiController extends BaseController
         'link_gdrive'       => $this->request->getPost('link_gdrive'),
         'conference'        => $this->request->getPost('conference'),
         'deskripsi'         => $this->request->getPost('deskripsi'),
-        'id_user'           => 1,
+        'id_user'           => $userId,
         'updated_at'        => date('Y-m-d H:i:s')
     ];
 

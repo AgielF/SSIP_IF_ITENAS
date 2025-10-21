@@ -37,6 +37,6 @@ class CreateContentViMi extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('visi_misi');
+        $this->forge->dropTable('content_visi_misi');
     }
 } 

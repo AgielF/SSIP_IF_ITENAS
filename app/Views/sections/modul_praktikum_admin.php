@@ -114,8 +114,16 @@
                 <div class="mb-3"><label class="form-label">File URL</label>
                     <input type="text" name="file_url" class="form-control">
                 </div>
-                <div class="mb-3"><label class="form-label">ID Jadwal</label>
-                    <input type="number" name="id_jadwal" class="form-control" required>
+                <div class="mb-3">
+                    <label class="form-label"> ID Jadwal</label>
+                    <select name="id_jadwal" class="form-select" required>
+                        <option value="">-- Pilih Jadwal --</option>
+                        <?php foreach ($jadwalList as $jadwal): ?>
+                            <option value="<?= $jadwal['id_jadwal'] ?>">
+                                <?= isset($jadwal['waktu_mulai']) ? '(' . $jadwal['waktu_mulai'] . ' - ' . $jadwal['waktu_selesai'] . ')' : '' ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">
@@ -145,8 +153,17 @@
                 <div class="mb-3"><label class="form-label">File URL</label>
                     <input type="text" name="file_url" id="edit-file" class="form-control">
                 </div>
-                <div class="mb-3"><label class="form-label">ID Jadwal</label>
-                    <input type="number" name="id_jadwal" id="edit-jadwal" class="form-control">
+                
+                <div class="mb-3">
+                    <label class="form-label">Jadwal</label>
+                    <select name="id_jadwal" id="edit-jadwal" class="form-select" required>
+                        <option value="">-- Pilih Jadwal --</option>
+                        <?php foreach ($jadwalList as $jadwal): ?>
+                            <option value="<?= $jadwal['id_jadwal'] ?>">
+                                <?= isset($jadwal['waktu_mulai']) ? '(' . $jadwal['waktu_mulai'] . ' - ' . $jadwal['waktu_selesai'] . ')' : '' ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
             <div class="modal-footer">

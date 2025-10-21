@@ -129,6 +129,7 @@ foreach ($publicationData as $row) {
                                 <th>ID</th>
                                 <th>Jenis</th>
                                 <th>Kategori</th>
+                                <th>Penulis Utama</th>
                                 <th>Tanggal</th>
                                 <th>Penulis</th>
                                 <th>Deskripsi</th>
@@ -136,6 +137,8 @@ foreach ($publicationData as $row) {
                                 <th class="action-buttons">Aksi</th>
                             </tr>
                         </thead>
+
+                        
                         <tbody>
                             <?php if (empty($groupedData[$kategori ?: 'jurnal'])): ?>
                                 <tr>
@@ -148,6 +151,7 @@ foreach ($publicationData as $row) {
                                         <td><?=esc($row['id_publikasi'])?></td>
                                         <td><?= esc($row['jenis_publikasi']) ?></td>
                                         <td><?= esc($row['kategori']) ?></td>
+                                         <td><?= esc($row['penulis_utama'] ?? '-') ?></td> <!-- ✅ hasil join -->
                                         <td><?= esc($row['tanggal_publikasi']) ?></td>
                                         <td><?= esc($row['penulis_pendamping']) ?></td>
                                         <td><?= esc($row['deskripsi']) ?></td>
@@ -163,10 +167,16 @@ foreach ($publicationData as $row) {
                                             <?php endif; ?>
                                         </td>
                                         <td class="action-buttons">
-                                            <button class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id_publikasi'] ?>">Edit</button>
-                                            <a href="<?= site_url('publikasi-ilmiah/delete/'.$row['id_publikasi']) ?>" 
-                                               onclick="return confirm('Yakin ingin menghapus?')" 
-                                               class="btn btn-sm btn-danger">Hapus</a>
+                                            <button class="btn btn-sm btn-outline-secondary btn-edit" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id_publikasi'] ?>"> <i class="fas fa-pencil-alt"></i></button>
+                                            <form action="<?= site_url('publikasi-ilmiah/delete/'.$row['id_publikasi']) ?>" 
+                                                method="get" 
+                                                class="d-inline delete-form"
+                                                onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
 

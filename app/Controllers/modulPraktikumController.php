@@ -3,14 +3,18 @@
 namespace App\Controllers;
 
 use App\Models\ModulPraktikumModel;
+use App\Models\JadwalModel;
 
 class modulPraktikumController extends BaseController
 {
     protected $modulPraktikumModel;
+    protected $jadwalModel;
 
     public function __construct()
     {
         $this->modulPraktikumModel = new ModulPraktikumModel();
+        $this->jadwalModel=new jadwalModel();
+
     }
 
     // 📋 LIST UNTUK USER
@@ -26,17 +30,22 @@ class modulPraktikumController extends BaseController
             'modulPraktikum' => $modulPraktikum
         ]);
     }
-    public function admin(){
-        $modulPraktikum = $this->modulPraktikumModel
-            ->select('modul_praktikum.*, jadwal.tanggal as jadwal_tanggal')
-            ->join('jadwal', 'jadwal.id_jadwal = modul_praktikum.id_jadwal')
-            ->findAll();
+    public function admin()
+{
+    $modulPraktikum = $this->modulPraktikumModel
+        ->select('modul_praktikum.*, jadwal.tanggal as jadwal_tanggal')
+        ->join('jadwal', 'jadwal.id_jadwal = modul_praktikum.id_jadwal')
+        ->findAll();
 
-        // ✅ kirim ke view dengan key
-        return view('modul_praktikum_list_admin_view', [
-            'modulPraktikum' => $modulPraktikum
-        ]);
-    }
+    // Ambil semua jadwal untuk select option
+    $jadwalList = $this->jadwalModel->findAll();
+
+    return view('modul_praktikum_list_admin_view', [
+        'modulPraktikum' => $modulPraktikum,
+        'jadwalList'     => $jadwalList
+    ]);
+}
+
 
     // 🟢 CREATE
     public function create()

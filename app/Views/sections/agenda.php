@@ -8,7 +8,7 @@
 
     <div class="row g-4">
         <?php if (!empty($schedules)): ?>
-            <?php foreach ($schedules as $schedule): ?>
+             <?php foreach (array_slice($schedules, 0, 6) as $schedule): ?>
                 <!-- Item Agenda Dinamis -->
                 <div class="col-md-4">
                     <div class="d-flex align-items-start">

@@ -13,4 +13,12 @@ class AuthUi extends BaseController
     {
         return view('auth/profile', ['title' => 'Profile']);
     }
+       public function logout()
+    {
+        // Hapus semua session (token + user)
+        session()->destroy();
+
+        // Redirect ke halaman login
+        return redirect()->to('/login')->with('success', 'Berhasil logout');
+    }
 }

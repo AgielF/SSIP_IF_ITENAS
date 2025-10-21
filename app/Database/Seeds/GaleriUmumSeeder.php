@@ -35,7 +35,7 @@ class GaleriUmumSeeder extends Seeder
                 'keterangan' => 'Foto kegiatan lomba programming',
                 'file_url' => '/uploads/galeri/lomba_programming.jpg',
                 'tanggal_upload' => '2024-11-15',
-                'id_user' => 3,
+                'id_user' => 4,
             ],
         ];
 

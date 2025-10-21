@@ -25,24 +25,31 @@ class GaleriUmumController extends BaseController
     }
 
     // Untuk admin
-    public function admin()
-    {
-        $galerimodelall = $this->galeriUmumModel->getDataAdminFormatted();
-        return view('galeri_admin_list_view', [
-            'title' => 'Kelola Galeri & Media',
-            'media_items' => $galerimodelall['galeri']
-        ]);
-    }
+    // Untuk admin
+public function admin()
+{
+    $sort = $this->request->getGet('sort') ?? 'DESC'; // default terbaru
+
+    $galerimodelall = $this->galeriUmumModel->getDataAdminFormatted($sort);
+
+    return view('galeri_admin_list_view', [
+        'title'       => 'Kelola Galeri & Media',
+        'media_items' => $galerimodelall['galeri'],
+        'sort'        => $sort
+    ]);
+}
+
 
     // CREATE
     public function create()
     {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
         $data = [
             'kategori'       => $this->request->getPost('kategori'),
             'keterangan'     => $this->request->getPost('keterangan'),
             'file_url'       => $this->request->getPost('file_url'),
             'tanggal_upload' => date('Y-m-d H:i:s'),
-            'id_user'        => 1 // default admin
+            'id_user'        => $userId // default admin
         ];
 
         $this->galeriUmumModel->insert($data);
@@ -52,10 +59,13 @@ class GaleriUmumController extends BaseController
     // UPDATE
     public function update($id)
     {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
         $data = [
             'kategori'   => $this->request->getPost('kategori'),
             'keterangan' => $this->request->getPost('keterangan'),
             'file_url'   => $this->request->getPost('file_url'),
+            'tanggal_upload' => date('Y-m-d H:i:s'),
+            'id_user'        => $userId // default admin
         ];
 
         $this->galeriUmumModel->update($id, $data);

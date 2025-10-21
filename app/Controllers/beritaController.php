@@ -62,12 +62,13 @@ class BeritaController extends BaseController
     // 💾 Simpan berita baru
     public function store()
     {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
         $data = [
             'judul' => $this->request->getPost('judul'),
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
-            'id_user' => 1, // default admin user
+            'id_user' => $userId, // default admin user
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -81,12 +82,13 @@ class BeritaController extends BaseController
     // 🔄 Update berita
     public function update($id)
     {
+         $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
         $data = [
             'judul' => $this->request->getPost('judul'),
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
-            'id_user' => 1,
+            'id_user' => $userId,
             'updated_at' => date('Y-m-d H:i:s')
         ];
 

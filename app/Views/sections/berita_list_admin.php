@@ -65,18 +65,25 @@
                                     <td><?= esc($row['tanggal']) ?></td>
                                     <td><?= esc($row['creator']) ?></td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning btn-edit"
+                                        <button class="btn btn-sm btn-outline-secondary btn-edit"
                                             data-id="<?= $row['id_berita'] ?>"
                                             data-judul="<?= esc($row['judul']) ?>"
                                             data-konten="<?= esc($row['konten']) ?>"
                                             data-kategori="<?= esc($row['kategori']) ?>"
                                             data-tanggal="<?= esc($row['tanggal']) ?>"
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
-                                            Edit
+                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
-                                        <a href="/berita/delete/<?= $row['id_berita'] ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus berita ini?')">Hapus</a>
+                                          <form action="<?= site_url('berita/delete/'.$row['id_berita']) ?>" 
+                                                method="get" 
+                                                class="d-inline delete-form"
+                                                onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                      
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -7,7 +7,7 @@
             <!-- Kolom 1: Info Lab -->
             <div class="col-md-4 mb-4">
                 <h5>LAB SSIP</h5>
-                <p class="small text-muted">
+                <p class="mb-3">
                     2025 © copyright by Laboratorium SSIP ITENAS. All rights reserved.
                 </p>
             </div>

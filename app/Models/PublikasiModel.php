@@ -119,4 +119,8 @@ class PublikasiModel extends Model
 
         return $processedData;
     }
+    public function getDataWithUser(){
+         return $this->select('publikasi.*, users.nama as penulis_utama')
+                    ->join('users', 'users.id = publikasi.id_user', 'left');
+    }
 }

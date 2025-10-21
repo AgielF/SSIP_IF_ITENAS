@@ -26,24 +26,31 @@ class RekrutController extends BaseController
         ]);
     }
 
-    // Halaman admin
-    public function admin()
-    {
-        return view('rekrutmen_admin_view', [
-            'title'     => 'Kelola Rekrutmen',
-            'rekrutmen' => $this->rekrutModel->getDataAdminFormatted()['rekrutmen'],
-            'jadwal'    => $this->jadwalModel
-                                ->select('jadwal.*, events.nama_event')
-                                ->join('events', 'events.id_event = jadwal.id_event', 'left')
-                                ->findAll()
-        ]);
-    }
+ // Halaman admin
+public function admin()
+{
+    // 🔎 Ambil query string sort (default: desc)
+    $sort = $this->request->getGet('sort') ?? 'desc';
+
+    return view('rekrutmen_admin_view', [
+        'title'     => 'Kelola Rekrutmen',
+        'sort'      => $sort, // ✅ untuk view
+        'rekrutmen' => $this->rekrutModel->getDataAdminFormatted($sort)['rekrutmen'],
+        'jadwal'    => $this->jadwalModel
+                            ->select('jadwal.*, events.nama_event')
+                            ->join('events', 'events.id_event = jadwal.id_event', 'left')
+                            ->findAll()
+    ]);
+}
+
+
 
     // Tambah data
     public function store()
     {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user   
         $data = [
-            'id_user'    => 1, // sementara hardcode admin
+            'id_user'    => $userId, // sementara hardcode admin
             'id_jadwal'  => $this->request->getPost('id_jadwal'),
             'deskripsi'  => $this->request->getPost('deskripsi'),
             'status'     => $this->request->getPost('status'),
@@ -59,8 +66,9 @@ class RekrutController extends BaseController
     // Update data
     public function update($id)
     {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
         $data = [
-            'id_user'    => 1,
+            'id_user'    => $userId,
             'id_jadwal'  => $this->request->getPost('id_jadwal'),
             'deskripsi'  => $this->request->getPost('deskripsi'),
             'status'     => $this->request->getPost('status'),

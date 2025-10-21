@@ -23,31 +23,34 @@ class GaleriUmumModel extends Model
     }
 
     // Ambil data khusus untuk admin (sudah diformat header + rows)
-    public function getDataAdminFormatted()
-    {
-        $semuaGaleri = $this->select('galeri_umum.*, users.nama as nama_user')
-                            ->join('users', 'users.id = galeri_umum.id_user', 'left')
-                            ->orderBy('galeri_umum.tanggal_upload', 'DESC')
-                            ->findAll();
+    // Ambil data khusus untuk admin (sudah diformat header + rows)
+public function getDataAdminFormatted($sort = 'DESC')
+{
+    $semuaGaleri = $this->select('galeri_umum.*, users.nama as nama_user')
+                        ->join('users', 'users.id = galeri_umum.id_user', 'left')
+                        ->orderBy('galeri_umum.tanggal_upload', $sort) // urut dinamis
+                        ->findAll();
 
-        $headers = ['ID', 'Kategori', 'Keterangan', 'File', 'Tanggal Upload'];
-        $rows = [];
+    $headers = ['ID','Admin Penyunting', 'Kategori', 'Keterangan', 'File', 'Tanggal Upload'];
+    $rows = [];
 
-        foreach ($semuaGaleri as $item) {
-            $rows[] = [
-                $item['id_galeri'],
-                $item['kategori'],
-                $item['keterangan'],
-                $item['file_url'],
-                $item['tanggal_upload'],
-            ];
-        }
-
-        return [
-            'galeri' => [
-                'headers' => $headers,
-                'rows'    => $rows
-            ]
+    foreach ($semuaGaleri as $item) {
+        $rows[] = [
+            $item['id_galeri'],
+            $item['nama_user'],
+            $item['kategori'],
+            $item['keterangan'],
+            $item['file_url'],
+            $item['tanggal_upload'],
         ];
     }
+
+    return [
+        'galeri' => [
+            'headers' => $headers,
+            'rows'    => $rows
+        ]
+    ];
+}
+
 }
