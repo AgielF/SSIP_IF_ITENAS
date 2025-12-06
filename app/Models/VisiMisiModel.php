@@ -8,6 +8,7 @@ class VisiMisiModel extends Model
 {
     protected $table = 'content_visi_misi';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['judul', 'isi', 'created_at', 'updated_at'];
-    public $timestamps = false;
+    protected $allowedFields = ['judul', 'isi'];
+    protected $useTimestamps = true;
+    
 }

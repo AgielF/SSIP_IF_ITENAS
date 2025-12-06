@@ -38,9 +38,9 @@ class JadwalController extends BaseController
         $view = $this->request->getGet('view') ?? 'list';
 
         $data = [
-            'title'     => 'Jadwal Praktikum Laboratorium',
-            'schedules' => $this->jadwalModel->getProcessedJadwalData(),
-            'current_view' => $view
+            'title'    => 'Detail Jadwal',
+            'jadwal'   => $jadwalModel->getJadwalWithDetails(), // Perlu modifikasi di model
+            'asisten'  => $asistenJadwalModel->getAsistenByJadwal($id_jadwal)
         ];
 
         return view('jadwal_praktikum_view', $data);

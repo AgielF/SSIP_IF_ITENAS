@@ -12,13 +12,22 @@ SSIP IF ITENAS adalah sistem informasi akademik yang dirancang untuk mengelola k
 - ✅ Requirements analysis
 - ✅ Technology stack selection
 
-### **Minggu 2: Database Implementation** ⭐ **CURRENT**
+### **Minggu 2: Database Implementation** 
 - ✅ Complete database structure (13 tables)
 - ✅ Migration files (14 files)
 - ✅ Seeder files with realistic data (14 files)
 - ✅ Model files (13 files)
 - ✅ Data integrity and relationships
 - ✅ Comprehensive test data
+
+### **Minggu 3: Admin Page** ⭐ **CURRENT**
+
+Frontend (Admin):
+
+- ✅ Implementasi UI tabel interaktif menggunakan DataTables.net untuk semua fitur CRUD.
+- ✅ Halaman untuk mengelola Jadwal dan Anggota Lab.
+- ✅ Mengintegrasikan data dari backend pada jadwal dan asisten.
+🔜 Selanjutnya: Mengintegrasikan dengan controller data BACKEND.
 
 ## 🗄️ Database Structure
 
@@ -156,29 +165,67 @@ Additional: jQuery, FontAwesome, Chart.js
 PHP >= 8.0
 MySQL >= 8.0
 Composer
-Git
-```
 
-### **Installation Steps**
-```bash
-# 1. Clone repository
-git clone [repository-url]
+Server lokal (misalnya XAMPP atau Laragon)
+
+Database MySQL
+
+Panduan Instalasi
+Ikuti langkah-langkah berikut untuk menjalankan proyek ini di lingkungan lokal Anda.
+
+1. Clone Repositori
+Pertama, salin (clone) repositori ini ke komputer Anda menggunakan perintah berikut:
+
+git clone https://github.com/AgielF/SSIP_IF_ITENAS.git
+
+Masuk ke dalam direktori proyek yang baru saja dibuat:
+
 cd SSIP_IF_ITENAS
 
-# 2. Install dependencies
+2. Instal Dependensi
+Proyek ini menggunakan Composer untuk mengelola library PHP. Jalankan perintah berikut untuk menginstal semua dependensi yang diperlukan:
+
 composer install
 
-# 3. Configure database
-cp env .env
-# Edit .env with database credentials
+Perintah ini akan membuat folder vendor/ yang berisi semua kerangka kerja CodeIgniter dan library lainnya.
 
-# 4. Run migrations
+3. Konfigurasi Lingkungan (.env)
+File .env digunakan untuk menyimpan semua konfigurasi sensitif seperti kredensial database.
+
+Salin file env menjadi .env:
+
+cp env .env
+
+Buka file .env yang baru dibuat dengan editor teks.
+
+Atur baseURL dan aktifkan mode development:
+
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost:8080/'
+
+Atur koneksi database Anda. Pastikan Anda sudah membuat database kosong terlebih dahulu.
+
+database.default.hostname = 127.0.0.1
+database.default.database = nama_database_anda
+database.default.username = root
+database.default.password = 
+
+4. Migrasi dan Seeding Database
+Langkah ini akan membuat semua tabel yang diperlukan dan mengisinya dengan data awal.
+
+Jalankan Migrasi: Perintah ini akan membuat struktur tabel di database Anda.
+
 php spark migrate
 
-# 5. Seed database
+Jalankan Seeder: Perintah ini akan mengisi tabel dengan data dummy (contoh data) agar aplikasi memiliki konten awal.
+
 php spark db:seed DatabaseSeeder
 
-# 6. Start development server
+Jika Anda ingin mereset dan menjalankan ulang semua migrasi dan seeder, Anda bisa menggunakan perintah php spark migrate:refresh --seed.
+
+5. Jalankan Aplikasi
+Gunakan server pengembangan bawaan CodeIgniter untuk menjalankan aplikasi.
+
 php spark serve
 ```
 

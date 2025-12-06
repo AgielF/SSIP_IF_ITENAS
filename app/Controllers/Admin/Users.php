@@ -1,57 +1,210 @@
 <?php
 
-namespace App\Controllers\Api;
+namespace App\Controllers\Admin;
 
-use CodeIgniter\RESTful\ResourceController;
+use App\Controllers\BaseController;
 use App\Models\UserModel;
+use App\Models\RoleModel;
 
-class Users extends ResourceController
+class Users extends BaseController
 {
-    protected $modelName = 'App\Models\UserModel';
-    protected $format    = 'json';
+    protected $userModel;
+    protected $roleModel;
 
-    // GET /api/users
+    public function __construct()
+    {
+        $this->userModel = new UserModel();
+        $this->roleModel = new RoleModel();
+    }
+
+    // List semua users
     public function index()
     {
-        return $this->respond($this->model->findAll());
+        $data = [
+            'title' => 'User Management',
+            'users' => $this->userModel->select('users.*, roles.role_name')
+                ->join('roles', 'roles.id = users.role_id')
+                ->findAll()
+        ];
+
+        return view('admin/users/index', $data);
     }
 
-    // GET /api/users/{id}
-    public function show($id = null)
+    // form untuk add new user
+    public function new()
     {
-        $data = $this->model->find($id);
-        if ($data) {
-            return $this->respond($data);
-        }
-        return $this->failNotFound('User not found');
+        $data = [
+            'title' => 'Add New User',
+            'roles' => $this->roleModel->findAll()
+        ];
+
+        return view('admin/users/create', $data);
     }
 
-    // POST /api/users
+    // Create user baru
     public function create()
     {
-        $data = $this->request->getPost();
-        if ($this->model->insert($data)) {
-            return $this->respondCreated($data);
+        // Debug: Log the request details
+        $isAjax = $this->request->isAJAX();
+        $headers = $this->request->getHeaders();
+        log_message('debug', 'Users::create called. AJAX: ' . ($isAjax ? 'true' : 'false'));
+        log_message('debug', 'Request headers: ' . json_encode($headers));
+        log_message('debug', 'X-Requested-With: ' . ($this->request->getHeaderLine('X-Requested-With') ?? 'not set'));
+
+        // Validate input data
+        $nomor = $this->request->getPost('nomor');
+        $nama = $this->request->getPost('nama');
+        $password = $this->request->getPost('password');
+        $jurusan = $this->request->getPost('jurusan');
+        $role_id = $this->request->getPost('role_id');
+
+        log_message('debug', 'Create data: ' . json_encode([$nomor, $nama, $jurusan, $role_id]));
+
+        // Check for duplicate nomor
+        $existingUser = $this->userModel->where('nomor', $nomor)->first();
+        if ($existingUser) {
+            log_message('debug', 'Duplicate nomor found: ' . $nomor);
+            if ($isAjax) {
+                log_message('debug', 'Returning JSON response for duplicate');
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'Nomor sudah digunakan']);
+            }
+            return redirect()->back()->with('error', 'Nomor sudah digunakan')->withInput();
         }
-        return $this->failValidationError($this->model->errors());
+
+        $data = [
+            'nomor' => $nomor,
+            'nama' => $nama,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'jurusan' => $jurusan,
+            'role_id' => $role_id
+        ];
+
+        if ($this->userModel->save($data)) {
+            log_message('debug', 'User saved successfully');
+            if ($isAjax) {
+                log_message('debug', 'Returning JSON response for success');
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => true, 'message' => 'User created successfully']);
+            }
+            return redirect()->to('/admin/users')->with('success', 'User created successfully');
+        } else {
+            log_message('debug', 'Failed to save user');
+            if ($isAjax) {
+                log_message('debug', 'Returning JSON response for failure');
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'Failed to create user']);
+            }
+            return redirect()->back()->with('error', 'Failed to create user')->withInput();
+        }
     }
 
-    // PUT /api/users/{id}
-    public function update($id = null)
+    // Edit user
+    public function edit($id)
     {
-        $data = $this->request->getRawInput();
-        if ($this->model->update($id, $data)) {
-            return $this->respond($data);
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            return redirect()->to('/admin/users')->with('error', 'User not found');
         }
-        return $this->failValidationError($this->model->errors());
+
+        $data = [
+            'title' => 'Edit User',
+            'user' => $user,
+            'roles' => $this->roleModel->findAll()
+        ];
+
+        return view('admin/users/edit', $data);
     }
 
-    // DELETE /api/users/{id}
-    public function delete($id = null)
+    // Update user
+    public function update($id)
     {
-        if ($this->model->delete($id)) {
-            return $this->respondDeleted(['id' => $id]);
+        // debug
+        log_message('debug', 'Users::update called for ID: ' . $id . '. AJAX: ' . ($this->request->isAJAX() ? 'true' : 'false'));
+
+        $nomor = $this->request->getPost('nomor');
+        $nama = $this->request->getPost('nama');
+        $jurusan = $this->request->getPost('jurusan');
+        $role_id = $this->request->getPost('role_id');
+
+        log_message('debug', 'Update data: ' . json_encode([$nomor, $nama, $jurusan, $role_id]));
+
+        // Cek nomor
+        $existingUser = $this->userModel->where('nomor', $nomor)->where('id !=', $id)->first();
+        if ($existingUser) {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'Nomor sudah digunakan oleh user lain']);
+            }
+            return redirect()->back()->with('error', 'Nomor sudah digunakan oleh user lain')->withInput();
         }
-        return $this->failNotFound('User not found');
+
+        $data = [
+            'nomor' => $nomor,
+            'nama' => $nama,
+            'jurusan' => $jurusan,
+            'role_id' => $role_id
+        ];
+
+        // Only update password if provided
+        $password = $this->request->getPost('password');
+        if (!empty($password)) {
+            $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        if ($this->userModel->update($id, $data)) {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => true, 'message' => 'User updated successfully']);
+            }
+            return redirect()->to('/admin/users')->with('success', 'User updated successfully');
+        } else {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'Failed to update user']);
+            }
+            return redirect()->back()->with('error', 'Failed to update user')->withInput();
+        }
+    }
+
+    // Delete user
+    public function delete($id)
+    {
+        if ($this->userModel->delete($id)) {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => true, 'message' => 'User deleted successfully']);
+            }
+            return redirect()->to('/admin/users')->with('success', 'User deleted successfully');
+        } else {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'Failed to delete user']);
+            }
+            return redirect()->back()->with('error', 'Failed to delete user');
+        }
+    }
+
+    // Buat asisten_lab_admin view
+    public function asistenAdmin()
+    {
+        $users = $this->userModel->select('users.*, roles.role_name as role')
+            ->join('roles', 'roles.id = users.role_id')
+            ->findAll();
+
+        $data = [
+            'title' => 'Kelola Anggota Laboratorium',
+            'asisten' => $users // Pass raw user data, let the view handle formatting
+        ];
+
+        return view('asisten_admin_list_view', $data);
     }
 }

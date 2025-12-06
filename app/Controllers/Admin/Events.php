@@ -4,89 +4,104 @@ namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
 use App\Models\EventsModel;
+use App\Models\UserModel;
 
 class Events extends BaseController
 {
-    protected $eventsModel;
+    protected $eventModel;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->eventsModel = new EventsModel();
+        $this->eventModel = new EventsModel();
+        $this->userModel = new UserModel();
     }
 
+    //Menampilkan daftar events
     public function index()
     {
         $data = [
-            'title' => 'Admin - Kelola Events',
-            'events' => $this->eventsModel->findAll()
+            'title' => 'Manajemen Events',
+            'events' => $this->eventModel->select('events.*, users.nama as creator')
+                ->join('users', 'users.id = events.created_by')
+                ->findAll()
         ];
 
-        return view('event_list_admin_view', $data);
+        return view('admin/events/index', $data);
     }
 
+    //Menampilkan form untuk membuat event baru
     public function new()
     {
         $data = [
-            'title' => 'Admin - Tambah Event Baru'
+            'title' => 'Tambah Event Baru',
+            'users' => $this->userModel->findAll()
         ];
 
-        return view('admin/events/new', $data);
+        return view('admin/events/create', $data);
     }
 
+    //Menyimpan event baru
     public function create()
     {
         $data = [
             'nama_event' => $this->request->getPost('nama_event'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'jenis' => $this->request->getPost('jenis'),
-            'created_by' => session()->get('user')['id'] ?? 1,
+            'created_by' => $this->request->getPost('created_by'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        if ($this->eventsModel->insert($data)) {
+        if ($this->eventModel->save($data)) {
             return redirect()->to('/admin/events')->with('success', 'Event berhasil ditambahkan');
+        } else {
+            return redirect()->back()->with('error', 'Gagal menambahkan event')->withInput();
         }
-
-        return redirect()->back()->with('error', 'Gagal menambahkan event');
     }
 
+    //Menampilkan form untuk mengedit event
     public function edit($id)
     {
-        $event = $this->eventsModel->find($id);
-
+        $event = $this->eventModel->find($id);
         if (!$event) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+            return redirect()->to('/admin/events')->with('error', 'Event tidak ditemukan');
         }
 
         $data = [
-            'title' => 'Admin - Edit Event',
-            'event' => $event
+            'title' => 'Edit Event',
+            'event' => $event,
+            'users' => $this->userModel->findAll()
         ];
 
         return view('admin/events/edit', $data);
     }
 
+    //Memperbarui event
     public function update($id)
     {
         $data = [
             'nama_event' => $this->request->getPost('nama_event'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'jenis' => $this->request->getPost('jenis'),
+            'created_by' => $this->request->getPost('created_by'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
-        if ($this->eventsModel->update($id, $data)) {
-            return redirect()->to('/admin/events')->with('success', 'Event berhasil diupdate');
+        if ($this->eventModel->update($id, $data)) {
+            return redirect()->to('/admin/events')->with('success', 'Event berhasil diperbarui');
+        } else {
+            return redirect()->back()->with('error', 'Gagal memperbarui event')->withInput();
         }
-
-        return redirect()->back()->with('error', 'Gagal mengupdate event');
     }
 
+    //Menghapus event
     public function delete($id)
     {
-        if ($this->eventsModel->delete($id)) {
+        if ($this->eventModel->delete($id)) {
             return redirect()->to('/admin/events')->with('success', 'Event berhasil dihapus');
+        } else {
+            return redirect()->to('/admin/events')->with('error', 'Gagal menghapus event');
         }
-
-        return redirect()->back()->with('error', 'Gagal menghapus event');
     }
 }
