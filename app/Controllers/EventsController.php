@@ -2,18 +2,18 @@
 
 namespace App\Controllers;
 
-use App\Models\EventModel;
+use App\Models\EventsModel;
 use App\Models\UserModel;
 use App\Controllers\BaseController;
 
 class EventsController extends BaseController
 {
     protected $eventModel;
-    protected $usersModel;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->eventModel = new EventModel();
+        $this->eventModel = new EventsModel();
         $this->userModel  = new UserModel();
     }
 

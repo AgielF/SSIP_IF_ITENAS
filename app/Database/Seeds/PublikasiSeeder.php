@@ -472,12 +472,9 @@ class PublikasiSeeder extends Seeder
         $validUserIds = [1, 2, 4, 5];
 
         // Check if publikasi already exist
-        foreach ($data as $publikasi) {
-            // Ensure id_user is within valid range (1-12)
-            if ($publikasi['id_user'] > 12) {
-                $publikasi['id_user'] = rand(1, 12);
-            }
-
+        foreach ($data as $key => $publikasi) {
+            // Ensure id_user is valid
+            $publikasi['id_user'] = $validUserIds[$key % count($validUserIds)];
             $existing = $this->db->table('publikasi')->where('link_publikasi', $publikasi['link_publikasi'])->get()->getRow();
             if (!$existing) {
                 $this->db->table('publikasi')->insert($publikasi);

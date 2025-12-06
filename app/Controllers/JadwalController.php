@@ -4,7 +4,7 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use App\Models\JadwalModel;
 use App\Models\AsistenJadwalModel;
-use App\Models\EventModel;
+use App\Models\EventsModel;
 use App\Models\UserModel;
 
 class JadwalController extends BaseController
@@ -18,7 +18,7 @@ class JadwalController extends BaseController
     {
         $this->jadwalModel        = new JadwalModel();
         $this->asistenJadwalModel = new AsistenJadwalModel();
-        $this->eventModel         = new EventModel();
+        $this->eventModel         = new EventsModel();
         $this->userModel          = new UserModel();
     }
 
@@ -38,9 +38,9 @@ class JadwalController extends BaseController
         $view = $this->request->getGet('view') ?? 'list';
 
         $data = [
-            'title'    => 'Detail Jadwal',
-            'jadwal'   => $jadwalModel->getJadwalWithDetails(), // Perlu modifikasi di model
-            'asisten'  => $asistenJadwalModel->getAsistenByJadwal($id_jadwal)
+            'title'     => 'Jadwal Praktikum Laboratorium',
+            'schedules' => $this->jadwalModel->getProcessedJadwalData(),
+            'current_view' => $view
         ];
 
         return view('jadwal_praktikum_view', $data);

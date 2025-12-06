@@ -13,8 +13,7 @@ class modulPraktikumController extends BaseController
     public function __construct()
     {
         $this->modulPraktikumModel = new ModulPraktikumModel();
-        $this->jadwalModel=new jadwalModel();
-
+        $this->jadwalModel = new JadwalModel();
     }
 
     // 📋 LIST UNTUK USER

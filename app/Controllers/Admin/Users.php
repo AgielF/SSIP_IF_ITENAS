@@ -76,7 +76,7 @@ class Users extends BaseController
         $data = [
             'nomor' => $nomor,
             'nama' => $nama,
-            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'password' => $password,
             'jurusan' => $jurusan,
             'role_id' => $role_id
         ];
@@ -122,6 +122,17 @@ class Users extends BaseController
     // Update user
     public function update($id)
     {
+        // Get current user data
+        $user = $this->userModel->find($id);
+        if (!$user) {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => false, 'message' => 'User not found']);
+            }
+            return redirect()->to('/admin/users')->with('error', 'User not found');
+        }
+
         // debug
         log_message('debug', 'Users::update called for ID: ' . $id . '. AJAX: ' . ($this->request->isAJAX() ? 'true' : 'false'));
 
@@ -132,28 +143,51 @@ class Users extends BaseController
 
         log_message('debug', 'Update data: ' . json_encode([$nomor, $nama, $jurusan, $role_id]));
 
-        // Cek nomor
-        $existingUser = $this->userModel->where('nomor', $nomor)->where('id !=', $id)->first();
-        if ($existingUser) {
-            if ($this->request->isAJAX()) {
-                return $this->response
-                    ->setContentType('application/json')
-                    ->setJSON(['success' => false, 'message' => 'Nomor sudah digunakan oleh user lain']);
+        $data = [];
+
+        // Update nomor if changed and not empty
+        if ($nomor !== null && $nomor !== '' && $nomor != $user['nomor']) {
+            $existingUser = $this->userModel->where('nomor', $nomor)->where('id !=', $id)->first();
+            if ($existingUser) {
+                if ($this->request->isAJAX()) {
+                    return $this->response
+                        ->setContentType('application/json')
+                        ->setJSON(['success' => false, 'message' => 'Nomor sudah digunakan oleh user lain']);
+                }
+                return redirect()->back()->with('error', 'Nomor sudah digunakan oleh user lain')->withInput();
             }
-            return redirect()->back()->with('error', 'Nomor sudah digunakan oleh user lain')->withInput();
+            $data['nomor'] = $nomor;
         }
 
-        $data = [
-            'nomor' => $nomor,
-            'nama' => $nama,
-            'jurusan' => $jurusan,
-            'role_id' => $role_id
-        ];
+        // Update nama if changed
+        if ($nama !== null && $nama != $user['nama']) {
+            $data['nama'] = $nama;
+        }
+
+        // Update jurusan if changed
+        if ($jurusan !== null && $jurusan != $user['jurusan']) {
+            $data['jurusan'] = $jurusan;
+        }
+
+        // Update role_id if changed and not empty
+        if ($role_id !== null && $role_id !== '' && $role_id != $user['role_id']) {
+            $data['role_id'] = $role_id;
+        }
 
         // Only update password if provided
         $password = $this->request->getPost('password');
         if (!empty($password)) {
-            $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+            $data['password'] = $password;
+        }
+
+        // If no data to update, return success
+        if (empty($data)) {
+            if ($this->request->isAJAX()) {
+                return $this->response
+                    ->setContentType('application/json')
+                    ->setJSON(['success' => true, 'message' => 'No changes made']);
+            }
+            return redirect()->back()->with('info', 'No changes made');
         }
 
         if ($this->userModel->update($id, $data)) {
@@ -197,7 +231,7 @@ class Users extends BaseController
     public function asistenAdmin()
     {
         $users = $this->userModel->select('users.*, roles.role_name as role')
-            ->join('roles', 'roles.id = users.role_id')
+            ->join('roles', 'roles.id = users.role_id', 'left')
             ->findAll();
 
         $data = [

@@ -10,10 +10,8 @@ class EventsModel extends Model
     protected $primaryKey = 'id_event';
     protected $allowedFields = ['nama_event', 'deskripsi', 'jenis', 'created_by', 'created_at', 'updated_at'];
 
-    public function getEventsWithCreator()
-    {
-        return $this->select('events.*, users.nama as creator_name')
-                    ->join('users', 'users.id = events.created_by')
-                    ->findAll();
-    }
+    // Mengaktifkan timestamps, disesuaikan dengan nama kolom di ERD
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at'; // Sesuai ERD
+    protected $updatedField  = ''; // Tidak ada updated_at di ERD
 }

@@ -30,9 +30,16 @@ class AdminFilter implements FilterInterface
 
         // 🔹 3. Kalau tetap tidak ada, tolak akses
         if (!$token) {
-            return Services::response()
-                ->setJSON(['status' => 'error', 'message' => 'Token required'])
-                ->setStatusCode(401);
+            // Check if it's an API request
+            $path = $request->getUri()->getPath();
+            $isApi = strpos($path, '/api/') === 0;
+            if ($isApi) {
+                return Services::response()
+                    ->setJSON(['status' => 'error', 'message' => 'Token required'])
+                    ->setStatusCode(401);
+            } else {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
+            }
         }
 
         try {
@@ -40,22 +47,36 @@ class AdminFilter implements FilterInterface
 
             // 🔹 cek role admin
             if ($decoded->role_id != 1) {
-                return Services::response()
-                    ->setJSON(['status' => 'error', 'message' => 'Access denied'])
-                    ->setStatusCode(403);
+                // Check if API
+                $path = $request->getUri()->getPath();
+                $isApi = strpos($path, '/api/') === 0;
+                if ($isApi) {
+                    return Services::response()
+                        ->setJSON(['status' => 'error', 'message' => 'Access denied'])
+                        ->setStatusCode(403);
+                } else {
+                    return redirect()->to('/')->with('error', 'Akses ditolak.');
+                }
             }
 
             // simpan user agar bisa dipakai controller
             $request->user = $decoded;
 
         } catch (\Exception $e) {
-            return Services::response()
-                ->setJSON([
-                    'status' => 'error',
-                    'message' => 'Invalid token',
-                    'error' => $e->getMessage()
-                ])
-                ->setStatusCode(401);
+            // Check if API
+            $path = $request->getUri()->getPath();
+            $isApi = strpos($path, '/api/') === 0;
+            if ($isApi) {
+                return Services::response()
+                    ->setJSON([
+                        'status' => 'error',
+                        'message' => 'Invalid token',
+                        'error' => $e->getMessage()
+                    ])
+                    ->setStatusCode(401);
+            } else {
+                return redirect()->to('/login')->with('error', 'Sesi tidak valid, silakan login kembali.');
+            }
         }
     }
 

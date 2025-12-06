@@ -306,12 +306,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Basic validation
         let isValid = true;
-        if (!data.nomor || !data.nama || !data.password || !data.role_id) {
-            isValid = false;
+        let errorMessage = '';
+
+        if (currentState.editingIndex === null) {
+            // For create
+            if (!data.nomor || !data.nama || !data.password || !data.role_id) {
+                isValid = false;
+                errorMessage = 'Semua field yang wajib diisi harus diisi!';
+            }
+        } else {
+            // For edit, no required fields
+            isValid = true;
         }
 
         if (!isValid) {
-            alert('Semua field yang wajib diisi harus diisi!');
+            alert(errorMessage);
             return;
         }
 
@@ -325,8 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const userData = allRows[rowIndex];
                 const userId = userData.dataset.userId; // Get user ID from data attribute
                 url = `/admin/users/update/${userId}`;
-                method = 'POST';
-                data['_method'] = 'PUT';
+                method = 'PUT';
                 console.log('Update URL:', url, 'User ID:', userId);
             } else {
                 console.log('Create URL:', url);
@@ -394,12 +402,12 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = 'Edit Anggota';
 
             const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
-                <div class="mb-3"><label class="form-label">Nomor <span class="text-danger">*</span></label><input type="text" class="form-control" name="nomor" value="${rowData.cells[1].textContent}" required></div>
-                <div class="mb-3"><label class="form-label">Nama <span class="text-danger">*</span></label><input type="text" class="form-control" name="nama" value="${rowData.cells[2].textContent}" required></div>
+                <div class="mb-3"><label class="form-label">Nomor</label><input type="text" class="form-control" name="nomor" value="${rowData.cells[1].textContent}"></div>
+                <div class="mb-3"><label class="form-label">Nama</label><input type="text" class="form-control" name="nama" value="${rowData.cells[2].textContent}"></div>
                 <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" name="password" placeholder="Kosongkan jika tidak ingin mengubah"></div>
                 <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan" value="${rowData.cells[3].textContent}"></div>
-                <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
-                    <select class="form-select" name="role_id" required>
+                <div class="mb-3"><label class="form-label">Role</label>
+                    <select class="form-select" name="role_id">
                         <option value="1" ${rowData.cells[5].textContent.toLowerCase().includes('admin') ? 'selected' : ''}>Admin</option>
                         <option value="2" ${rowData.cells[5].textContent.toLowerCase().includes('dosen') ? 'selected' : ''}>Dosen</option>
                         <option value="3" ${rowData.cells[5].textContent.toLowerCase().includes('mahasiswa') ? 'selected' : ''}>Mahasiswa</option>

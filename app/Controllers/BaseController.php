@@ -29,6 +29,13 @@ abstract class BaseController extends Controller
     protected $request;
 
     /**
+     * Instance of the main Response object.
+     *
+     * @var ResponseInterface
+     */
+    protected $response;
+
+    /**
      * An array of helpers to be loaded automatically upon
      * class instantiation. These helpers will be available
      * to all other controllers that extend BaseController.
