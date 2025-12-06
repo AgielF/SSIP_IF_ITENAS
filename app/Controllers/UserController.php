@@ -29,9 +29,24 @@ class UserController extends BaseController
      */
     public function getDataAdmin()
     {
+        // Ambil semua user dengan join ke roles table untuk mendapatkan role_name
+        $users = $this->userModel->select('users.*, roles.role_name')
+            ->join('roles', 'roles.id = users.role_id', 'left')
+            ->orderBy('users.created_at', 'DESC')
+            ->findAll();
+
+        // Map role_name ke format yang konsisten untuk view
+        $processedUsers = [];
+        foreach ($users as $user) {
+            // Pastikan role_name ada, jika tidak gunakan default
+            $roleName = $user['role_name'] ?? 'user';
+            $user['role'] = strtolower($roleName); // Simpan sebagai lowercase untuk konsistensi
+            $processedUsers[] = $user;
+        }
+
         return view('asisten_admin_list_view', [
-            'title'   => 'Anggota Laboratorium',
-            'asisten' => $this->userModel->getProcessedPersonnelData()
+            'title'   => 'Kelola Anggota Laboratorium',
+            'asisten' => $processedUsers
         ]);
     }
 

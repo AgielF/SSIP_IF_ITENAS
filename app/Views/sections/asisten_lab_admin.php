@@ -94,14 +94,25 @@
                 <tbody>
                     <?php if (!empty($asisten)): ?>
                         <?php foreach ($asisten as $i => $person): ?>
-                            <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>" data-user-id="<?= esc($person['id']) ?>">
+                            <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>" data-user-id="<?= esc($person['id']) ?>" data-role-id="<?= esc($person['role_id'] ?? '') ?>">
                                 <td></td> <!-- Nomor diisi oleh JS -->
                                 <td><?= esc($person['nomor'] ?? '') ?></td>
                                 <td><?= esc($person['nama']) ?></td>
                                 <td><?= esc($person['jurusan'] ?? '') ?></td>
                                 <td>-</td> <!-- No phone field in current data -->
                                 <td>
-                                    <span class="badge bg-secondary"><?= esc(ucfirst($person['role'] ?? 'user')) ?></span>
+                                    <?php 
+                                    // Tampilkan role_name dari database, atau fallback ke role field
+                                    $roleDisplay = '';
+                                    if (isset($person['role_name'])) {
+                                        $roleDisplay = ucfirst($person['role_name']);
+                                    } elseif (isset($person['role'])) {
+                                        $roleDisplay = ucfirst($person['role']);
+                                    } else {
+                                        $roleDisplay = 'User';
+                                    }
+                                    ?>
+                                    <span class="badge bg-secondary"><?= esc($roleDisplay) ?></span>
                                 </td>
                                 <td>
                                     <div class="btn-group">
@@ -290,8 +301,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
                 <select class="form-select" name="role_id" required>
                     <option value="1">Admin</option>
-                    <option value="2">Dosen</option>
-                    <option value="3">Mahasiswa</option>
+                    <option value="2">Asisten</option>
+                    <option value="3">Dosen</option>
                 </select>
             </div>`;
         modalForm.innerHTML = formHtml;
@@ -408,9 +419,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan" value="${rowData.cells[3].textContent}"></div>
                 <div class="mb-3"><label class="form-label">Role</label>
                     <select class="form-select" name="role_id">
-                        <option value="1" ${rowData.cells[5].textContent.toLowerCase().includes('admin') ? 'selected' : ''}>Admin</option>
-                        <option value="2" ${rowData.cells[5].textContent.toLowerCase().includes('dosen') ? 'selected' : ''}>Dosen</option>
-                        <option value="3" ${rowData.cells[5].textContent.toLowerCase().includes('mahasiswa') ? 'selected' : ''}>Mahasiswa</option>
+                        <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Admin</option>
+                        <option value="2" ${rowData.dataset.roleId === '2' ? 'selected' : ''}>Asisten</option>
+                        <option value="3" ${rowData.dataset.roleId === '3' ? 'selected' : ''}>Dosen</option>
                     </select>
                 </div>`;
             modalForm.innerHTML = formHtml;
