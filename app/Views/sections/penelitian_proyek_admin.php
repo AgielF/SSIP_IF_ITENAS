@@ -7,6 +7,27 @@
 
     <main class="fm-content card rounded-0 rounded-bottom border-top-0">
         <div class="card-body">
+
+            <!-- ======================================= -->
+            <!-- FLASH MESSAGE -->
+            <!-- ======================================= -->
+            <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i>
+                    <?= session()->getFlashdata('success') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle me-1"></i>
+                    <?= session()->getFlashdata('error') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+            <!-- ======================================= -->
+
             <div class="d-flex justify-content-between align-items-center mb-4 gap-3">
                 <h4>Daftar Proyek Riset</h4>
                 <div class="d-flex gap-2 flex-wrap non-printable">
@@ -62,7 +83,7 @@
                                 <tr>
                                     <td><?= esc($i + 1) ?></td>
                                     <td><?= esc($row['judul']) ?></td>
-                                    <td><?=esc($row['pembuat'])?></td>
+                                    <td><?= esc($row['pembuat']) ?></td>
                                     <td><?= esc($row['deskripsi']) ?></td>
                                     <td><?= esc($row['mitra']) ?></td>
                                     <td><?= esc($row['sumber_dana']) ?></td>
@@ -80,15 +101,18 @@
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
+
                                         <a href="/proyek-riset/delete/<?= $row['id_proyek'] ?>"
                                             class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
+                                            onclick="return confirm('Hapus data ini?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>
                             <tr>
-                                <td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td>
+                                <td colspan="9" class="text-center text-muted">Data tidak ditemukan.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -211,7 +235,7 @@
     // Export PDF
     document.getElementById('export-pdf-btn').addEventListener('click', () => window.print());
 
-    // Isi data ke modal edit
+    // Isi modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function () {
             document.getElementById('formEdit').action = "/proyek-riset/update/" + this.dataset.id;
@@ -224,4 +248,11 @@
             document.getElementById('edit-selesai').value = this.dataset.selesai;
         });
     });
+
+    // Auto close alert
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(alert => {
+            alert.classList.remove('show');
+        });
+    }, 3000);
 </script>
