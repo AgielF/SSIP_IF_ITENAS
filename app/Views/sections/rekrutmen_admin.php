@@ -20,13 +20,28 @@
 </style>
 
 <div class="container my-5">
-    <!-- Flash Message -->
-    <?php if(session()->getFlashdata('success')): ?>
-        <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
-    <?php endif; ?>
-    <?php if(session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
-    <?php endif; ?>
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
     <!-- Navigasi Tab -->
     <ul class="nav nav-tabs" id="project-nav">
@@ -95,12 +110,13 @@
                 <td class="non-printable">
 
                     <!-- form edit -->
-                    <button 
+                    <button
                         class="btn btn-sm btn-outline-secondary btn-edit"
                         data-id="<?= $row['id_rekrut'] ?>"
                         data-deskripsi="<?= esc($row['deskripsi']) ?>"
                         data-status="<?= esc($row['status']) ?>"
                         data-syarat="<?= esc($row['syarat']) ?>"
+                        data-link_gform="<?= esc($row['link_gform'] ?? '') ?>"
                         data-jadwal="<?= $row['id_jadwal'] ?>"
                         data-bs-toggle="modal"
                         data-bs-target="#editDataModal">
@@ -160,6 +176,10 @@
                     <textarea name="syarat" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Link Google Form</label>
+                    <input type="url" name="link_gform" class="form-control" placeholder="https://forms.google.com/...">
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Jadwal</label>
                     <select name="id_jadwal" class="form-select" required>
                         <?php if (!empty($jadwal)): ?>
@@ -204,6 +224,10 @@
                     <textarea name="syarat" id="edit-syarat" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Link Google Form</label>
+                    <input type="url" name="link_gform" id="edit-link_gform" class="form-control" placeholder="https://forms.google.com/...">
+                </div>
+                <div class="mb-3">
                     <label class="form-label">Jadwal</label>
                     <select name="id_jadwal" id="edit-jadwal" class="form-select" required>
                         <?php if (!empty($jadwal)): ?>
@@ -228,6 +252,20 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // Toast notification handling
+    <?php if (session()->getFlashdata('success')): ?>
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
+        successToast.show();
+        setTimeout(() => successToast.hide(), 3000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        document.getElementById('errorMessage').textContent = '<?= session()->getFlashdata('error') ?>';
+        errorToast.show();
+        setTimeout(() => errorToast.hide(), 3000);
+    <?php endif; ?>
     const searchInput = document.getElementById("search-input");
     const sortFilter = document.getElementById("sort-filter");
     const itemsPerPageFilter = document.getElementById("items-per-page-filter");
@@ -314,6 +352,7 @@ filtered.sort((a, b) => {
             document.getElementById("edit-deskripsi").value = this.dataset.deskripsi;
             document.getElementById("edit-status").value = this.dataset.status;
             document.getElementById("edit-syarat").value = this.dataset.syarat;
+            document.getElementById("edit-link_gform").value = this.dataset.link_gform;
             document.getElementById("edit-jadwal").value = this.dataset.jadwal;
         });
     });

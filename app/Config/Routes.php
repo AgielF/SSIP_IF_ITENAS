@@ -13,6 +13,7 @@ $routes->get('/berita', 'beritaController::index');
 $routes->get('/asisten', 'UserController::index');
 
 $routes->get('/jadwal', 'JadwalController::index');
+$routes->get('/jadwal-praktikum', 'JadwalController::praktikum');
 $routes->get('/jadwal-list', 'Home::jadwal_card');
 
 $routes->get('/penelitian-proyek', 'ProyekRisetController::index');
@@ -57,6 +58,14 @@ $routes->get('/api/rekrutmen-page', 'Api\Content::rekrutmenPage');
 $routes->get('/api/publikasi-page', 'Api\Content::publikasiPage');
 $routes->get('/api/peserta-praktikum', 'Api\Content::pesertaPraktikum');
 
+// Admin API routes
+$routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) {
+    $routes->get('asisten-jadwal', 'AdminApi::getAsistenJadwal');
+    $routes->post('asisten-jadwal/create', 'AdminApi::createAsistenJadwal');
+    $routes->post('asisten-jadwal/update/(:num)', 'AdminApi::updateAsistenJadwal/$1');
+    $routes->post('asisten-jadwal/delete/(:num)', 'AdminApi::deleteAsistenJadwal/$1');
+});
+
 // Authentication API routes
 $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($routes) {
     $routes->post('login', 'Auth::login');
@@ -75,6 +84,7 @@ $routes->get('logout', 'AuthUi::logout');   // 👈 tambahkan ini
 $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/asisten_admin', 'UserController::getDataAdmin');
     $routes->get('/jadwal_admin', 'JadwalController::admin');
+    $routes->get('/jadwal/admin', 'JadwalController::admin'); // Alternative route
     $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
     $routes->get('/publikasi-ilmiah_admin', 'PublikasiController::getDataAdmin');
     $routes->get('/galeri_admin', 'GaleriUmumController::admin');

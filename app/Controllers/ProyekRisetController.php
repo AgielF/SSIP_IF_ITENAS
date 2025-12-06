@@ -34,7 +34,7 @@ class ProyekRisetController extends BaseController
             'proyek' => $semuaProyek
         ];
 
-        return view('penelitian_proyek_admin_list_view', $data);
+        return view('penelitian-proyek_admin', $data);
     }
 
     // 🟢 CREATE

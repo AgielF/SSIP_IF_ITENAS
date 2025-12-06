@@ -10,6 +10,8 @@ use App\Models\ProyekRisetModel;
 use App\Models\PublikasiModel;
 use App\Models\GaleriUmumModel;
 use App\Models\VisiMisiModel;
+use App\Models\EventsModel;
+use App\Models\BeritaModel;
 // use App\Models\RekrutmenModel; // Asumsi ada model ini
 // use App\Models\RepositoriModel; // Asumsi ada model ini
 
@@ -23,11 +25,22 @@ class Home extends BaseController
     /**
      * Mengambil dan memproses data jadwal.
      */
-    private function getProcessedJadwalData(): array
+    private function getProcessedJadwalData($limit = null): array
     {
         $jadwalModel = new JadwalModel();
         $asistenJadwalModel = new AsistenJadwalModel();
         $databaseData = $jadwalModel->getJadwalWithDetails();
+        
+        // Sort by date ascending to get upcoming schedules first
+        usort($databaseData, function($a, $b) {
+            return strtotime($a['tanggal']) - strtotime($b['tanggal']);
+        });
+        
+        // Apply limit if specified
+        if ($limit !== null) {
+            $databaseData = array_slice($databaseData, 0, $limit);
+        }
+        
         $processedSchedules = [];
         $today = new \DateTime('today');
 
@@ -95,15 +108,28 @@ class Home extends BaseController
     // Setiap method sekarang menjadi sangat ringkas.
     // ===================================================================
 
+    private function getBeritaData(): array
+    {
+        // Fetch berita data
+        $beritaModel = new BeritaModel();
+        $beritaList = $beritaModel->select('berita.*, users.nama as creator')
+                                  ->join('users', 'users.id = berita.id_user')
+                                  ->orderBy('berita.tanggal', 'DESC')
+                                  ->findAll(5); // Limit to 5 latest berita
+
+        return $beritaList;
+    }
+
     public function index()
     {
         $visiMisiModel = new VisiMisiModel();
         $data = [
             'title'     => 'Beranda | Lab. Fisika Dasar',
-            'schedules' => $this->getProcessedJadwalData(),
+            'schedules' => $this->getProcessedJadwalData(6), // Limit to 6 schedules for home page
             'visi'      => $visiMisiModel->where('judul', 'Visi')->first()['isi'] ?? '',
             'misi'      => $visiMisiModel->where('judul', 'Misi')->first()['isi'] ?? '',
             'fields'    => $this->getTopicData(),           // Data untuk section topic
+            'berita_list' => $this->getBeritaData()
         ];
         return view('home_view', $data);
     }

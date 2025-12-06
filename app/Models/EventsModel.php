@@ -17,6 +17,6 @@ class EventsModel extends Model
 
     // Mengaktifkan timestamps, disesuaikan dengan nama kolom di ERD
     protected $useTimestamps = true;
-    protected $createdField  = 'create_at'; // Sesuai ERD
+    protected $createdField  = 'created_at'; // Sesuai ERD
     protected $updatedField  = ''; // Tidak ada updated_at di ERD
 }

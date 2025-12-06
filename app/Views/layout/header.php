@@ -44,7 +44,7 @@ $isAdmin = ($roleName === 'Admin');
             display: flex;
             justify-content: space-between;
             align-items: center;
-            height: 70px;
+            height: 8/0px;
             position: fixed;
             top: 0;
             left: 0;
@@ -234,7 +234,8 @@ $isAdmin = ($roleName === 'Admin');
                 <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
                 <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
                 <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
-                 <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
+                <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
+                <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
             </ul>
         </li>
         <?php endif; ?>
@@ -250,8 +251,8 @@ $isAdmin = ($roleName === 'Admin');
 <header class="top-header">
     <div class="header-left">
         <i class="fas fa-bars menu-toggle"></i>
-        <a class="navbar-brand ms-3" href="#">
-            <img src="https://placehold.co/150x50/FFFFFF/000000?text=Logo+Lab" alt="Logo">
+        <a class="navbar-brand ms-3 " href="/"">
+            <img src="<?= base_url('assets/images/GambarLogo.jpg') ?>" alt="Logo Lab" style="height: 71px;">
         </a>
     </div>
     <ul class="navbar-nav flex-row">

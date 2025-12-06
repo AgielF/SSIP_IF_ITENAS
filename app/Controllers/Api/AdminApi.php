@@ -87,6 +87,7 @@ class AdminApi extends ResourceController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
+            'link_gform' => $this->request->getPost('link_gform'),
             'created_at' => date('Y-m-d H:i:s')
         ];
 
@@ -110,6 +111,7 @@ class AdminApi extends ResourceController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
+            'link_gform' => $this->request->getPost('link_gform'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
@@ -701,7 +703,7 @@ class AdminApi extends ResourceController
 
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'id_user' => 1, // Default to admin user ID
+            'id_user' => $this->request->getPost('id_user'), // Get actual user ID from form
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s')
         ];
@@ -722,7 +724,7 @@ class AdminApi extends ResourceController
 
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'id_user' => 1, // Default to admin user ID
+            'id_user' => $this->request->getPost('id_user'), // Get actual user ID from form
             'updated_at' => date('Y-m-d H:i:s')
         ];
 

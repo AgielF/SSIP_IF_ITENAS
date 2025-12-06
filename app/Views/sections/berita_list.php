@@ -47,7 +47,7 @@
 <div class="container my-5">
     <!-- Header dan Filter -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <h2 class="h3">Agenda & Acara (Berita)</h2>
+    <h2 class="h3">Berita & Pengumuman</h2>
     <div class="filter-buttons btn-group" role="group">
         <?php 
         $kategoriList = ['semua', 'seminar', 'workshop', 'internal']; 

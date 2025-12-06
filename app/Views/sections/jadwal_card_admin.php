@@ -19,6 +19,28 @@
         color: #0d6efd;
         border-color: #dee2e6 #dee2e6 #fff;
     }
+
+    /* Modal visibility improvements */
+    #assignAsistenModal .modal-content {
+        background-color: #ffffff !important;
+        border: 2px solid #dee2e6 !important;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5) !important;
+    }
+    #assignAsistenModal .modal-backdrop {
+        background-color: rgba(0, 0, 0, 0.7) !important;
+    }
+    #assignAsistenModal .form-check {
+        background-color: #f8f9fa;
+        padding: 8px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
+    #assignAsistenModal .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
     @media print {
         body * { visibility: hidden; }
         #printable-area, #printable-area * { visibility: visible; }
@@ -31,6 +53,29 @@
 </style>
 
 <div class="container my-5">
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
             <a class="nav-link active" href="#">Daftar Jadwal</a>
@@ -83,6 +128,7 @@
                                 <th>Jam</th>
                                 <th>Dosen</th>
                                 <th>Ruangan</th>
+                                <th>Asisten</th>
                                 <th>Jenis</th>
                                 <th class="non-printable">Aksi</th>
                             </tr>
@@ -104,11 +150,20 @@
                                             <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"
                                                 data-id="<?= $row[0] ?>"
                                                 data-id_event="<?= esc($row[8] ?? '') ?>"
-                                                data-tanggal="<?= esc($row[3]) ?>"
-                                                data-waktu_mulai="<?= esc($row[4]) ?>"
-                                                data-waktu_selesai="<?= esc($row[4]) ?>"
-                                                data-ruangan="<?= esc($row[6]) ?>">
+                                                data-tanggal="<?= esc($row[9]) ?>"
+                                                data-waktu_mulai="<?= esc($row[10]) ?>"
+                                                data-waktu_selesai="<?= esc($row[11]) ?>"
+                                                data-ruangan="<?= esc($row[12]) ?>"
+                                                data-kelas="<?= esc($row[13]) ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#editDataModal">
                                                 <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-info me-1 btn-assign"
+                                                data-id="<?= $row[0] ?>"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#assignAsistenModal">
+                                                <i class="fas fa-user-plus"></i>
                                             </button>
                                             <a href="<?= site_url('jadwal/delete/'.$row[0]) ?>"
                                             class="btn btn-sm btn-outline-danger"
@@ -120,7 +175,7 @@
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted">Data tidak ditemukan.</td>
+                                    <td colspan="10" class="text-center text-muted">Data tidak ditemukan.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -169,6 +224,17 @@
                     <label class="form-label">Ruangan</label>
                     <input type="text" name="ruangan" class="form-control" required>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Kelas</label>
+                    <select name="kelas" class="form-control">
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -213,6 +279,17 @@
                     <label class="form-label">Ruangan</label>
                     <input type="text" name="ruangan" id="edit-ruangan" class="form-control" required>
                 </div>
+                <div class="mb-3">
+                    <label class="form-label">Kelas</label>
+                    <select name="kelas" id="edit-kelas" class="form-control">
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                    </select>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -222,8 +299,49 @@
     </div>
 </div>
 
+<!-- Modal Assign Asisten -->
+<div class="modal fade" id="assignAsistenModal" tabindex="-1" style="z-index: 1055;" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-white shadow-lg border">
+            <form id="assignAsistenForm" method="post">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">Assign Asisten ke Jadwal</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id_jadwal" id="assign-jadwal-id">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Pilih Asisten Laboratorium</label>
+                        <div id="asisten-list" class="border rounded p-3 bg-light" style="max-height: 300px; overflow-y: auto;">
+                            <!-- Asisten list will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Assignment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Toast notification handling
+    <?php if (session()->getFlashdata('success')): ?>
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
+        successToast.show();
+        setTimeout(() => successToast.hide(), 3000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        document.getElementById('errorMessage').textContent = '<?= session()->getFlashdata('error') ?>';
+        errorToast.show();
+        setTimeout(() => errorToast.hide(), 3000);
+    <?php endif; ?>
     const searchInput = document.getElementById('search-input');
     const table = document.getElementById('jadwal-table');
     const tableRows = Array.from(table.querySelectorAll('tbody tr'));
@@ -302,21 +420,140 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTable();
 
     // === Edit Modal ===
-    const editButtons = document.querySelectorAll(".btn-edit");
-    const editModal = new bootstrap.Modal(document.getElementById("editDataModal"));
-    const editForm = document.getElementById("editForm");
+    document.querySelectorAll('.btn-edit').forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const idEvent = this.getAttribute('data-id_event');
+            const tanggal = this.getAttribute('data-tanggal');
+            const waktuMulai = this.getAttribute('data-waktu_mulai');
+            const waktuSelesai = this.getAttribute('data-waktu_selesai');
+            const ruangan = this.getAttribute('data-ruangan');
+            const kelas = this.getAttribute('data-kelas');
 
-    editButtons.forEach(btn => {
-        btn.addEventListener("click", function () {
-            document.getElementById("edit-id").value = this.dataset.id;
-            document.getElementById("edit-id-event").value = this.dataset.id_event;
-            document.getElementById("edit-tanggal").value = this.dataset.tanggal;
-            document.getElementById("edit-waktu-mulai").value = this.dataset.waktu_mulai;
-            document.getElementById("edit-waktu-selesai").value = this.dataset.waktu_selesai;
-            document.getElementById("edit-ruangan").value = this.dataset.ruangan;
+            document.getElementById("edit-id").value = id;
+            document.getElementById("edit-id-event").value = idEvent;
+            document.getElementById("edit-tanggal").value = tanggal;
+            document.getElementById("edit-waktu-mulai").value = waktuMulai;
+            document.getElementById("edit-waktu-selesai").value = waktuSelesai;
+            document.getElementById("edit-ruangan").value = ruangan;
+            document.getElementById("edit-kelas").value = kelas;
 
-            editForm.action = "<?= site_url('jadwal/update/') ?>" + this.dataset.id;
-            editModal.show();
+            document.getElementById("editForm").action = "<?= site_url('jadwal/update/') ?>" + id;
+        });
+    });
+
+    // === Assign Asisten Modal ===
+    document.querySelectorAll('.btn-assign').forEach(button => {
+        button.addEventListener('click', function() {
+            const jadwalId = this.getAttribute('data-id');
+            document.getElementById('assign-jadwal-id').value = jadwalId;
+
+            // Load available assistants
+            loadAssistantsForJadwal(jadwalId);
+        });
+    });
+
+    function loadAssistantsForJadwal(jadwalId) {
+        const asistenList = document.getElementById('asisten-list');
+        asistenList.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+        // Get available assistants from PHP data
+        const assistants = <?php echo json_encode($assistants ?? []); ?>;
+
+        // Get currently assigned assistants for this jadwal
+        fetch('<?php echo site_url('api/asisten-jadwal'); ?>?jadwal=' + jadwalId, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const assignedIds = data.data ? data.data.map(item => item.id_user) : [];
+
+            let html = '';
+            if (assistants && assistants.length > 0) {
+                assistants.forEach(asisten => {
+                    const isAssigned = assignedIds.includes(asisten.id);
+                    html += `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   name="assigned_asisten[]" value="${asisten.id}"
+                                   id="asisten-${asisten.id}" ${isAssigned ? 'checked' : ''}>
+                            <label class="form-check-label" for="asisten-${asisten.id}">
+                                ${asisten.nama}
+                            </label>
+                        </div>
+                    `;
+                });
+            }
+
+            asistenList.innerHTML = html || '<p class="text-muted">Tidak ada asisten tersedia</p>';
+        })
+        .catch(error => {
+            console.error('Error loading assistants:', error);
+            asistenList.innerHTML = '<p class="text-danger">Error loading assistants: ' + error.message + '</p>';
+        });
+    }
+
+    // Handle assign asisten form submission
+    document.getElementById('assignAsistenForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const jadwalId = formData.get('id_jadwal');
+
+        // Clear existing assignments first
+        fetch('<?= site_url('api/asisten-jadwal') ?>?jadwal=' + jadwalId, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            const deletePromises = (data.data || []).map(item => {
+                return fetch('<?= site_url('api/asisten-jadwal/delete/') ?>' + item.id, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    }
+                });
+            });
+
+            return Promise.all(deletePromises);
+        })
+        .then(() => {
+            // Add new assignments
+            const selectedAsisten = formData.getAll('assigned_asisten[]');
+            const assignPromises = selectedAsisten.map(asistenId => {
+                const assignData = new FormData();
+                assignData.append('id_jadwal', jadwalId);
+                assignData.append('id_user', asistenId);
+
+                return fetch('<?= site_url('api/asisten-jadwal/create') ?>', {
+                    method: 'POST',
+                    body: assignData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+            });
+
+            return Promise.all(assignPromises);
+        })
+        .then(() => {
+            // Close modal and reload page
+            const modal = bootstrap.Modal.getInstance(document.getElementById('assignAsistenModal'));
+            modal.hide();
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error updating assignments:', error);
+            alert('Terjadi kesalahan saat menyimpan assignment');
         });
     });
 });

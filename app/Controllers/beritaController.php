@@ -75,7 +75,7 @@ class BeritaController extends BaseController
 
         $this->beritaModel->insert($data);
 
-        return redirect()->to('/berita')->with('success', 'Berita berhasil ditambahkan');
+        return redirect()->to('/berita_admin')->with('success', 'Berita berhasil ditambahkan');
     }
 
 
@@ -94,7 +94,7 @@ class BeritaController extends BaseController
 
         $this->beritaModel->update($id, $data);
 
-        return redirect()->to('/berita')->with('success', 'Berita berhasil diperbarui');
+        return redirect()->to('/berita_admin')->with('success', 'Berita berhasil diperbarui');
     }
 
     // ❌ Hapus berita
@@ -102,6 +102,6 @@ class BeritaController extends BaseController
     {
         $this->beritaModel->delete($id);
 
-        return redirect()->to('/berita')->with('success', 'Berita berhasil dihapus');
+        return redirect()->to('/berita_admin')->with('success', 'Berita berhasil dihapus');
     }
 }

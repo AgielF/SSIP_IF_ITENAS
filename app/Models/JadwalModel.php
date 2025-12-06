@@ -9,7 +9,7 @@ class JadwalModel extends Model
 {
     protected $table = 'jadwal';
     protected $primaryKey = 'id_jadwal';
-    protected $allowedFields = ['id_event', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'ruangan', 'created_at', 'updated_at'];
+    protected $allowedFields = ['id_event', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'ruangan', 'kelas', 'created_at', 'updated_at'];
 
     public function getJadwalWithDetails()
     {
@@ -36,7 +36,8 @@ class JadwalModel extends Model
             }
 
             $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
-            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
+            $instructor = 'Dosen Pengampu'; // Default instructor name
+            $assistants = !empty($asisten) ? implode(', ', array_column($asisten, 'nama')) : 'Belum Ditentukan';
 
             $processedSchedules[] = [
                 'id_jadwal'  => $item['id_jadwal'],   // tambahkan ini
@@ -46,7 +47,8 @@ class JadwalModel extends Model
                 'status_color'=> $status_color,
                 'date'        => $scheduleDate->format('l, d F Y'),
                 'time'        => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
-                'instructor'  => $instructor
+                'instructor'  => $instructor,
+                'assistants'  => $assistants
             ];
         }
 

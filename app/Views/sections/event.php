@@ -30,7 +30,7 @@
 <div class="container my-5">
   <!-- Header dan Filter -->
   <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-    <h2 class="h3">Agenda & Acara</h2>
+    <h2 class="h3">Daftar Event</h2>
     <div class="d-flex gap-2">
       <!-- Filter Jenis -->
       <div class="filter-buttons btn-group" role="group">

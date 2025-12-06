@@ -31,6 +31,29 @@
 </style>
 
 <div class="container my-5">
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="successMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
             <a class="nav-link active" href="#">Daftar Galeri</a>
@@ -196,6 +219,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Toast notification handling
+    <?php if (session()->getFlashdata('success')): ?>
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
+        successToast.show();
+        setTimeout(() => successToast.hide(), 3000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        document.getElementById('errorMessage').textContent = '<?= session()->getFlashdata('error') ?>';
+        errorToast.show();
+        setTimeout(() => errorToast.hide(), 3000);
+    <?php endif; ?>
     const searchInput = document.getElementById('search-input');
     const table = document.getElementById('galeri-table');
     const tableRows = Array.from(table.querySelectorAll('tbody tr'));

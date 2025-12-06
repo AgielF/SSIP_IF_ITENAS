@@ -8,32 +8,47 @@ class AsistenJadwalSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            [
-                'id_jadwal' => 1,
-                'id_user'   => 1, // id asisten
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'id_jadwal' => 2,
-                'id_user'   => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'id_jadwal' => 3,
-                'id_user'   => 2,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-        ];
+        // Get all jadwal IDs
+        $jadwalIds = $this->db->table('jadwal')->select('id_jadwal')->get()->getResultArray();
+        $jadwalIds = array_column($jadwalIds, 'id_jadwal');
 
-        // Check if asisten_jadwal already exist
-        foreach ($data as $asisten) {
-            $existing = $this->db->table('asisten_jadwal')->where('id_jadwal', $asisten['id_jadwal'])->where('id_user', $asisten['id_user'])->get()->getRow();
-            if (!$existing) {
-                $this->db->table('asisten_jadwal')->insert($asisten);
+        // Get assistant user IDs (role_id = 2)
+        $assistantIds = $this->db->table('users')
+            ->select('id')
+            ->where('role_id', 2)
+            ->get()->getResultArray();
+        $assistantIds = array_column($assistantIds, 'id');
+
+        if (empty($jadwalIds) || empty($assistantIds)) {
+            echo "No jadwal or assistants found. Skipping assignment creation.\n";
+            return;
+        }
+
+        // Create sample assignments
+        $assignments = [];
+
+        // Assign assistants to first few jadwals
+        foreach ($jadwalIds as $index => $jadwalId) {
+            if ($index >= count($assistantIds)) break;
+
+            $assignments[] = [
+                'id_jadwal' => $jadwalId,
+                'id_user' => $assistantIds[$index],
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+        }
+
+        // Insert assignments if they don't exist
+        foreach ($assignments as $assignment) {
+            $exists = $this->db->table('asisten_jadwal')
+                ->where('id_jadwal', $assignment['id_jadwal'])
+                ->where('id_user', $assignment['id_user'])
+                ->get()->getRow();
+
+            if (!$exists) {
+                $this->db->table('asisten_jadwal')->insert($assignment);
+                echo "Assigned assistant {$assignment['id_user']} to jadwal {$assignment['id_jadwal']}\n";
             }
         }
     }
