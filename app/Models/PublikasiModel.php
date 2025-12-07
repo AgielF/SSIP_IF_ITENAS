@@ -88,20 +88,20 @@ class PublikasiModel extends Model
         ];
 
         foreach ($semuaProyek as $pub) {
-            $link_publikasi = '<a href="' . esc($pub['link_publikasi'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Publikasi</a>';
-            $link_doi = '<a href="' . esc($pub['link_doi'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link DOI</a>';
-            $link_gdrive = '<a href="' . esc($pub['link_gdrive'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Gdrive</a>';
+            $link_publikasi = !empty($pub['link_publikasi']) ? '<a href="' . esc($pub['link_publikasi'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Publikasi</a>' : '-';
+            $link_doi = !empty($pub['link_doi']) ? '<a href="' . esc($pub['link_doi'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link DOI</a>' : '-';
+            $link_gdrive = !empty($pub['link_gdrive']) ? '<a href="' . esc($pub['link_gdrive'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Gdrive</a>' : '-';
 
             $row = [
-                $pub['kategori'],
-                $pub['tanggal_publikasi'],
-                $pub['penulis_utama'],
-                $pub['penulis_pendamping'],
-                $pub['volume'],
-                $pub['tahun'],
-                $pub['nomor'],
-                $pub['conference'],
-                $pub['deskripsi'],
+                $pub['kategori'] ?? '-',
+                $pub['tanggal_publikasi'] ?? '-',
+                $pub['penulis_utama'] ?? '-',
+                $pub['penulis_pendamping'] ?? '-',
+                $pub['volume'] ?? '-',
+                $pub['tahun'] ?? '-',
+                $pub['nomor'] ?? '-',
+                $pub['conference'] ?? '-',
+                $pub['deskripsi'] ?? '-',
                 $link_publikasi,
                 $link_doi,
                 $link_gdrive,
@@ -115,10 +115,6 @@ class PublikasiModel extends Model
             } elseif ($pub['jenis_publikasi'] === 'paten') {
                 $processedData['paten']['rows'][] = $row;
             }
-    
-    
-            return $processedData;
-    
         }
 
         return $processedData;

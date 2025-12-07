@@ -20,25 +20,32 @@ class Users extends BaseController
     // List semua users
     public function index()
     {
-        $data = [
-            'title' => 'User Management',
-            'users' => $this->userModel->select('users.*, roles.role_name')
-                ->join('roles', 'roles.id = users.role_id')
-                ->findAll()
-        ];
+        // Ambil semua user dengan join ke roles table untuk mendapatkan role_name
+        $users = $this->userModel->select('users.*, roles.role_name')
+            ->join('roles', 'roles.id = users.role_id', 'left')
+            ->orderBy('users.created_at', 'DESC')
+            ->findAll();
 
-        return view('admin/users/index', $data);
+        // Map role_name ke format yang konsisten untuk view
+        $processedUsers = [];
+        foreach ($users as $user) {
+            // Pastikan role_name ada, jika tidak gunakan default
+            $roleName = $user['role_name'] ?? 'user';
+            $user['role'] = strtolower($roleName); // Simpan sebagai lowercase untuk konsistensi
+            $processedUsers[] = $user;
+        }
+
+        return view('asisten_admin_list_view', [
+            'title'   => 'Kelola Anggota Laboratorium',
+            'asisten' => $processedUsers
+        ]);
     }
 
     // form untuk add new user
     public function new()
     {
-        $data = [
-            'title' => 'Add New User',
-            'roles' => $this->roleModel->findAll()
-        ];
-
-        return view('admin/users/create', $data);
+        // Redirect ke asisten_admin, form add ada di modal
+        return redirect()->to('/asisten_admin');
     }
 
     // Create user baru
@@ -89,7 +96,7 @@ class Users extends BaseController
                     ->setContentType('application/json')
                     ->setJSON(['success' => true, 'message' => 'User created successfully']);
             }
-            return redirect()->to('/admin/users')->with('success', 'User created successfully');
+            return redirect()->to('/asisten_admin')->with('success', 'User created successfully');
         } else {
             log_message('debug', 'Failed to save user');
             if ($isAjax) {
@@ -105,18 +112,8 @@ class Users extends BaseController
     // Edit user
     public function edit($id)
     {
-        $user = $this->userModel->find($id);
-        if (!$user) {
-            return redirect()->to('/admin/users')->with('error', 'User not found');
-        }
-
-        $data = [
-            'title' => 'Edit User',
-            'user' => $user,
-            'roles' => $this->roleModel->findAll()
-        ];
-
-        return view('admin/users/edit', $data);
+        // Redirect ke asisten_admin, form edit ada di modal
+        return redirect()->to('/asisten_admin');
     }
 
     // Update user
@@ -130,7 +127,7 @@ class Users extends BaseController
                     ->setContentType('application/json')
                     ->setJSON(['success' => false, 'message' => 'User not found']);
             }
-            return redirect()->to('/admin/users')->with('error', 'User not found');
+            return redirect()->to('/asisten_admin')->with('error', 'User not found');
         }
 
         // debug
@@ -207,7 +204,7 @@ class Users extends BaseController
                     ->setContentType('application/json')
                     ->setJSON(['success' => true, 'message' => 'User updated successfully']);
             }
-            return redirect()->to('/admin/users')->with('success', 'User updated successfully');
+            return redirect()->to('/asisten_admin')->with('success', 'User updated successfully');
         } else {
             if ($this->request->isAJAX()) {
                 return $this->response
@@ -227,7 +224,7 @@ class Users extends BaseController
                     ->setContentType('application/json')
                     ->setJSON(['success' => true, 'message' => 'User deleted successfully']);
             }
-            return redirect()->to('/admin/users')->with('success', 'User deleted successfully');
+            return redirect()->to('/asisten_admin')->with('success', 'User deleted successfully');
         } else {
             if ($this->request->isAJAX()) {
                 return $this->response

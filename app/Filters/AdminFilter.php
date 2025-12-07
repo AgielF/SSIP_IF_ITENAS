@@ -45,7 +45,15 @@ class AdminFilter implements FilterInterface
         }
 
         try {
-            $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET') ?: 'your-secret-key', 'HS256'));
+            $jwtSecret = getenv('JWT_SECRET');
+            if (empty($jwtSecret) || $jwtSecret === 'your-secret-key') {
+                log_message('error', 'JWT_SECRET not set or using default value! This is a security risk.');
+                if (ENVIRONMENT === 'production') {
+                    throw new \RuntimeException('JWT_SECRET must be configured in production environment');
+                }
+                $jwtSecret = 'your-secret-key'; // Fallback for development only
+            }
+            $decoded = JWT::decode($token, new Key($jwtSecret, 'HS256'));
 
             // 🔹 cek role admin
             if ($decoded->role_id != 1) {

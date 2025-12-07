@@ -19,6 +19,20 @@ class App extends BaseConfig
     public string $baseURL = 'http://localhost:8080/';
 
     /**
+     * Constructor to set baseURL from environment variable if available
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        
+        // Get baseURL from environment variable if set
+        $envBaseURL = getenv('APP_BASEURL');
+        if ($envBaseURL !== false && !empty($envBaseURL)) {
+            $this->baseURL = rtrim($envBaseURL, '/') . '/';
+        }
+    }
+
+    /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
      *
