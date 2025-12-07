@@ -30,12 +30,14 @@ class AdminFilter implements FilterInterface
 
         // 🔹 3. Kalau tetap tidak ada, tolak akses
         if (!$token) {
-            // Check if it's an API request
+            // Check if it's an API request or AJAX request
             $path = $request->getUri()->getPath();
             $isApi = strpos($path, '/api/') === 0;
-            if ($isApi) {
+            $isAjax = $request->isAJAX() || $request->hasHeader('X-Requested-With');
+            
+            if ($isApi || $isAjax) {
                 return Services::response()
-                    ->setJSON(['status' => 'error', 'message' => 'Token required'])
+                    ->setJSON(['status' => 'error', 'message' => 'Token required', 'success' => false])
                     ->setStatusCode(401);
             } else {
                 return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
@@ -47,12 +49,14 @@ class AdminFilter implements FilterInterface
 
             // 🔹 cek role admin
             if ($decoded->role_id != 1) {
-                // Check if API
+                // Check if API or AJAX
                 $path = $request->getUri()->getPath();
                 $isApi = strpos($path, '/api/') === 0;
-                if ($isApi) {
+                $isAjax = $request->isAJAX() || $request->hasHeader('X-Requested-With');
+                
+                if ($isApi || $isAjax) {
                     return Services::response()
-                        ->setJSON(['status' => 'error', 'message' => 'Access denied'])
+                        ->setJSON(['status' => 'error', 'message' => 'Access denied', 'success' => false])
                         ->setStatusCode(403);
                 } else {
                     return redirect()->to('/')->with('error', 'Akses ditolak.');
@@ -63,14 +67,17 @@ class AdminFilter implements FilterInterface
             $request->user = $decoded;
 
         } catch (\Exception $e) {
-            // Check if API
+            // Check if API or AJAX
             $path = $request->getUri()->getPath();
             $isApi = strpos($path, '/api/') === 0;
-            if ($isApi) {
+            $isAjax = $request->isAJAX() || $request->hasHeader('X-Requested-With');
+            
+            if ($isApi || $isAjax) {
                 return Services::response()
                     ->setJSON([
                         'status' => 'error',
                         'message' => 'Invalid token',
+                        'success' => false,
                         'error' => $e->getMessage()
                     ])
                     ->setStatusCode(401);

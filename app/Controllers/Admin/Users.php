@@ -135,13 +135,16 @@ class Users extends BaseController
 
         // debug
         log_message('debug', 'Users::update called for ID: ' . $id . '. AJAX: ' . ($this->request->isAJAX() ? 'true' : 'false'));
+        log_message('debug', 'Request method: ' . $this->request->getMethod());
+        log_message('debug', 'All POST data: ' . json_encode($this->request->getPost()));
 
         $nomor = $this->request->getPost('nomor');
         $nama = $this->request->getPost('nama');
         $jurusan = $this->request->getPost('jurusan');
         $role_id = $this->request->getPost('role_id');
 
-        log_message('debug', 'Update data: ' . json_encode([$nomor, $nama, $jurusan, $role_id]));
+        log_message('debug', 'Update data: ' . json_encode(['nomor' => $nomor, 'nama' => $nama, 'jurusan' => $jurusan, 'role_id' => $role_id]));
+        log_message('debug', 'Current user role_id: ' . $user['role_id']);
 
         $data = [];
 
@@ -169,9 +172,17 @@ class Users extends BaseController
             $data['jurusan'] = $jurusan;
         }
 
-        // Update role_id if changed and not empty
-        if ($role_id !== null && $role_id !== '' && $role_id != $user['role_id']) {
+        // Update role_id if provided - always update if value is sent (don't skip if same value)
+        if ($role_id !== null && $role_id !== '') {
+            // Convert to integer for proper comparison and storage
+            $role_id = (int)$role_id;
+            $current_role_id = (int)$user['role_id'];
+            
+            // Always update role_id if it's provided, even if it's the same (to ensure update happens)
             $data['role_id'] = $role_id;
+            log_message('debug', 'Role ID will be updated from ' . $current_role_id . ' to ' . $role_id);
+        } else {
+            log_message('debug', 'Role ID not provided in request - keeping current value: ' . $user['role_id']);
         }
 
         // Only update password if provided

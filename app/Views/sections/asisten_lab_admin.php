@@ -336,7 +336,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            let url = '/admin/users/create';
+            // Use site_url helper for proper URL generation
+            const baseUrl = '<?= site_url() ?>';
+            let url = baseUrl + '/admin/users/create';
             let method = 'POST';
 
             if (currentState.editingIndex !== null) {
@@ -344,9 +346,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const rowIndex = currentState.editingIndex;
                 const userData = allRows[rowIndex];
                 const userId = userData.dataset.userId; // Get user ID from data attribute
-                url = `/admin/users/update/${userId}`;
-                method = 'PUT';
-                console.log('Update URL:', url, 'User ID:', userId);
+                url = baseUrl + `/admin/users/update/${userId}`;
+                method = 'POST';
+                // No need for _method field - CodeIgniter route is already POST
+                console.log('Update URL:', url, 'User ID:', userId, 'Role ID:', data.role_id);
             } else {
                 console.log('Create URL:', url);
             }
@@ -367,7 +370,26 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!response.ok) {
                 const errorText = await response.text();
                 console.error('Response error:', errorText);
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                
+                // Try to parse as JSON for better error message
+                let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    if (errorJson.message) {
+                        errorMessage = errorJson.message;
+                    }
+                } catch (e) {
+                    // Not JSON, use text as is
+                }
+                
+                // If 401 or 403, redirect to login
+                if (response.status === 401 || response.status === 403) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                throw new Error(errorMessage);
             }
 
             let result;
@@ -430,7 +452,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (target.classList.contains('delete-btn')) {
             if (confirm('Apakah Anda yakin ingin menghapus anggota ini?')) {
-                fetch(`/admin/users/delete/${userId}`, {
+                const baseUrl = '<?= site_url() ?>';
+                fetch(baseUrl + `/admin/users/delete/${userId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -446,7 +469,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (!response.ok) {
                         const errorText = await response.text();
                         console.error('Delete response error:', errorText);
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        
+                        // Try to parse as JSON for better error message
+                        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            if (errorJson.message) {
+                                errorMessage = errorJson.message;
+                            }
+                        } catch (e) {
+                            // Not JSON, use text as is
+                        }
+                        
+                        // If 401 or 403, redirect to login
+                        if (response.status === 401 || response.status === 403) {
+                            alert('Session expired. Please login again.');
+                            window.location.href = '/login';
+                            return;
+                        }
+                        
+                        throw new Error(errorMessage);
                     }
 
                     let result;

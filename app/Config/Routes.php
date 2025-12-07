@@ -93,7 +93,7 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/admin/users/new', 'Admin\Users::new');
     $routes->post('/admin/users/create', 'Admin\Users::create');
     $routes->get('/admin/users/edit/(:num)', 'Admin\Users::edit/$1');
-    $routes->put('/admin/users/update/(:num)', 'Admin\Users::update/$1');
+    $routes->post('/admin/users/update/(:num)', 'Admin\Users::update/$1');
     $routes->post('/admin/users/delete/(:num)', 'Admin\Users::delete/$1');
 
 });
