@@ -124,7 +124,7 @@ class Home extends BaseController
     {
         $visiMisiModel = new VisiMisiModel();
         $data = [
-            'title'     => 'Beranda | Lab. Fisika Dasar',
+            'title'     => 'Beranda | Lab. SSIP - Institut Teknologi Nasional Bandung',
             'schedules' => $this->getProcessedJadwalData(6), // Limit to 6 schedules for home page
             'visi'      => $visiMisiModel->where('judul', 'Visi')->first()['isi'] ?? '',
             'misi'      => $visiMisiModel->where('judul', 'Misi')->first()['isi'] ?? '',

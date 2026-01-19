@@ -40,9 +40,8 @@ class AnggotaController extends BaseController
 
         // 3. Tambahkan key 'role' berupa string berdasarkan 'role_id'
         $roleMap = [
-            4 => 'dosen',
+            3 => 'dosen',
             2 => 'asisten',
-            3 => 'praktikan'
         ];
         $user['role'] = $roleMap[$user['role_id']] ?? 'tidak diketahui';
         

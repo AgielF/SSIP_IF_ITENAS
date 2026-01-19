@@ -79,12 +79,6 @@ $userRole = $roles[$user['role_id']] ?? 'Anggota';
                 </div>
             </div>
         </div>
-        <!-- Footer -->
-        <div class="card-footer bg-light text-center rounded-bottom-4">
-            <a href="/logout" class="btn btn-outline-danger btn-sm">
-                <i class="fas fa-sign-out-alt me-1"></i> Logout
-            </a>
-        </div>
     </div>
 </div>
 

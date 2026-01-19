@@ -16,7 +16,7 @@ class OrganizationController extends BaseController
         $asistenLab = $userModel->where('role_id', 2)->findAll(); // Asisten
 
         $data = [
-            'title' => 'Struktur Organisasi Lab Fisika Dasar',
+            'title' => 'SSIP - Struktur Organisasi Laboratorium',
             'kepalaLab' => $kepalaLab,
             'dosenLab' => $dosenLab,
             'asistenLab' => $asistenLab

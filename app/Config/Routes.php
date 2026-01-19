@@ -71,7 +71,7 @@ $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($rou
 $routes->get('login', 'AuthUi::login');
 // Profile butuh login
 $routes->get('profile', 'AuthUi::profile', ['filter' => 'auth']);
-$routes->get('logout', 'AuthUi::logout');   // 👈 tambahkan ini
+$routes->get('logout', 'AuthUi::logout');   // tambahkan ini
 
 // routes khusus admin, dilindungi filter admin
 $routes->group('', ['filter' => 'admin'], function($routes) {

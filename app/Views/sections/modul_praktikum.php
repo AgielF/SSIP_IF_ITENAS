@@ -34,12 +34,17 @@
                 <div class="lesson-content">
                     <h2><?= esc($modul['judul'] ?? 'Modul Praktikum') ?></h2>
                     <p><?= esc($modul['deskripsi'] ?? 'Deskripsi modul belum tersedia.') ?></p>
-                    <a href="<?= base_url('modul-praktikum/detail/'.$modul['id_modul']) ?>" class="btn">VIEW LESSON ></a>
+                    <?php if (!empty($modul['file_url'])): ?>
+                        <a href="<?= base_url('modul-praktikum/download/'.$modul['file_url']) ?>" class="btn">📥 DOWNLOAD PDF</a>
+                        <a href="<?= base_url('modul-praktikum/preview/'.$modul['file_url']) ?>" target="_blank" class="btn" style="background-color: #27ae60; border-color: #27ae60;">👁️ PREVIEW PDF</a>
+                    <?php else: ?>
+                        <span class="text-muted">File belum tersedia</span>
+                    <?php endif; ?>
                     <div class="status">Tanggal: <?= esc($modul['jadwal_tanggal']) ?></div>
                 </div>
                 <div class="lesson-image">
-                    <?php if (!empty($modul['gambar'])): ?>
-                        <img src="<?= base_url('uploads/modul/'.$modul['gambar']) ?>" alt="Gambar Modul">
+                    <?php if (!empty($modul['file_url'])): ?>
+                        <img src="https://via.placeholder.com/300x150.png?text=PDF+File" alt="PDF Icon">
                     <?php else: ?>
                         <img src="https://via.placeholder.com/300x150.png?text=Modul+Praktikum" alt="Default Gambar">
                     <?php endif; ?>

@@ -1,6 +1,6 @@
 <section class="py-5">
     <div class="container">
-        <h2 class="text-center mb-4">Berita</h2>
+        <h2 class="text-left mb-4">Berita & Kegiatan</h2>
 
         <?php if (!empty($berita_list)): ?>
             <?php foreach (array_slice($berita_list, 0, 3) as $berita): ?>

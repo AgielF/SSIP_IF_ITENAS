@@ -11,7 +11,6 @@
                     <button type="button" class="btn btn-outline-primary active" data-filter="semua">Semua</button>
                     <button type="button" class="btn btn-outline-primary" data-filter="dosen">Dosen</button>
                     <button type="button" class="btn btn-outline-primary" data-filter="asisten">Asisten</button>
-                    <button type="button" class="btn btn-outline-primary" data-filter="praktikan">Praktikan</button>
                 </div>
                 <div class="d-flex align-items-center gap-3">
                   
@@ -35,6 +34,7 @@
             <?php if (!empty($asisten)): ?>
                 <?php foreach ($asisten as $i => $a): ?>
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12 filter-item" data-role="<?= esc(strtolower($a['role'] ?? '')) ?>" data-period="2022/2023">
+                    <!-- Debug: Role value is <?= esc($a['role'] ?? 'N/A') ?> -->
                     <div class="card h-100 shadow-sm">
                         <div class="position-relative">
                             <div class="role-badge bg-primary text-white py-1 px-2 rounded position-absolute top-0 end-0 m-2 small">
@@ -183,14 +183,27 @@ class AdvancedFilter {
             processedItems.reverse(); // Membalik urutan array
         }
         
-        // 3. Terapkan batasan item per halaman
-        if (this.currentItemsPerPage !== 'semua') {
-            const limit = parseInt(this.currentItemsPerPage, 10);
-            processedItems = processedItems.slice(0, limit);
-        }
-
-        // 4. Render item
-        this.renderItems(processedItems);
+        // 3. Separate items by role for pagination
+        const dosenItems = processedItems.filter(item => item.dataset.role === 'dosen');
+        const asistenItems = processedItems.filter(item => item.dataset.role === 'asisten');
+        
+        // 4. Apply pagination to each role separately
+        const paginateItems = (items) => {
+            if (this.currentItemsPerPage !== 'semua') {
+                const limit = parseInt(this.currentItemsPerPage, 10);
+                return items.slice(0, limit);
+            }
+            return items;
+        };
+        
+        const paginatedDosenItems = paginateItems(dosenItems);
+        const paginatedAsistenItems = paginateItems(asistenItems);
+        
+        // 5. Combine paginated items for rendering
+        const combinedItems = [...paginatedDosenItems, ...paginatedAsistenItems];
+        
+        // 6. Render item
+        this.renderItems(combinedItems);
     }
     
     renderItems(itemsToRender) {
