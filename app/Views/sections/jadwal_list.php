@@ -1,12 +1,21 @@
 <?php
-$fields = [
-    'Machine Learning' => 'Machine Learning',
-    'Data Mining' => 'Data Mining',
-    'Deep Learning' => 'Deep Learning',
-    'Artificial Intelligence' => 'Artificial Intelligence',
-    'Expert Systems' => 'Expert Systems',
-    'Smart Systems' => 'Smart Systems'
-];
+// Generate fields dynamically dari events data
+$fields = [];
+if (!empty($events)) {
+    foreach ($events as $event) {
+        $fields[$event['nama_event']] = $event['nama_event'];
+    }
+} else {
+    // Fallback jika events tidak ada
+    $fields = [
+        'Machine Learning' => 'Machine Learning',
+        'Data Mining' => 'Data Mining',
+        'Deep Learning' => 'Deep Learning',
+        'Artificial Intelligence' => 'Artificial Intelligence',
+        'Expert Systems' => 'Expert Systems',
+        'Smart Systems' => 'Smart Systems'
+    ];
+}
 ?>
 
 <?php foreach ($fields as $fieldKey => $fieldName): ?>

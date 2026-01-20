@@ -61,10 +61,12 @@ class UserController extends BaseController
         throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
     }
 
+    // Mapping role_id sesuai seed: 1 admin, 2 asisten, 3 dosen, 4 praktikan/mahasiswa
     $roleMap = [
-        4 => 'dosen',
+        1 => 'admin',
         2 => 'asisten',
-        3 => 'praktikan'
+        3 => 'dosen',
+        4 => 'praktikan'
     ];
     $user['role'] = $roleMap[$user['role_id']] ?? 'tidak diketahui';
 

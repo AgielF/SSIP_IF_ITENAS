@@ -85,7 +85,7 @@
                                     <td><?= esc($row['deskripsi']) ?></td>
                                     <td>
                                         <?php if (!empty($row['file_url'])): ?>
-                                            <a href="<?= base_url('uploads/modul/'.$row['file_url']) ?>" target="_blank">Lihat File</a>
+                                            <a href="<?= base_url('modul-praktikum/preview/'.$row['file_url']) ?>" target="_blank" class="badge bg-info text-dark">👁️ Preview</a>
                                         <?php else: ?>
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
@@ -122,7 +122,7 @@
 <!-- Modal Tambah -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form action="/modul-praktikum/create" method="post" class="modal-content">
+        <form action="/modul-praktikum/create" method="post" enctype="multipart/form-data" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Modul Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -134,8 +134,10 @@
                 <div class="mb-3"><label class="form-label">Deskripsi</label>
                     <textarea name="deskripsi" class="form-control" required></textarea>
                 </div>
-                <div class="mb-3"><label class="form-label">File URL</label>
-                    <input type="text" name="file_url" class="form-control">
+                <div class="mb-3">
+                    <label class="form-label">File PDF</label>
+                    <input type="file" name="file_modul" class="form-control" accept=".pdf" placeholder="Pilih file PDF">
+                    <small class="text-muted d-block mt-1">Format: PDF | Ukuran maksimal: 10MB</small>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"> ID Jadwal</label>
@@ -160,7 +162,7 @@
 <!-- Modal Edit -->
 <div class="modal fade" id="modalEdit" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <form id="formEdit" method="post" class="modal-content">
+        <form id="formEdit" method="post" enctype="multipart/form-data" class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Edit Modul Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -173,8 +175,11 @@
                 <div class="mb-3"><label class="form-label">Deskripsi</label>
                     <textarea name="deskripsi" id="edit-deskripsi" class="form-control" required></textarea>
                 </div>
-                <div class="mb-3"><label class="form-label">File URL</label>
-                    <input type="text" name="file_url" id="edit-file" class="form-control">
+                <div class="mb-3">
+                    <label class="form-label">File PDF</label>
+                    <input type="file" name="file_modul" id="edit-file" class="form-control" accept=".pdf">
+                    <small class="text-muted d-block mt-1">Format: PDF | Ukuran maksimal: 10MB | Kosongkan jika tidak ingin mengubah file</small>
+                    <div id="current-file-info" class="mt-2"></div>
                 </div>
                 
                 <div class="mb-3">
@@ -253,12 +258,20 @@ document.addEventListener('DOMContentLoaded', function () {
     // Isi data ke modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
         btn.addEventListener('click', function () {
+            const currentFile = this.dataset.file;
             document.getElementById('formEdit').action = "/modul-praktikum/update/" + this.dataset.id;
             document.getElementById('edit-id').value = this.dataset.id;
             document.getElementById('edit-judul').value = this.dataset.judul;
             document.getElementById('edit-deskripsi').value = this.dataset.deskripsi;
-            document.getElementById('edit-file').value = this.dataset.file;
             document.getElementById('edit-jadwal').value = this.dataset.jadwal;
+            
+            // Tampilkan informasi file saat ini
+            const fileInfo = document.getElementById('current-file-info');
+            if (currentFile) {
+                fileInfo.innerHTML = `<small class="text-success"><i class="fas fa-file-pdf me-1"></i>File saat ini: <a href="<?= base_url('modul-praktikum/preview/') ?>${currentFile}" target="_blank">${currentFile}</a></small>`;
+            } else {
+                fileInfo.innerHTML = '<small class="text-muted">Belum ada file</small>';
+            }
         });
     });
 </script>

@@ -18,12 +18,14 @@ class UserModel extends Model
     
     public function getDosenLab()
     {
-        return $this->where('role_id', 4)->findAll();
+        // Sesuai seed: dosen memiliki role_id = 3
+        return $this->where('role_id', 3)->findAll();
     }
 
     public function praktikan()
     {
-        return $this->where('role_id', 3)->findAll();
+        // Praktikan/mahasiswa gunakan role_id terpisah (jika ada), default kosong
+        return $this->where('role_id', 4)->findAll();
     }
     
     public function admin(){
