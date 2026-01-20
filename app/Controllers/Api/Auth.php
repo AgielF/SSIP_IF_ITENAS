@@ -129,11 +129,12 @@ class Auth extends ResourceController
 
 
     public function logout()
-    {
-        session()->destroy();
-        return redirect()->to('/login');
-    }
+{
+    session()->remove('user');
+    session()->destroy();
 
+    return redirect()->to('/login')->with('success', 'Berhasil logout');
+}
 
     /**
      * Profile endpoint
