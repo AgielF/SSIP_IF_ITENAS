@@ -3,7 +3,6 @@
 namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
-
 class ProyekRisetSeeder extends Seeder
 {
     public function run()
@@ -11,7 +10,9 @@ class ProyekRisetSeeder extends Seeder
         $data = [
             [
                 'judul' => 'Pengembangan Sistem Informasi Akademik Berbasis Web',
-                'deskripsi' => 'Penelitian untuk mengembangkan sistem informasi akademik yang terintegrasi untuk perguruan tinggi',
+                'topik' => 'smart system',
+                'status' => 'sedang dilaksanakan',
+                'deskripsi' => 'Penelitian untuk mengembangkan sistem informasi akademik...',
                 'mitra' => 'Universitas Indonesia',
                 'sumber_dana' => 'DIKTI',
                 'tahun_mulai' => 2024,
@@ -22,7 +23,9 @@ class ProyekRisetSeeder extends Seeder
             ],
             [
                 'judul' => 'Implementasi Machine Learning untuk Prediksi Kelulusan Mahasiswa',
-                'deskripsi' => 'Penelitian menggunakan algoritma machine learning untuk memprediksi kelulusan mahasiswa berdasarkan data akademik',
+                'topik' => 'machine learning',
+                'status' => 'akan dilaksanakan',
+                'deskripsi' => 'Penelitian menggunakan algoritma machine learning...',
                 'mitra' => 'Institut Teknologi Bandung',
                 'sumber_dana' => 'LPDP',
                 'tahun_mulai' => 2023,
@@ -33,7 +36,9 @@ class ProyekRisetSeeder extends Seeder
             ],
             [
                 'judul' => 'Pengembangan Aplikasi Mobile untuk Monitoring Kesehatan',
-                'deskripsi' => 'Penelitian pengembangan aplikasi mobile untuk monitoring kesehatan pasien secara real-time',
+                'topik' => 'expert system',
+                'status' => 'sedang dilaksanakan',
+                'deskripsi' => 'Penelitian pengembangan aplikasi mobile...',
                 'mitra' => 'Rumah Sakit Umum Daerah',
                 'sumber_dana' => 'DIKTI',
                 'tahun_mulai' => 2024,
@@ -44,12 +49,8 @@ class ProyekRisetSeeder extends Seeder
             ],
         ];
 
-        // Check if proyek_riset already exist
-        foreach ($data as $proyek) {
-            $existing = $this->db->table('proyek_riset')->where('judul', $proyek['judul'])->get()->getRow();
-            if (!$existing) {
-                $this->db->table('proyek_riset')->insert($proyek);
-            }
-        }
+        // clean seed
+        $this->db->table('proyek_riset')->truncate();
+        $this->db->table('proyek_riset')->insertBatch($data);
     }
-} 
+}
