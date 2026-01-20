@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Controllers\BaseController;
+use App\Models\RekrutModel;
+use App\Models\JadwalModel;
+
+class RekrutController extends BaseController
+{
+    protected $rekrutModel;
+    protected $jadwalModel;
+
+    public function __construct()
+    {
+        $this->rekrutModel = new RekrutModel();
+        $this->jadwalModel = new JadwalModel();
+    }
+
+    // Halaman publik
+    public function index()
+    {
+        return view('rekrutmen_view', [
+            'title'     => 'Informasi Rekrutmen',
+            'rekrutmen' => $this->rekrutModel->getDataPublik()
+        ]);
+    }
+
+ // Halaman admin
+public function admin()
+{
+    // 🔎 Ambil query string sort (default: desc)
+    $sort = $this->request->getGet('sort') ?? 'desc';
+
+    return view('rekrutmen_admin_view', [
+        'title'     => 'Kelola Rekrutmen',
+        'sort'      => $sort, // ✅ untuk view
+        'rekrutmen' => $this->rekrutModel->getDataAdminFormatted($sort)['rekrutmen'],
+        'jadwal'    => $this->jadwalModel
+                            ->select('jadwal.*, events.nama_event')
+                            ->join('events', 'events.id_event = jadwal.id_event', 'left')
+                            ->findAll()
+    ]);
+}
+
+
+
+    // Tambah data
+    public function store()
+    {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user   
+        $data = [
+            'id_user'    => $userId, // sementara hardcode admin
+            'id_jadwal'  => $this->request->getPost('id_jadwal'),
+            'deskripsi'  => $this->request->getPost('deskripsi'),
+            'status'     => $this->request->getPost('status'),
+            'syarat'     => $this->request->getPost('syarat'),
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->rekrutModel->insert($data);
+
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil ditambahkan');
+    }
+
+    // Update data
+    public function update($id)
+    {
+        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
+        $data = [
+            'id_user'    => $userId,
+            'id_jadwal'  => $this->request->getPost('id_jadwal'),
+            'deskripsi'  => $this->request->getPost('deskripsi'),
+            'status'     => $this->request->getPost('status'),
+            'syarat'     => $this->request->getPost('syarat'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+        $this->rekrutModel->update($id, $data);
+
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil diperbarui');
+    }
+
+    // Hapus data
+    public function delete($id)
+    {
+        $this->rekrutModel->delete($id);
+        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil dihapus');
+    }
+}
