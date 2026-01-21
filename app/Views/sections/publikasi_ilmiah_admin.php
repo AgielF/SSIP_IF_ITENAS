@@ -161,6 +161,7 @@ foreach ($publicationData as $row) {
                                 <th>Volume</th>
                                 <th>Tahun</th>
                                 <th>Nomor</th>
+                                <th>Conference</th>
                                 <th>Deskripsi</th>
                                 <th>Link Publikasi</th>
                                 <th class="action-buttons">Aksi</th>
@@ -189,6 +190,7 @@ foreach ($publicationData as $row) {
                                         <td><?= esc($row['volume']) ?></td>
                                         <td><?= esc($row['tahun']) ?></td>
                                         <td><?= esc($row['nomor']) ?></td>
+                                        <td><?= esc($row['conference']) ?></td>
                                         <td><?= esc($row['deskripsi']) ?></td>
                                         <td>
                                             <?php if (!empty($row['link_publikasi'])): ?>

@@ -23,8 +23,11 @@
     padding-left: 0;
 }
 .publication-list li {
-    padding: 1rem 0;
-    border-bottom: 1px solid #f0f2f5;
+    padding: 1.25rem 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+.publication-list li:last-child {
+    border-bottom: none;
 }
 </style>
 
@@ -34,9 +37,26 @@
 <!-- ================= LEFT COLUMN ================= -->
 <div class="col-lg-5">
     <div class="content-card h-100">
-        <h3>Field of Study and Topic Coverage</h3>
-        <h4><?= esc($field['title']) ?></h4>
-        <p class="text-muted"><?= esc($field['description']) ?></p>
+        <h3>Field of Study</h3>
+
+        <h4 class="fw-semibold mb-3">
+            <?= esc($field['title']) ?>
+        </h4>
+
+        <p class="text-muted mb-4">
+            <?= esc($field['description']) ?>
+        </p>
+
+        <div class="d-flex gap-3 small text-muted">
+            <div>
+                <strong><?= count($publications) ?></strong><br>
+                Publikasi
+            </div>
+            <div>
+                <strong><?= count($projects) ?></strong><br>
+                Proyek Riset
+            </div>
+        </div>
     </div>
 </div>
 
@@ -44,7 +64,7 @@
 <div class="col-lg-7">
 <div class="content-card h-100">
 
-<!-- Tabs -->
+<!-- ================= TABS ================= -->
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#publikasi">
@@ -67,14 +87,40 @@
 <?php if (!empty($publications)): ?>
 <?php foreach ($publications as $pub): ?>
 <li>
-    <strong><?= esc($pub['judul'] ?? 'Tanpa Judul') ?></strong>
-    <p class="small text-muted mb-1">
-        <?= esc($pub['kategori']) ?> • <?= esc($pub['tanggal_publikasi']) ?>
+    <h6 class="fw-semibold mb-1">
+        <?= esc($pub['judul'] ?? 'Tanpa Judul') ?>
+    </h6>
+
+    <div class="small text-muted mb-2">
+        <?= esc($pub['kategori'] ?? '-') ?>
+        • <?= esc($pub['tanggal_publikasi'] ?? '-') ?>
+    </div>
+
+    <?php if (!empty($pub['deskripsi'])): ?>
+    <p class="mb-2 text-secondary">
+        <?= esc($pub['deskripsi']) ?>
     </p>
-    <p class="mb-1"><?= esc($pub['deskripsi']) ?></p>
-    <span class="badge bg-secondary">
-        <?= esc($pub['jenis_publikasi']) ?>
-    </span>
+    <?php endif; ?>
+
+    <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-light text-dark border">
+            <?= esc($pub['jenis_publikasi']) ?>
+        </span>
+
+        <?php if (!empty($pub['link_doi'])): ?>
+        <a href="<?= esc($pub['link_doi'], 'attr') ?>" target="_blank"
+           class="badge bg-primary text-decoration-none">
+            DOI
+        </a>
+        <?php endif; ?>
+
+        <?php if (!empty($pub['link_publikasi'])): ?>
+        <a href="<?= esc($pub['link_publikasi'], 'attr') ?>" target="_blank"
+           class="badge bg-success text-decoration-none">
+            Publikasi
+        </a>
+        <?php endif; ?>
+    </div>
 </li>
 <?php endforeach; ?>
 <?php else: ?>
@@ -91,15 +137,51 @@
 <?php if (!empty($projects)): ?>
 <?php foreach ($projects as $pr): ?>
 <li>
-    <strong><?= esc($pr['judul']) ?></strong>
-    <p class="small text-muted mb-1">
-        <?= esc($pr['tahun_mulai']) ?> – <?= esc($pr['tahun_selesai']) ?>
-        • <?= esc($pr['status']) ?>
+    <h6 class="fw-semibold mb-1">
+        <?= esc($pr['judul']) ?>
+    </h6>
+
+    <div class="small text-muted mb-2">
+        <?= esc($pr['tahun_mulai']) ?>
+        <?php if (!empty($pr['tahun_selesai'])): ?>
+            – <?= esc($pr['tahun_selesai']) ?>
+        <?php endif; ?>
+    </div>
+
+    <?php if (!empty($pr['deskripsi'])): ?>
+    <p class="mb-2 text-secondary">
+        <?= esc($pr['deskripsi']) ?>
     </p>
-    <p><?= esc($pr['deskripsi']) ?></p>
-    <span class="badge bg-info">
-        <?= esc($pr['mitra']) ?>
-    </span>
+    <?php endif; ?>
+
+    <div class="d-flex flex-wrap gap-2">
+
+        <!-- STATUS -->
+        <span class="badge
+            <?=
+                match ($pr['status']) {
+                    'sedang dilaksanakan' => 'bg-warning text-dark',
+                    'selesai' => 'bg-success',
+                    default => 'bg-secondary'
+                }
+            ?>">
+            <?= esc($pr['status']) ?>
+        </span>
+
+        <!-- MITRA -->
+        <?php if (!empty($pr['mitra'])): ?>
+        <span class="badge bg-light text-dark border">
+            <?= esc($pr['mitra']) ?>
+        </span>
+        <?php endif; ?>
+
+        <!-- SUMBER DANA -->
+        <?php if (!empty($pr['sumber_dana'])): ?>
+        <span class="badge bg-info text-dark">
+            <?= esc($pr['sumber_dana']) ?>
+        </span>
+        <?php endif; ?>
+    </div>
 </li>
 <?php endforeach; ?>
 <?php else: ?>
@@ -112,5 +194,6 @@
 </div>
 </div>
 </div>
+
 </div>
 </div>

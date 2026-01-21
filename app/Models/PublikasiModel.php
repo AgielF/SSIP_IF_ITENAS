@@ -39,7 +39,9 @@ class PublikasiModel extends Model
         $processedData = [
             'jurnal' => [
                 'headers' => [
+                    'judul',
                     'Kategori',
+                    'topik',
                     'Tanggal Publikasi',
                     'Penulis Utama',
                     'Penulis Pendamping',
@@ -48,7 +50,6 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
-                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -57,7 +58,9 @@ class PublikasiModel extends Model
             ],
             'prosiding' => [
                 'headers' => [
+                    'judul',
                     'Kategori',
+                    'topik',
                     'Tanggal Publikasi',
                      'Penulis Utama',
                     'Penulis Pendamping',
@@ -66,7 +69,6 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
-                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -75,7 +77,9 @@ class PublikasiModel extends Model
             ],
             'paten' => [
                 'headers' => [
+                    'judul',
                     'Kategori',
+                    'topik',
                     'Tanggal Publikasi',
                      'Penulis Utama',
                     'Penulis Pendamping',
@@ -84,7 +88,6 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
-                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -99,7 +102,9 @@ class PublikasiModel extends Model
             $link_gdrive = !empty($pub['link_gdrive']) ? '<a href="' . esc($pub['link_gdrive'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Gdrive</a>' : '-';
 
             $row = [
+                $pub['judul']??'-',
                 $pub['kategori'] ?? '-',
+                $pub['topik']??'-',
                 $pub['tanggal_publikasi'] ?? '-',
                 $pub['penulis_utama'] ?? '-',
                 $pub['penulis_pendamping'] ?? '-',
@@ -108,7 +113,6 @@ class PublikasiModel extends Model
                 $pub['nomor'] ?? '-',
                 $pub['conference'] ?? '-',
                 $pub['deskripsi'] ?? '-',
-                $pub['topik']??'-',
                 $link_publikasi,
                 $link_doi,
                 $link_gdrive,
