@@ -71,11 +71,13 @@
                             <th>No.</th>
                             <th>Judul</th>
                             <th>Admin</th>
+                            <th>Topik</th>
                             <th>Deskripsi</th>
                             <th>Mitra</th>
                             <th>Sumber Dana</th>
                             <th>Tahun Mulai</th>
                             <th>Tahun selesai</th>
+                            <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -83,14 +85,16 @@
                         <?php if (!empty($proyek)) : ?>
                             <?php foreach ($proyek as $i => $row) : ?>
                                 <tr>
-                                    <td><?= esc($i + 1) ?></td>
+                                    <td><?= esc($row['id_proyek']) ?></td>
                                     <td><?= esc($row['judul']) ?></td>
                                     <td><?=esc($row['pembuat'])?></td>
+                                    <td><?=esc($row['topik'])?></td>
                                     <td><?= esc($row['deskripsi']) ?></td>
                                     <td><?= esc($row['mitra']) ?></td>
                                     <td><?= esc($row['sumber_dana']) ?></td>
                                     <td><?= esc($row['tahun_mulai']) ?></td>
                                     <td><?= esc($row['tahun_selesai']) ?></td>
+                                    <td><?= esc($row['status']) ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary btn-edit"
                                             data-id="<?= $row['id_proyek'] ?>"
@@ -151,6 +155,27 @@
                     </div>
                 </div>
             </div>
+<div class="mb-3">
+    <label class="form-label">Topik</label>
+    <select name="topik" class="form-select" required>
+        <option value="">-- Pilih Topik --</option>
+        <option value="machine learning">Machine Learning</option>
+        <option value="system expert">System Expert</option>
+        <option value="smart system">Smart System</option>
+        <option value="artificial-intelligence">Artificial Intelligence</option>
+        <option value="data mining">Data Mining</option>
+        <option value="deep learning">Deep Learning</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select" required>
+        <option value="akan dilaksanakan">Akan Dilaksanakan</option>
+        <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
+        <option value="selesai">Selesai</option>
+    </select>
+</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
@@ -190,6 +215,25 @@
                     </div>
                 </div>
             </div>
+            <div class="mb-3">
+    <label class="form-label">Topik</label>
+    <select name="topik" id="edit-topik" class="form-select" required>
+        <option value="machine learning">machine learning</option>
+        <option value="system expert">expert system</option>
+        <option value="smart system">smart system</option>
+        <option value="artificial-intelligence">artificial intelligence</option>
+        <option value="data mining">data mining</option>
+        <option value="deep learning">deep learning</option>
+    </select>
+</div>
+<div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" id="edit-status" class="form-select" required>
+        <option value="akan dilaksanakan">Akan Dilaksanakan</option>
+        <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
+        <option value="selesai">Selesai</option>
+    </select>
+</div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Update</button>

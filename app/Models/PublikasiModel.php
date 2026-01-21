@@ -23,7 +23,10 @@ class PublikasiModel extends Model
         'link_doi',
         'link_gdrive',
         'conference',
-        'deskripsi'
+        'deskripsi',
+        'topik',
+        'judul'
+
     ];
 
     public function getPublikasiDataFormatedView()
@@ -45,6 +48,7 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
+                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -62,6 +66,7 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
+                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -79,6 +84,7 @@ class PublikasiModel extends Model
                     'Nomor',
                     'Conference',
                     'Deskripsi',
+                    'topik',
                     'Link Publikasi',
                     'Link DOI',
                     'Link Gdrive'
@@ -102,10 +108,11 @@ class PublikasiModel extends Model
                 $pub['nomor'] ?? '-',
                 $pub['conference'] ?? '-',
                 $pub['deskripsi'] ?? '-',
+                $pub['topik']??'-',
                 $link_publikasi,
                 $link_doi,
                 $link_gdrive,
-                $pub['id_publikasi'] // simpan ID di akhir untuk tombol edit/delete
+                // $pub['id_publikasi'] // simpan ID di akhir untuk tombol edit/delete
             ];
 
             if ($pub['jenis_publikasi'] === 'jurnal') {
@@ -123,4 +130,12 @@ class PublikasiModel extends Model
          return $this->select('publikasi.*, users.nama as penulis_utama')
                     ->join('users', 'users.id = publikasi.id_user', 'left');
     }
+    public function getPublikasiByTopik(string $topik)
+{
+    return $this->select('publikasi.*, users.nama as penulis_utama')
+                ->join('users', 'users.id = publikasi.id_user', 'left')
+                ->where('publikasi.topik', $topik)
+                ->findAll();
+}
+
 }

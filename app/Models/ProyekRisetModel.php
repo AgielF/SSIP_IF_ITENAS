@@ -8,7 +8,7 @@ class ProyekRisetModel extends Model
 {
     protected $table = 'proyek_riset';
     protected $primaryKey = 'id_proyek';
-    protected $allowedFields = ['judul', 'deskripsi', 'mitra', 'sumber_dana', 'tahun_mulai', 'tahun_selesai', 'id_user', 'created_at', 'updated_at'];
+    protected $allowedFields = ['judul', 'deskripsi', 'mitra', 'sumber_dana', 'tahun_mulai', 'tahun_selesai', 'id_user', 'created_at', 'updated_at','topik','status'];
 
     /**
      * Mengambil dan memformat data proyek agar siap ditampilkan di view.
@@ -27,18 +27,20 @@ class ProyekRisetModel extends Model
 
 
         // 2. Siapkan header tabel dan array untuk baris data
-        $headers = ['Judul','Admin penyunting', 'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai'];
+        $headers = ['Judul','Admin penyunting','topik' ,'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai','status'];
         $rows = [];
 
         foreach ($semuaProyek as $proyek) {
             $rows[] = [
                 $proyek['judul'],
                 $proyek['pembuat'],
+                $proyek['topik'],
                 $proyek['deskripsi'],
                 $proyek['mitra'],
                 $proyek['sumber_dana'],
                 $proyek['tahun_mulai'],
-                $proyek['tahun_selesai']
+                $proyek['tahun_selesai'],
+                $proyek['status']
                 
             ];
         }
@@ -58,6 +60,13 @@ class ProyekRisetModel extends Model
                     ->join('users', 'users.id = proyek_riset.id_user', 'left')
                     ->findAll();
     }
+    public function getProyekByTopik(string $topik)
+{
+    return $this->select('proyek_riset.*, users.nama as pembuat')
+                ->join('users', 'users.id = proyek_riset.id_user', 'left')
+                ->where('proyek_riset.topik', $topik)
+                ->findAll();
+}
 
 
 }

@@ -87,12 +87,12 @@ class Home extends BaseController
                 'icon' => 'fa-robot'
             ],
             [
-                'title' => 'Expert Systems',
+                'title' => 'Expert System',
                 'description' => 'Rule-based systems, inference engines, knowledge bases.',
                 'icon' => 'fa-cogs'
             ],
             [
-                'title' => 'Smart Systems',
+                'title' => 'Smart System',
                 'description' => 'Predictive systems, recommendation systems, adaptive systems.',
                 'icon' => 'fa-lightbulb'
             ],

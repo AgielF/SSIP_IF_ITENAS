@@ -230,7 +230,7 @@ $isAdmin = ($roleName === 'Admin');
                 <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
                 <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
                 <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
-                <li><a class="dropdown-item" href="/penelitan-proyek_admin">Kelola Penelitian Proyek</a></li>
+                <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
                 <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
                 <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
                 <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>

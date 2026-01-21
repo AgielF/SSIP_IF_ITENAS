@@ -34,52 +34,58 @@ class ProyekRisetController extends BaseController
             'proyek' => $semuaProyek
         ];
 
-        return view('penelitian-proyek_admin', $data);
+        return view('penelitian_proyek_admin_list_view', $data);
     }
 
     // 🟢 CREATE
     public function create()
-    {
-        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+{
+    $userId = $this->getUserIdOrRedirect();
 
-        $data = [
-            'judul'         => $this->request->getPost('judul'),
-            'deskripsi'     => $this->request->getPost('deskripsi'),
-            'mitra'         => $this->request->getPost('mitra'),
-            'sumber_dana'   => $this->request->getPost('sumber_dana'),
-            'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
-            'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user'       => $userId, // default admin
-            'created_at'    => date('Y-m-d H:i:s')
-        ];
+    $data = [
+        'judul'         => $this->request->getPost('judul'),
+        'topik'         => $this->request->getPost('topik'),
+        'deskripsi'     => $this->request->getPost('deskripsi'),
+        'mitra'         => $this->request->getPost('mitra'),
+        'sumber_dana'   => $this->request->getPost('sumber_dana'),
+        'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
+        'tahun_selesai' => $this->request->getPost('tahun_selesai'),
+        'status'        => $this->request->getPost('status'),
+        'id_user'       => $userId,
+        'created_at'    => date('Y-m-d H:i:s')
+    ];
 
-        $this->proyekRisetModel->save($data);
+    $this->proyekRisetModel->save($data);
 
-        return redirect()->to('/penelitian-proyek_admin')
-                         ->with('success', 'Proyek riset berhasil ditambahkan.');
-    }
+    return redirect()->to('/penelitian-proyek_admin')
+        ->with('success', 'Proyek riset berhasil ditambahkan.');
+}
+
 
     // 🟡 UPDATE
-    public function update($id)
-    {
-         $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+   public function update($id)
+{
+    $userId = $this->getUserIdOrRedirect();
 
-        $data = [
-            'judul'         => $this->request->getPost('judul'),
-            'deskripsi'     => $this->request->getPost('deskripsi'),
-            'mitra'         => $this->request->getPost('mitra'),
-            'sumber_dana'   => $this->request->getPost('sumber_dana'),
-            'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
-            'tahun_selesai' => $this->request->getPost('tahun_selesai'),
-            'id_user'       => $userId,
-            'updated_at'    => date('Y-m-d H:i:s')
-        ];
+    $data = [
+        'judul'         => $this->request->getPost('judul'),
+        'topik'         => $this->request->getPost('topik'),
+        'deskripsi'     => $this->request->getPost('deskripsi'),
+        'mitra'         => $this->request->getPost('mitra'),
+        'sumber_dana'   => $this->request->getPost('sumber_dana'),
+        'tahun_mulai'   => $this->request->getPost('tahun_mulai'),
+        'tahun_selesai' => $this->request->getPost('tahun_selesai'),
+        'status'        => $this->request->getPost('status'),
+        'id_user'       => $userId,
+        'updated_at'    => date('Y-m-d H:i:s')
+    ];
 
-        $this->proyekRisetModel->update($id, $data);
+    $this->proyekRisetModel->update($id, $data);
 
-        return redirect()->to('/penelitian-proyek_admin')
-                         ->with('success', 'Proyek riset berhasil diperbarui.');
-    }
+    return redirect()->to('/penelitian-proyek_admin')
+        ->with('success', 'Proyek riset berhasil diperbarui.');
+}
+
 
     // 🔴 DELETE
     public function delete($id)

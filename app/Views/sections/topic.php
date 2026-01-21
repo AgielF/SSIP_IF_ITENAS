@@ -15,7 +15,7 @@ helper('url');
             <?php foreach ($fields as $field): ?>
                 <div class="col-md-4">
                     <!-- SETIAP ITEM SEKARANG ADALAH LINK -->
-                    <a href="/penelitian/<?= url_title($field['title'], '-', true) ?>" class="text-decoration-none text-dark">
+                    <a href="/topic_detail/<?= url_title($field['title'], '-', true) ?>" class="text-decoration-none text-dark">
                         <div class="d-flex">
                             <div class="me-3">
                                 <i class="fas <?= esc($field['icon']) ?> fa-2x text-primary"></i>

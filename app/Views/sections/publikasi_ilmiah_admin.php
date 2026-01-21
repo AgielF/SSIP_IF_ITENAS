@@ -150,11 +150,17 @@ foreach ($publicationData as $row) {
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Jenis</th>
+                                <th>Judul</th>
+                                <!-- <th>Jenis</th> -->
                                 <th>Kategori</th>
+                                <th>Topik</th>
+                                <th>Kategori</th>
+                                <th>Tanggal </th>
                                 <th>Penulis Utama</th>
-                                <th>Tanggal</th>
-                                <th>Penulis</th>
+                                <th>Penulis Pendamping</th>
+                                <th>Volume</th>
+                                <th>Tahun</th>
+                                <th>Nomor</th>
                                 <th>Deskripsi</th>
                                 <th>Link Publikasi</th>
                                 <th class="action-buttons">Aksi</th>
@@ -172,11 +178,17 @@ foreach ($publicationData as $row) {
                                 <?php foreach ($groupedData[$kategori ?: 'jurnal'] as $row): ?>
                                     <tr>
                                         <td><?=esc($row['id_publikasi'])?></td>
-                                        <td><?= esc($row['jenis_publikasi']) ?></td>
+                                        <td><?=esc($row['judul'])?></td>
+                                        <!-- <td><?= esc($row['jenis_publikasi']) ?></td> -->
+                                        <td><?=esc($row['kategori'])?></td>
+                                        <td><?=esc($row['topik'])?></td>
                                         <td><?= esc($row['kategori']) ?></td>
-                                         <td><?= esc($row['penulis_utama'] ?? '-') ?></td> <!-- ✅ hasil join -->
                                         <td><?= esc($row['tanggal_publikasi']) ?></td>
+                                         <td><?= esc($row['penulis_utama'] ?? '-') ?></td> <!-- ✅ hasil join -->
                                         <td><?= esc($row['penulis_pendamping']) ?></td>
+                                        <td><?= esc($row['volume']) ?></td>
+                                        <td><?= esc($row['tahun']) ?></td>
+                                        <td><?= esc($row['nomor']) ?></td>
                                         <td><?= esc($row['deskripsi']) ?></td>
                                         <td>
                                             <?php if (!empty($row['link_publikasi'])): ?>
@@ -266,6 +278,18 @@ foreach ($publicationData as $row) {
                                                             <textarea name="deskripsi" class="form-control"><?= esc($row['deskripsi']) ?></textarea>
                                                         </div>
                                                     </div>
+                                                    <div class="mb-3">
+    <label class="form-label">Topik</label>
+    <select name="topik" class="form-select" required>
+        <option value="">-- Pilih Topik --</option>
+        <option value="machine learning">Machine Learning</option>
+        <option value="system expert">System Expert</option>
+        <option value="smart system">Smart System</option>
+        <option value="artificial-intelligence">Artificial Intelligence</option>
+        <option value="data mining">Data Mining</option>
+        <option value="deep learning">Deep Learning</option>
+    </select>
+</div>
                                                     <div class="modal-footer">
                                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -355,6 +379,18 @@ foreach ($publicationData as $row) {
                         <textarea name="deskripsi" class="form-control"></textarea>
                     </div>
                 </div>
+                <div class="mb-3">
+    <label class="form-label">Topik</label>
+    <select name="topik" class="form-select" required>
+        <option value="">-- Pilih Topik --</option>
+        <option value="machine learning">Machine Learning</option>
+        <option value="system expert">System Expert</option>
+        <option value="smart system">Smart System</option>
+        <option value="artificial-intelligence">Artificial Intelligence</option>
+        <option value="data mining">Data Mining</option>
+        <option value="deep learning">Deep Learning</option>
+    </select>
+</div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Simpan</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
