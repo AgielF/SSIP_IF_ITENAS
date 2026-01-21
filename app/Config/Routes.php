@@ -33,6 +33,9 @@ $routes->get('/asisten/(:num)', 'UserController::profil/$1');
 
 $routes->get('/organisasi', 'OrganizationController::index');
 
+$routes->get('contact', 'ContactController::index');
+$routes->post('contact/send', 'ContactController::send');
+
 // routes API Content
 $routes->get('/api/visi-misi', 'Api\Content::visiMisi');
 $routes->get('/api/proyek-riset', 'Api\Content::proyekRiset');

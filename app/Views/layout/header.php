@@ -269,7 +269,7 @@ $isAdmin = ($roleName === 'Admin');
             <a class="nav-link" href="/asisten"><i class="fas fa-users me-1"></i>Anggota</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="fas fa-address-book me-1"></i>Contact</a>
+            <a class="nav-link" href="/contact"><i class="fas fa-address-book me-1"></i>Contact</a>
         </li>
           <li class="nav-item">
             <a class="nav-link" href="/organisasi"><i class="fas fa-address-book me-1"></i>Struktur Organisasi</a>
