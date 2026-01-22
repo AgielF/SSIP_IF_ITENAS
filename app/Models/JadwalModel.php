@@ -42,10 +42,12 @@ class JadwalModel extends Model
             $processedSchedules[] = [
                 'id_jadwal'  => $item['id_jadwal'],   // tambahkan ini
                 'title'       => $item['nama_event'],
+                'kelas'       => $item['kelas'],
                 'lab'         => $item['ruangan'],
                 'status'      => $status,
                 'status_color'=> $status_color,
                 'date'        => $scheduleDate->format('l, d F Y'),
+                'raw_date'    => $item['tanggal'],
                 'time'        => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
                 'instructor'  => $instructor,
                 'assistants'  => $assistants

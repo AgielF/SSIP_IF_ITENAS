@@ -14,6 +14,9 @@ $roleName = $user && isset($roles[$user['role_id']]) ? $roles[$user['role_id']] 
 // Cek apakah user admin
 $isAdmin = ($roleName === 'Admin');
 
+// Cek apakah user asisten
+$isAsisten = ($roleName === 'Asisten');
+
 ?>
 
 
@@ -184,13 +187,15 @@ $isAdmin = ($roleName === 'Admin');
     </div>
     <ul class="sidebar-nav">
         <!-- Link yang ada di sidebar -->
+        <?php if (!$isAsisten): ?>
         <li class="nav-item">
             <a class="nav-link" href="/penelitian-proyek"><i class="fas fa-project-diagram"></i>Penelitian & Proyek</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/publikasi-ilmiah"><i class="fas fa-book-open"></i>Publikasi Ilmiah</a>
         </li>
-        
+        <?php endif; ?>
+
         <!-- === STRUKTUR HTML BARU UNTUK DROPDOWN === -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="/jadwal" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -206,6 +211,7 @@ $isAdmin = ($roleName === 'Admin');
             </ul>
         </li>
         <!-- === AKHIR STRUKTUR HTML BARU === -->
+        <?php if (!$isAsisten): ?>
         <li class="nav-item">
             <a class="nav-link" href="/berita"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
         </li>
@@ -218,6 +224,7 @@ $isAdmin = ($roleName === 'Admin');
         <li class="nav-item">
             <a class="nav-link" href="/repositori"><i class="fa-solid fa-file-export"></i>Repo Project</a>
         </li>
+        <?php endif; ?>
 
         <!-- === MENU KHUSUS ADMIN === -->
         <?php if ($isAdmin): ?>
@@ -259,22 +266,27 @@ $isAdmin = ($roleName === 'Admin');
         <li class="nav-item">
             <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Home</a>
         </li>
+        <?php if ($user): ?>
         <li class="nav-item">
-          <li class="nav-item">
             <a class="nav-link" href="/profile"><i class="fas fa-user"></i>Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/login"><i class="fas fa-address-book me-1"></i>Login</a>
-      </li>
+            <a class="nav-link" href="/logout" onclick="return confirm('Yakin ingin logout?')"><i class="fas fa-right-from-bracket me-1"></i>Logout</a>
+        </li>
+        <?php else: ?>
+        <li class="nav-item">
+            <a class="nav-link" href="/login"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+        </li>
+        <?php endif; ?>
+        <li class="nav-item">
             <a class="nav-link" href="/asisten"><i class="fas fa-users me-1"></i>Anggota</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/contact"><i class="fas fa-address-book me-1"></i>Contact</a>
         </li>
-          <li class="nav-item">
+        <li class="nav-item">
             <a class="nav-link" href="/organisasi"><i class="fas fa-address-book me-1"></i>Struktur Organisasi</a>
         </li>
-
     </ul>
 </header>
 

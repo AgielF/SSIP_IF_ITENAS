@@ -6,30 +6,38 @@
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
 
+<?php
+function getStatusColorPHP($status) {
+    switch(strtolower($status)) {
+        case 'upcoming': return '#0d6efd'; // blue
+        case 'today': return '#fd7e14'; // orange
+        case 'completed': return '#198754'; // green
+        default: return '#6c757d'; // gray
+    }
+}
+?>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
     // Prepare events data from PHP
-    var events = [
-        <?php if (!empty($schedules)): ?>
-            <?php foreach ($schedules as $schedule): ?>
-                {
-                    id: '<?= esc($schedule['id_jadwal']) ?>',
-                    title: '<?= esc($schedule['title']) ?>',
-                    start: '<?= esc($schedule['date']) ?>T<?= date('H:i:s', strtotime(explode(' - ', $schedule['time'])[0])) ?>',
-                    end: '<?= esc($schedule['date']) ?>T<?= date('H:i:s', strtotime(explode(' - ', $schedule['time'])[1])) ?>',
-                    backgroundColor: getStatusColor('<?= esc($schedule['status']) ?>'),
-                    borderColor: getStatusColor('<?= esc($schedule['status']) ?>'),
-                    extendedProps: {
-                        lab: '<?= esc($schedule['lab']) ?>',
-                        instructor: '<?= esc($schedule['instructor']) ?>',
-                        status: '<?= esc($schedule['status']) ?>'
-                    }
-                }<?= (end($schedules) !== $schedule) ? ',' : '' ?>
-            <?php endforeach; ?>
-        <?php endif; ?>
-    ];
+    var events = <?= json_encode(array_map(function($schedule) {
+        return [
+            'id' => $schedule['id_jadwal'],
+            'title' => $schedule['title'],
+            'start' => $schedule['raw_date'] . 'T' . date('H:i:s', strtotime(explode(' - ', $schedule['time'])[0])),
+            'end' => $schedule['raw_date'] . 'T' . date('H:i:s', strtotime(explode(' - ', $schedule['time'])[1])),
+            'backgroundColor' => getStatusColorPHP($schedule['status']),
+            'borderColor' => getStatusColorPHP($schedule['status']),
+            'extendedProps' => [
+                'kelas' => $schedule['kelas'],
+                'lab' => $schedule['lab'],
+                'instructor' => $schedule['instructor'],
+                'status' => $schedule['status']
+            ]
+        ];
+    }, $schedules ?? [])) ?>;
 
     function getStatusColor(status) {
         switch(status.toLowerCase()) {
@@ -60,8 +68,42 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Status: ' + info.event.extendedProps.status
             );
         },
+        eventContent: function(arg) {
+            // Custom event display
+            return {
+                html: '<div class="fc-event-title" style="font-size: 16px; font-weight: bold;">' + arg.event.title + ' ' + arg.event.extendedProps.kelas + '</div>'
+            };
+        },
         eventMouseEnter: function(info) {
-            // Optional: Show tooltip on hover
+            // Show tooltip
+            var tooltip = document.createElement('div');
+            tooltip.className = 'calendar-tooltip';
+            tooltip.innerHTML = '<strong>' + info.event.title + '</strong><br>' +
+                                'Kelas: ' + info.event.extendedProps.kelas + '<br>' +
+                                'Waktu: ' + info.event.start.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) +
+                                ' - ' + info.event.end.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + '<br>' +
+                                'Ruangan: ' + info.event.extendedProps.lab + '<br>' +
+                                'Status: ' + info.event.extendedProps.status;
+            tooltip.style.position = 'absolute';
+            tooltip.style.background = 'rgba(0,0,0,0.8)';
+            tooltip.style.color = 'white';
+            tooltip.style.padding = '5px 10px';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.pointerEvents = 'none';
+            document.body.appendChild(tooltip);
+
+            var rect = info.el.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - 30) + 'px';
+
+            info.el.tooltip = tooltip;
+        },
+        eventMouseLeave: function(info) {
+            if (info.el.tooltip) {
+                document.body.removeChild(info.el.tooltip);
+                info.el.tooltip = null;
+            }
         }
     });
 

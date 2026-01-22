@@ -103,6 +103,17 @@ class JadwalController extends BaseController
             'updated_at'    => date('Y-m-d H:i:s')
         ];
 
+        // Check for room conflict
+        $conflict = $this->jadwalModel->where('ruangan', $data['ruangan'])
+            ->where('tanggal', $data['tanggal'])
+            ->where('waktu_mulai <', $data['waktu_selesai'])
+            ->where('waktu_selesai >', $data['waktu_mulai'])
+            ->first();
+
+        if ($conflict) {
+            return redirect()->back()->with('error', 'Ruangan sudah digunakan pada waktu tersebut untuk praktikum lain.');
+        }
+
         $this->jadwalModel->insert($data);
         return redirect()->to('/jadwal_admin')->with('success', 'Jadwal berhasil ditambahkan');
     }
@@ -118,6 +129,18 @@ class JadwalController extends BaseController
             'kelas'         => $this->request->getPost('kelas'),
             'updated_at'    => date('Y-m-d H:i:s')
         ];
+
+        // Check for room conflict, excluding current record
+        $conflict = $this->jadwalModel->where('ruangan', $data['ruangan'])
+            ->where('tanggal', $data['tanggal'])
+            ->where('waktu_mulai <', $data['waktu_selesai'])
+            ->where('waktu_selesai >', $data['waktu_mulai'])
+            ->where('id_jadwal !=', $id)
+            ->first();
+
+        if ($conflict) {
+            return redirect()->back()->with('error', 'Ruangan sudah digunakan pada waktu tersebut untuk praktikum lain.');
+        }
 
         $this->jadwalModel->update($id, $data);
         return redirect()->to('/jadwal_admin')->with('success', 'Jadwal berhasil diperbarui');
