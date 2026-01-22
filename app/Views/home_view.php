@@ -2,6 +2,12 @@
 
 <?= $this->include('sections/slider') ?>
 
+<?= $this->include('sections/about_ssip') ?>
+
+ <!-- TAMBAHKAN BARIS INI -->
+<?= $this->include('sections/visi_misi') ?>
+
+
 <main>
     <!-- Anda bisa menambahkan section berita di sini -->
     <?= $this->include('sections/jadwal_praktikum') ?>
@@ -17,9 +23,7 @@
         }
     ?>
 
-    <!-- TAMBAHKAN BARIS INI -->
-    <?= $this->include('sections/visi_misi') ?>
-
+   
 </main>
 
 <?= $this->include('layout/footer') ?>

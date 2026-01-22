@@ -30,8 +30,6 @@
                                     <th>Link</th>
                                 </tr>
                             </thead>
-
-
                             <tbody>
     <?php if (empty($publicationData)): ?>
         <tr>
@@ -60,10 +58,6 @@
         <?php endforeach ?>
     <?php endif; ?>
 </tbody>
-
-
-
-
                         </table>
                     </div>
                 </div>
