@@ -187,7 +187,7 @@ class Home extends BaseController
             'title' => 'Repositori',
             'repos' => [] // Placeholder for repository data
         ];
-        return view('repositori_list_view', $data);
+        return view('repositori_admin_list_view', $data);
     }
 
     public function repositori_admin()

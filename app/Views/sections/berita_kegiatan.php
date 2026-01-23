@@ -82,9 +82,7 @@
                             </div>
 
                             <div class="mt-auto pt-3 border-top">
-                                <a href="#" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
-                                    Baca Selengkapnya
-                                </a>
+                                
                             </div>
 
                         </div>
