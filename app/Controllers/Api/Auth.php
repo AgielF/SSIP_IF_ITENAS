@@ -112,7 +112,8 @@ class Auth extends ResourceController
             'id'      => $user['id'],
             'nomor'   => $user['nomor'],
             'nama'    => $user['nama'],
-            'role_id' => $user['role_id']
+            'role_id' => $user['role_id'],
+            'foto'    => $user['foto']
         ]);
 
         // Redirect sesuai role

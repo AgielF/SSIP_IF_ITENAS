@@ -72,7 +72,11 @@
     <div class="profile-card mb-4">
         <div class="row align-items-center">
             <div class="col-md-3 text-center">
-                <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>">
+                <?php if (!empty($user['foto'])): ?>
+                    <img src="/<?= esc($user['foto']) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>" onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
+                <?php else: ?>
+                    <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>">
+                <?php endif; ?>
             </div>
             <div class="col-md-9">
                 <h2 class="h3 mb-1"><?= esc($user['nama']) ?></h2>

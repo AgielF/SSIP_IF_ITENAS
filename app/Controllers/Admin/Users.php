@@ -80,6 +80,7 @@ class Users extends BaseController
             return redirect()->back()->with('error', 'Nomor sudah digunakan')->withInput();
         }
 
+        // First, insert user without foto
         $data = [
             'nomor' => $nomor,
             'nama' => $nama,
@@ -88,25 +89,40 @@ class Users extends BaseController
             'role_id' => $role_id
         ];
 
-        if ($this->userModel->save($data)) {
-            log_message('debug', 'User saved successfully');
-            if ($isAjax) {
-                log_message('debug', 'Returning JSON response for success');
-                return $this->response
-                    ->setContentType('application/json')
-                    ->setJSON(['success' => true, 'message' => 'User created successfully']);
-            }
-            return redirect()->to('/asisten_admin')->with('success', 'User created successfully');
-        } else {
+        $userId = $this->userModel->insert($data);
+        if (!$userId) {
             log_message('debug', 'Failed to save user');
             if ($isAjax) {
-                log_message('debug', 'Returning JSON response for failure');
                 return $this->response
                     ->setContentType('application/json')
                     ->setJSON(['success' => false, 'message' => 'Failed to create user']);
             }
             return redirect()->back()->with('error', 'Failed to create user')->withInput();
         }
+
+        // Handle file upload
+        $fotoPath = null;
+        $foto = $this->request->getFile('foto');
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $uploadPath = ROOTPATH . 'public/uploads/photos/' . $userId . '/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $newName = $foto->getRandomName();
+            $foto->move($uploadPath, $newName);
+            $fotoPath = 'uploads/photos/' . $userId . '/' . $newName;
+
+            // Update user with foto path
+            $this->userModel->update($userId, ['foto' => $fotoPath]);
+        }
+
+        log_message('debug', 'User saved successfully');
+        if ($isAjax) {
+            return $this->response
+                ->setContentType('application/json')
+                ->setJSON(['success' => true, 'message' => 'User created successfully']);
+        }
+        return redirect()->to('/asisten_admin')->with('success', 'User created successfully');
     }
 
     // Edit user
@@ -186,6 +202,18 @@ class Users extends BaseController
         $password = $this->request->getPost('password');
         if (!empty($password)) {
             $data['password'] = $password;
+        }
+
+        // Handle file upload for foto
+        $foto = $this->request->getFile('foto');
+        if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            $uploadPath = ROOTPATH . 'public/uploads/photos/' . $id . '/';
+            if (!is_dir($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $newName = $foto->getRandomName();
+            $foto->move($uploadPath, $newName);
+            $data['foto'] = 'uploads/photos/' . $id . '/' . $newName;
         }
 
         // If no data to update, return success

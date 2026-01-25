@@ -11,7 +11,20 @@ class AuthUi extends BaseController
 
     public function profile()
     {
-        return view('auth/profile', ['title' => 'Profile']);
+        $userSession = session('user');
+        if (!$userSession) {
+            return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
+        }
+
+        // Fetch fresh user data from DB to get updated foto
+        $userModel = new \App\Models\UserModel();
+        $user = $userModel->find($userSession['id']);
+
+        if (!$user) {
+            return redirect()->to('/login')->with('error', 'User tidak ditemukan.');
+        }
+
+        return view('auth/profile', ['title' => 'Profile', 'user' => $user]);
     }
        public function logout()
     {

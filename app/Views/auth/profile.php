@@ -1,10 +1,12 @@
 <?php
-// Ambil data user dari session
-$user = session('user');
+// Data user dari controller (fresh from DB)
+if (!isset($user)) {
+    $user = session('user');
+}
 
 // Mapping role_id ke nama role
 $roles = [
-    1 => 'Admin',
+    1 => 'Kepala Laboratorium',
     2 => 'Asisten',
     3 => 'Mahasiswa',
     4 => 'Dosen',
@@ -47,11 +49,21 @@ $roleName = $roles[$user['role_id']] ?? 'Anggota';
             <div class="row align-items-center">
                 <!-- Avatar -->
                 <div class="col-md-3 text-center mb-3 mb-md-0">
-                    <img
-                        src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>"
-                        class="rounded-circle shadow-sm border"
-                        alt="Foto <?= esc($user['nama']) ?>"
-                    >
+                    <?php if (!empty($user['foto'])): ?>
+                        <img
+                            src="/<?= esc($user['foto']) ?>"
+                            class="rounded-circle shadow-sm border"
+                            alt="Foto <?= esc($user['nama']) ?>"
+                            style="width: 150px; height: 150px; object-fit: cover;"
+                            onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'"
+                        >
+                    <?php else: ?>
+                        <img
+                            src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>"
+                            class="rounded-circle shadow-sm border"
+                            alt="Foto <?= esc($user['nama']) ?>"
+                        >
+                    <?php endif; ?>
                 </div>
 
                 <!-- Informasi User -->
