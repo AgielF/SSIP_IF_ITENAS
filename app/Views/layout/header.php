@@ -222,7 +222,7 @@ $isAsisten = ($roleName === 'Asisten');
             <a class="nav-link" href="/galeri"><i class="fa-solid fa-images"></i>Galeri</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/repositori"><i class="fa-solid fa-file-export"></i>Repo Project</a>
+            <a class="nav-link" href="/project-lab"><i class="fa-solid fa-file-export"></i>Repo Project</a>
         </li>
         <?php endif; ?>
 
@@ -243,6 +243,7 @@ $isAsisten = ($roleName === 'Asisten');
                 <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
                 <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
                 <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
+                <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
             </ul>
         </li>
         <?php endif; ?>

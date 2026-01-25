@@ -70,6 +70,7 @@
                         <table class="table table-hover" id="proyekTable">
                             <thead>
                                 <tr>
+                                    <th>No</th>
                                     <th>Judul Proyek</th>
                                     <th>Deskripsi</th>
                                     <th>Mitra</th>
@@ -91,6 +92,7 @@
                                             $status = ($tahunSelesai < date('Y')) ? 'Selesai' : 'Berjalan';
                                         ?>
                                         <tr>
+                                             <td><?= $i+1 ?></td>
                                             <td><?= esc($proyek['judul'] ?? '-') ?></td>
                                             <td><?= esc($proyek['deskripsi'] ?? '-') ?></td>
                                             <td><?= esc($proyek['mitra'] ?? '-') ?></td>
