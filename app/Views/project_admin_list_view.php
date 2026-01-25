@@ -2,6 +2,6 @@
 
 <?= $this->include('sections/slider') ?>
 
-<?= $this->include('sections/repositori') ?>
+<?= $this->include('sections/project_admin') ?>
 
 <?= $this->include('layout/footer') ?>
