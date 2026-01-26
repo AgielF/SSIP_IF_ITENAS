@@ -105,7 +105,7 @@
                                     // Tampilkan role_name dari database, atau fallback ke role field
                                     $roleDisplay = '';
                                     if (isset($person['role_name'])) {
-                                        $roleDisplay = ucfirst($person['role_name']);
+                                        $roleDisplay = $person['role_name'] === 'admin' ? 'Kepala Laboratorium' : ucfirst($person['role_name']);
                                     } elseif (isset($person['role'])) {
                                         $roleDisplay = ucfirst($person['role']);
                                     } else {
@@ -298,13 +298,14 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mb-3"><label class="form-label">Nama <span class="text-danger">*</span></label><input type="text" class="form-control" name="nama" required></div>
             <div class="mb-3"><label class="form-label">Password <span class="text-danger">*</span></label><input type="password" class="form-control" name="password" required></div>
             <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan"></div>
+            <div class="mb-3"><label class="form-label">Foto</label><input type="file" class="form-control" name="foto" accept="image/*"></div>
             <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
-                <select class="form-select" name="role_id" required>
-                    <option value="1">Admin</option>
-                    <option value="2">Asisten</option>
-                    <option value="3">Dosen</option>
-                </select>
-            </div>`;
+        <select class="form-select" name="role_id" required>
+            <option value="1">Kepala Laboratorium</option>
+            <option value="2">Asisten</option>
+            <option value="3">Dosen</option>
+        </select>
+    </div>`;
         modalForm.innerHTML = formHtml;
         dataModal.show();
     });
@@ -313,7 +314,12 @@ document.addEventListener('DOMContentLoaded', function () {
     saveDataBtn.addEventListener('click', async () => {
         const form = modalForm;
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+
+        // Get form data as object for validation
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = value;
+        }
 
         // Basic validation
         let isValid = true;
@@ -357,10 +363,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const response = await fetch(url, {
                 method: method,
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                body: new URLSearchParams(data)
+                body: formData
             });
 
             console.log('Response status:', response.status);
@@ -439,9 +444,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="mb-3"><label class="form-label">Nama</label><input type="text" class="form-control" name="nama" value="${rowData.cells[2].textContent}"></div>
                 <div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" name="password" placeholder="Kosongkan jika tidak ingin mengubah"></div>
                 <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan" value="${rowData.cells[3].textContent}"></div>
+                <div class="mb-3"><label class="form-label">Foto</label><input type="file" class="form-control" name="foto" accept="image/*"></div>
                 <div class="mb-3"><label class="form-label">Role</label>
                     <select class="form-select" name="role_id">
-                        <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Admin</option>
+                        <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Kepala Laboratorium</option>
                         <option value="2" ${rowData.dataset.roleId === '2' ? 'selected' : ''}>Asisten</option>
                         <option value="3" ${rowData.dataset.roleId === '3' ? 'selected' : ''}>Dosen</option>
                     </select>

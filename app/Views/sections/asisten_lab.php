@@ -9,6 +9,7 @@
             <div class="card-body d-flex flex-column flex-md-row justify-content-md-between align-items-start align-items-md-center gap-3">
                 <div class="filter-controls btn-group btn-group-sm" role="group">
                     <button type="button" class="btn btn-outline-primary active" data-filter="semua">Semua</button>
+                    <button type="button" class="btn btn-outline-primary" data-filter="admin">Kepala Laboratorium</button>
                     <button type="button" class="btn btn-outline-primary" data-filter="dosen">Dosen</button>
                     <button type="button" class="btn btn-outline-primary" data-filter="asisten">Asisten</button>
                 </div>
@@ -38,11 +39,13 @@
                     <div class="card h-100 shadow-sm">
                         <div class="position-relative">
                             <div class="role-badge bg-primary text-white py-1 px-2 rounded position-absolute top-0 end-0 m-2 small">
-                                <?= ucfirst(esc($a['role'] ?? '')) ?>
+                                <?= $a['role'] === 'admin' ? 'Kepala Laboratorium' : ucfirst(esc($a['role'] ?? '')) ?>
                             </div>
-                            <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>"
-                                 class="card-img-top aspect-ratio-1x1"
-                                 alt="Foto <?= esc($a['nama']) ?>">
+                            <?php if (!empty($a['foto'])): ?>
+                                <img src="/<?= esc($a['foto']) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>" onerror="this.src='https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>'">
+                            <?php else: ?>
+                                <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>">
+                            <?php endif; ?>
                         </div>
                         <div class="card-body text-center">
                             <h5 class="card-title mb-1">
@@ -184,9 +187,10 @@ class AdvancedFilter {
         }
         
         // 3. Separate items by role for pagination
+        const adminItems = processedItems.filter(item => item.dataset.role === 'admin');
         const dosenItems = processedItems.filter(item => item.dataset.role === 'dosen');
         const asistenItems = processedItems.filter(item => item.dataset.role === 'asisten');
-        
+
         // 4. Apply pagination to each role separately
         const paginateItems = (items) => {
             if (this.currentItemsPerPage !== 'semua') {
@@ -195,12 +199,13 @@ class AdvancedFilter {
             }
             return items;
         };
-        
+
+        const paginatedAdminItems = paginateItems(adminItems);
         const paginatedDosenItems = paginateItems(dosenItems);
         const paginatedAsistenItems = paginateItems(asistenItems);
-        
+
         // 5. Combine paginated items for rendering
-        const combinedItems = [...paginatedDosenItems, ...paginatedAsistenItems];
+        const combinedItems = [...paginatedAdminItems, ...paginatedDosenItems, ...paginatedAsistenItems];
         
         // 6. Render item
         this.renderItems(combinedItems);

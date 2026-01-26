@@ -8,7 +8,7 @@ class UserModel extends Model
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'created_at', 'updated_at'];
+    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'foto', 'created_at', 'updated_at'];
     
     // FUNGSI YANG SUDAH ADA (TIDAK DIUBAH)
     public function getAsistenLab() 
@@ -40,12 +40,17 @@ class UserModel extends Model
     public function getProcessedPersonnelData(): array
     {
         // 1. Panggil fungsi lain di dalam kelas ini menggunakan "$this"
+        $admin = $this->admin();
         $asisten = $this->getAsistenLab();
         $dosen = $this->getDosenLab();
         $praktikan = $this->praktikan();
-        
-        
+
+
         $allPersonnel = [];
+        foreach ($admin as $adm) {
+            $adm['role'] = 'admin'; // Menambahkan key 'role'
+            $allPersonnel[] = $adm;
+        }
         foreach ($dosen as $d) {
             $d['role'] = 'dosen'; // Menambahkan key 'role'
             $allPersonnel[] = $d;
@@ -58,7 +63,7 @@ class UserModel extends Model
             $p['role'] = 'praktikan';
             $allPersonnel[] = $p;
         }
-        
+
         return $allPersonnel;
     }
      protected function hashPassword(array $data){

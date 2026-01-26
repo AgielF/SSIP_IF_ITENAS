@@ -13,6 +13,7 @@
         align-items: center;
         margin: 30px 0;
         position: relative;
+        flex-wrap: wrap;
     }
 
     .person-card {
@@ -21,14 +22,18 @@
         padding: 25px;
         margin: 0 15px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        text-align: center;
         min-width: 220px;
+        max-width: 280px;
+        min-height: 180px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border: 2px solid transparent;
         cursor: pointer;
         text-decoration: none;
         color: inherit;
-        display: block;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         position: relative;
     }
 
@@ -77,6 +82,9 @@
         font-weight: bold;
         margin-bottom: 8px;
         color: #333;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
     }
 
     .person-role {
@@ -89,6 +97,14 @@
 
     .person-icon {
         font-size: 48px;
+        margin-bottom: 15px;
+    }
+
+    .person-avatar img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
         margin-bottom: 15px;
     }
 
@@ -137,6 +153,10 @@
 
     .level-2 .horizontal-line {
         width: calc(100% - 80px);
+    }
+
+    .level-3 .horizontal-line {
+        display: none;
     }
 
     .level-title {
