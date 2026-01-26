@@ -1,24 +1,21 @@
 <?php
 $user = session('user');
 
-// Contoh mapping role_id ke nama role
+// mapping role
 $roles = [
     1 => 'Admin',
     2 => 'Asisten',
-    3 => 'Mahasiswa'
+    3 => 'Dosen',
+    4 => 'Mahasiswa'
 ];
 
-// Ambil nama role dari mapping
-$roleName = $user && isset($roles[$user['role_id']]) ? $roles[$user['role_id']] : 'Tidak diketahui';
+$roleId   = $user['role_id'] ?? null;
+$roleName = $roles[$roleId] ?? null;
 
-// Cek apakah user admin
-$isAdmin = ($roleName === 'Admin');
-
-// Cek apakah user asisten
+$isAdmin   = ($roleName === 'Admin');
 $isAsisten = ($roleName === 'Asisten');
-
+$isDosen   = ($roleName === 'Dosen');
 ?>
-
 
 <!doctype html>
 <html lang="id">
@@ -185,18 +182,23 @@ $isAsisten = ($roleName === 'Asisten');
     <div class="sidebar-header">
         <span>Menu Utama</span>
     </div>
-    <ul class="sidebar-nav">
-        <!-- Link yang ada di sidebar -->
-        <?php if (!$isAsisten): ?>
-        <li class="nav-item">
-            <a class="nav-link" href="/penelitian-proyek"><i class="fas fa-project-diagram"></i>Penelitian & Proyek</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/publikasi-ilmiah"><i class="fas fa-book-open"></i>Publikasi Ilmiah</a>
-        </li>
-        <?php endif; ?>
 
-        <!-- === STRUKTUR HTML BARU UNTUK DROPDOWN === -->
+    <ul class="sidebar-nav">
+
+        <!-- ===== MENU UMUM (SELALU TAMPIL, LOGIN / BELUM) ===== -->
+        <li class="nav-item">
+            <a class="nav-link" href="/penelitian-proyek">
+                <i class="fas fa-project-diagram"></i>Penelitian & Proyek
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/publikasi-ilmiah">
+                <i class="fas fa-book-open"></i>Publikasi Ilmiah
+            </a>
+        </li>
+
+        <!-- === DROPDOWN PRAKTIKUM === -->
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="/jadwal" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-flask"></i>Praktikum
@@ -210,46 +212,67 @@ $isAsisten = ($roleName === 'Asisten');
                 <li><a class="dropdown-item" href="#">Perizinan</a></li>
             </ul>
         </li>
-        <!-- === AKHIR STRUKTUR HTML BARU === -->
-        <?php if (!$isAsisten): ?>
-        <li class="nav-item">
-            <a class="nav-link" href="/berita"><i class="fas fa-newspaper"></i>Berita & Kegiatan</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/rekrutmen"><i class="fas fa-bullhorn"></i>Rekrutmen</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/galeri"><i class="fa-solid fa-images"></i>Galeri</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/project-lab"><i class="fa-solid fa-file-export"></i>Repo Project</a>
-        </li>
-        <?php endif; ?>
 
-        <!-- === MENU KHUSUS ADMIN === -->
-        <?php if ($isAdmin): ?>
+        <li class="nav-item">
+            <a class="nav-link" href="/berita">
+                <i class="fas fa-newspaper"></i>Berita & Kegiatan
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/rekrutmen">
+                <i class="fas fa-bullhorn"></i>Rekrutmen
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/galeri">
+                <i class="fa-solid fa-images"></i>Galeri
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="/project-lab">
+                <i class="fa-solid fa-file-export"></i>Project Lab
+            </a>
+        </li>
+
+        <!-- ===== DROPDOWN ADMIN (HANYA JIKA LOGIN) ===== -->
+        <?php if ($user && ($isAdmin || $isDosen || $isAsisten)): ?>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 <i class="fas fa-user-shield"></i> Admin
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/asisten_admin">Kelola Users</a></li>
-                <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
-                <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
-                <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
-                <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
-                <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
-                <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
-                <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
-                <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
-                <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
-                <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
+
+                <?php if ($isAdmin): ?>
+                    <li><a class="dropdown-item" href="/asisten_admin">Kelola Users</a></li>
+                    <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
+                    <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
+                    <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
+                    <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
+                    <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
+                    <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
+                    <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
+                    <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
+                    <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
+                    <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
+
+                <?php elseif ($isDosen): ?>
+                    <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
+                    <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
+                    <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
+
+                <?php elseif ($isAsisten): ?>
+                    <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
+                <?php endif; ?>
+
             </ul>
         </li>
         <?php endif; ?>
+
     </ul>
 </aside>
-
 
 
 <!-- Overlay for when sidebar is open -->
