@@ -30,7 +30,7 @@
             min-height: 100vh;
         }
 
-        /* ===== LEFT (LOGIN) ===== */
+        /* ===== LEFT ===== */
         .auth-left {
             display: flex;
             align-items: center;
@@ -46,36 +46,58 @@
             text-align: center;
         }
 
-        .logo {
-            width: 64px;
-            margin-bottom: 24px;
-        }
-
         .login-box h2 {
             font-size: 18px;
             font-weight: 600;
             margin: 0;
-            color: #ffffff;
         }
 
         .login-box h3 {
             font-size: 16px;
             font-weight: 600;
             margin: 6px 0 14px;
-            color: #ffffff;
         }
 
         .login-box p {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.8);
+            opacity: 0.8;
             margin-bottom: 28px;
+        }
+
+        /* ===== ALERT ERROR ===== */
+        .alert-error {
+            background: rgba(239, 68, 68, 0.18);
+            border: 1px solid rgba(239, 68, 68, 0.45);
+            color: #fff;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: shake 0.35s;
+        }
+
+        .alert-error i {
+            font-size: 16px;
+            color: #fecaca;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            50% { transform: translateX(4px); }
+            75% { transform: translateX(-4px); }
+            100% { transform: translateX(0); }
         }
 
         /* ===== INPUT ===== */
         .input-field {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.1);
             border-radius: 12px;
             padding: 0 18px;
             height: 56px;
@@ -83,107 +105,54 @@
         }
 
         .input-field i {
-            color: #ffffff;
-            font-size: 16px;
             margin-right: 14px;
+            font-size: 16px;
         }
 
         .input-field input {
+            background: transparent;
             border: none;
             outline: none;
-            background: transparent;
             width: 100%;
             font-size: 14px;
-            color: #ffffff;
+            color: white;
         }
 
         .input-field input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255,255,255,0.7);
         }
 
         /* ===== BUTTON ===== */
         .btn-login {
-            margin-top: 10px;
             width: 100%;
             height: 48px;
+            margin-top: 10px;
             border-radius: 10px;
-            border: 2px solid #ffffff;
+            border: 2px solid #fff;
             background: transparent;
-            color: #ffffff;
-            font-weight: 600;
+            color: #fff;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
         }
 
         .btn-login:hover {
-            background: #ffffff;
+            background: #fff;
             color: #002366;
         }
 
-        /* ===== RIGHT (BRANDING) ===== */
+        /* ===== RIGHT ===== */
         .auth-right {
-            background: #ffffff;
+            background: white;
             padding: 60px;
-            position: relative;
-            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .logo-container {
-            text-align: center;
         }
 
         .main-logo {
             max-width: 100%;
-            max-height: 100%;
-            width: auto;
             height: auto;
-        }
-
-        .branding-title {
-            font-size: 42px;
-            font-weight: 800;
-            line-height: 1.15;
-            margin-top: 120px;
-        }
-
-        .branding-title span {
-            color: white;
-        }
-
-        .branding-footer {
-            position: absolute;
-            bottom: 40px;
-            left: 60px;
-            right: 60px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            font-weight: 500;
-            color: white;
-        }
-
-        /* ===== ILLUSTRATION GRID (SIMPLIFIED) ===== */
-        .illustration-grid {
-            position: absolute;
-            top: 40px;
-            right: 60px;
-            display: grid;
-            grid-template-columns: repeat(3, 80px);
-            gap: 16px;
-        }
-
-        .illustration-box {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -205,20 +174,43 @@
     <!-- LEFT -->
     <div class="auth-left">
         <div class="login-box">
-            <h2>Laboratorium Smart System And Information Processing</h2>
+
+            <h2>Laboratorium Smart System</h2>
             <h3>Informatika</h3>
-            <form action="/api/auth/login" method="post">
+
+            <!-- ALERT ERROR -->
+            <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert-error">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <?= session()->getFlashdata('error') ?>
+                </div>
+            <?php endif; ?>
+
+            <form action="<?= base_url('/api/auth/login') ?>" method="post">
+
                 <div class="input-field">
                     <i class="fas fa-user"></i>
-                    <input type="text" name="nomor" placeholder="NIM / Username" required>
+                    <input
+                        type="text"
+                        name="nomor"
+                        placeholder="NIM / Username"
+                        value="<?= old('nomor') ?>"
+                        required>
                 </div>
 
                 <div class="input-field">
                     <i class="fas fa-lock"></i>
-                    <input type="password" name="password" placeholder="Password" required>
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required>
                 </div>
 
-                <button type="submit" class="btn-login">Sign In</button>
+                <button type="submit" class="btn-login">
+                    Sign In
+                </button>
+
             </form>
 
         </div>
@@ -226,12 +218,9 @@
 
     <!-- RIGHT -->
     <div class="auth-right">
-
-        <!-- Logo -->
-        <div class="logo-container">
-            <img src="<?php echo base_url('assets/images/GambarLogo.jpg'); ?>" alt="Logo Lab SSIP" class="main-logo">
-        </div>
-
+        <img src="<?= base_url('assets/images/GambarLogo.jpg') ?>"
+             alt="Logo Lab SSIP"
+             class="main-logo">
     </div>
 
 </div>

@@ -73,6 +73,9 @@ user_guide_src/cilexer/build/*
 user_guide_src/cilexer/dist/*
 user_guide_src/cilexer/pycilexer.egg-info/*
 
+/public/uploads/
+/public/Foto Aslab Praktikum PBD/
+
 #-------------------------
 # Test Files
 #-------------------------

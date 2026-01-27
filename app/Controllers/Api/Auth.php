@@ -65,68 +65,59 @@ class Auth extends ResourceController
 
 
 
-    public function login()
+//    
+public function login()
 {
     try {
-
-
         $nomor    = trim($this->request->getPost('nomor'));
         $password = trim($this->request->getPost('password'));
 
-          // 🧾 Tambahkan log di sini
-        log_message('debug', 'Nomor dikirim UI: ['.$nomor.'] length='.strlen($nomor));
-        log_message('debug', 'Password dikirim UI: ['.$password.'] length='.strlen($password));
-        log_message('debug', 'HEX Password: '.bin2hex($password));
-        
-
         if (!$nomor || !$password) {
-            return redirect()->back()->with('error', 'Nomor dan password 
-            harus diisi');
+            return redirect()->back()->withInput()
+                ->with('error', 'Nomor dan password harus diisi');
         }
 
         $user = $this->userModel->where('nomor', $nomor)->first();
 
-        if (!$user) {
-            return redirect()->back()->with('error', 'User tidak ditemukan');
+        if (!$user || !$this->userModel->verifyPassword($password, $user['password'])) {
+            return redirect()->back()->withInput()
+                ->with('error', 'NIM / Username atau Password salah');
         }
 
-        if (!$this->userModel->verifyPassword($password, $user['password'])) {
-            return redirect()->back()->with('error', 'Password salah');
-        }
-
-        // Generate JWT
+        // JWT
         $key = getenv('JWT_SECRET') ?: 'your-secret-key';
         $payload = [
             'iat'     => time(),
-            'exp'     => time() + 86400, // 24 jam
+            'exp'     => time() + 86400,
             'uid'     => $user['id'],
             'nomor'   => $user['nomor'],
             'nama'    => $user['nama'],
             'role_id' => $user['role_id']
         ];
+
         $token = JWT::encode($payload, $key, 'HS256');
 
-        // Simpan token ke session
-        session()->set('token', $token);
-        session()->set('user', [
-            'id'      => $user['id'],
-            'nomor'   => $user['nomor'],
-            'nama'    => $user['nama'],
-            'role_id' => $user['role_id'],
-            'foto'    => $user['foto']
+        session()->set([
+            'token' => $token,
+            'user'  => [
+                'id'      => $user['id'],
+                'nomor'   => $user['nomor'],
+                'nama'    => $user['nama'],
+                'role_id' => $user['role_id'],
+                'foto'    => $user['foto']
+            ]
         ]);
 
-        // Redirect sesuai role
-        if ($user['role_id'] == 1) {
-            return redirect()->to('/asisten_admin');
-        } else {
-            return redirect()->to('/profile');
-        }
+        return ($user['role_id'] == 1)
+            ? redirect()->to('/asisten_admin')
+            : redirect()->to('/profile');
 
     } catch (\Throwable $e) {
-        return redirect()->back()->with('error', 'Login gagal: ' . $e->getMessage());
+        log_message('error', $e->getMessage());
+        return redirect()->back()->with('error', 'Terjadi kesalahan saat login');
     }
 }
+
 
 
     public function logout()
