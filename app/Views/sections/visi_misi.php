@@ -102,12 +102,14 @@
                     <h3 class="fw-bold mb-4">Misi Kami</h3>
                 </div>
 
-                <ul class="list-unstyled misi-list m-0 text-start"> <?php foreach (explode("\n", $misi) as $index => $misi_item): ?>
-                    <li class="d-flex align-items-start">
-                        <div class="me-3 fw-bold text-primary" style="min-width: 25px;">
+                <ul class="list-unstyled misi-list m-0 text-start">
+                    <?php foreach (explode("\n", $misi) as $index => $misi_item): ?>
+                    <li class="d-flex align-items-start mb-2">
+                        <div class="me-3 fw-bold text-primary" style="min-width: 25px; font-size: 1.2rem;">
                             0<?= $index + 1 ?>.
                         </div>
-                        <span class="text-secondary" style="line-height: 1.6;">
+                        
+                        <span class="text-secondary" style="line-height: 1.6; font-size: 1.2rem;">
                             <?= esc($misi_item) ?>
                         </span>
                     </li>

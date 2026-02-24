@@ -37,11 +37,11 @@
             </div>
 
             <div class="col-md-7"> <div class="about-card">
-                    <p class="text-secondary" style="font-size: 1.05rem; line-height: 1.7;">
+                    <p class="text-secondary" style="font-size: 1.2rem; line-height: 1.7;">
                         The Smart Systems and Information Processing Laboratory (SSIP Lab) is a research and learning facility that focuses on the development of smart systems and modern information processing technologies. This laboratory embraces various studies related to machine learning, deep learning, artificial intelligence (AI), expert systems, data mining, information retrieval, and natural language processing (NLP).
                     </p>
                     
-                    <p class="text-secondary mt-3 mb-0" style="font-size: 1.05rem; line-height: 1.7;">
+                    <p class="text-secondary mt-3 mb-0" style="font-size: 1.2rem; line-height: 1.7;">
                         The SSIP Lab is a place where theory and application are integrated, providing an environment for academic exploration, applied research, and industrial collaboration in the areas of smart systems and intelligent data processing.
                     </p>
                     

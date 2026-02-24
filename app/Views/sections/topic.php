@@ -51,7 +51,7 @@
     <div class="row g-4"> <?php if (!empty($fields)): ?>
             <?php foreach ($fields as $field): ?>
                 <div class="col-md-4">
-                    <a href="/topic_detail/<?= url_title($field['title'], '-', true) ?>" class="text-decoration-none text-dark h-100 d-block">
+                    <a href="/topic_detail/<?= url_title($field['title'], '-', true) ?>" class="text-decoration-none text-dark h-100 d-block" style="font-size: 1.2rem;">
                         
                         <div class="topic-card shadow-sm">
                             
@@ -61,7 +61,7 @@
                             
                             <div>
                                 <h4 class="h5 fw-bold mb-2"><?= esc($field['title']) ?></h4>
-                                <p class="text-secondary small mb-0" style="line-height: 1.6;">
+                                <p class="text-secondary small mb-0" style="line-height: 1.6; font-size:1.2rem ;">
                                     <?= esc($field['description']) ?>
                                 </p>
                             </div>

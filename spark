@@ -11,15 +11,9 @@
  */
 
 // ===================================================================
-//  DEBUGGING BLOCK
+//  DEBUGGING BLOCK (SILENT VERSION)
 // ===================================================================
-echo "--- DEBUG START ---\n";
-echo "Arguments received:\n";
-print_r($_SERVER['argv']);
-echo "\n";
-
 if (($_SERVER['argv'][1] ?? null) === 'serve') {
-    echo "Command is 'serve'. Checking for port...\n";
     $hasPort = false;
     foreach ($_SERVER['argv'] as $arg) {
         if (strpos($arg, '--port') === 0) {
@@ -29,18 +23,10 @@ if (($_SERVER['argv'][1] ?? null) === 'serve') {
     }
 
     if (! $hasPort) {
-        echo "Port not found. Adding --port=5000...\n";
+        // Otomatis menambahkan port 5000 secara diam-diam
         $_SERVER['argv'][] = '--port=5000';
-        echo "New arguments:\n";
-        print_r($_SERVER['argv']);
-        echo "\n";
-    } else {
-        echo "Port already exists. No changes made.\n";
     }
-} else {
-    echo "Command is not 'serve'. No changes made.\n";
 }
-echo "--- DEBUG END ---\n\n";
 // ===================================================================
 
 use CodeIgniter\Boot;

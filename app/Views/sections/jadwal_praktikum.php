@@ -41,18 +41,22 @@
             <?php foreach (array_slice($schedules, 0, 3) as $schedule): ?>
                 <div class="col-md-4">
                     <div class="schedule-card shadow-sm h-100 d-flex align-items-start">
-                        
-                        <div class="date-box bg-primary text-white p-3 rounded me-3 text-center flex-shrink-0" style="min-width: 70px;">
+    
+                        <div class="date-box bg-primary text-white p-3 rounded me-3 text-center flex-shrink-0" style="min-width: 80px;">
                             <div class="h3 fw-bold mb-0"><?= date('d', strtotime($schedule['date'])) ?></div>
                             <div class="small text-uppercase"><?= date('M', strtotime($schedule['date'])) ?></div>
                         </div>
                         
                         <div class="flex-grow-1">
-                            <h5 class="mb-2 fw-bold text-dark"><?= esc($schedule['title']) ?></h5>
-                            <p class="text-muted small mb-1">
+                            <h5 class="mb-2 fw-bold text-dark" style="font-size: 1.2rem;">
+                                <?= esc($schedule['title']) ?>
+                            </h5>
+                            
+                            <p class="text-muted mb-1" style="font-size: 1.1rem;">
                                 <i class="far fa-clock text-primary me-1"></i> <?= esc($schedule['time']) ?>
                             </p>
-                            <p class="text-muted small mb-0">
+                            
+                            <p class="text-muted mb-0" style="font-size: 1.1rem;">
                                 <i class="fas fa-map-marker-alt text-danger me-1"></i> <?= esc($schedule['lab']) ?>
                             </p>
                         </div>
@@ -69,4 +73,8 @@
             </div>
         <?php endif; ?>
     </div>
+
+
+
+
 </div>

@@ -66,17 +66,17 @@
                                 </div>
                                 
                                 <div>
-                                    <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 1.1rem;">
+                                    <h5 class="card-title fw-bold text-dark mb-1" style="font-size: 1.2rem;">
                                         <?= esc($berita['judul']) ?>
                                     </h5>
-                                    <small class="text-muted">
+                                    <small class="text-muted" style="font-size: 1.1rem">
                                         <i class="far fa-user me-1"></i> <?= esc($berita['creator']) ?>
                                     </small>
                                 </div>
                             </div>
 
                             <div class="flex-grow-1">
-                                <p class="card-text text-secondary line-clamp-3 mb-3" style="font-size: 0.95rem;">
+                                <p class="card-text text-secondary line-clamp-3 mb-3" style="font-size: 1.1rem;">
                                     <?= esc(substr(strip_tags($berita['konten']), 0, 150)) ?>...
                                 </p>
                             </div>
@@ -97,5 +97,7 @@
                 </div>
             <?php endif; ?>
         </div>
+
+
     </div>
 </section>

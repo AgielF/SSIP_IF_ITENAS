@@ -17,11 +17,10 @@ if (!empty($events)) {
     ];
 }
 ?>
-
 <?php foreach ($fields as $fieldKey => $fieldName): ?>
     <div class="mb-5">
         <h4 class="h5 mb-3 border-bottom pb-2">
-            <i class="fas fa-brain me-2"></i>
+            <i class="fas fa-brain me-2" style="font-size: 1.2rem"></i>
             <?= esc($fieldName) ?>
         </h4>
         <div class="row">
@@ -50,35 +49,33 @@ if (!empty($events)) {
 
                                 <div class="row g-2">
                                     <div class="col-12">
-                                        <small class="text-muted">
+                                        <div class="text-muted" style="font-size: 1.1rem;">
                                             <i class="fas fa-calendar-day me-1"></i>
                                             <?= esc($schedule['date']) ?>
-                                        </small>
+                                        </div>
                                     </div>
+                                    
                                     <div class="col-12">
-                                        <small class="text-muted">
+                                        <div class="text-muted" style="font-size: 1.1rem;">
                                             <i class="fas fa-clock me-1"></i>
                                             <?= esc($schedule['time']) ?>
-                                        </small>
+                                        </div>
                                     </div>
+                                    
                                     <div class="col-12">
-                                        <small class="text-muted">
+                                        <div class="text-muted" style="font-size: 1.1rem;">
                                             <i class="fas fa-map-marker-alt me-1"></i>
                                             Ruangan: <?= esc($schedule['lab']) ?>
-                                        </small>
+                                        </div>
                                     </div>
+                                    
                                     <div class="col-12">
-                                        <small class="text-muted">
+                                        <div class="text-muted" style="font-size: 1.1rem;">
                                             <i class="fas fa-user-graduate me-1"></i>
                                             Asisten: <?= esc($schedule['assistants']) ?>
-                                        </small>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-light">
-                                <small class="text-muted">
-                                    ID Jadwal: #<?= esc($schedule['id_jadwal']) ?>
-                                </small>
                             </div>
                         </div>
                     </div>
