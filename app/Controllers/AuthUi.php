@@ -11,20 +11,49 @@ class AuthUi extends BaseController
 
     public function profile()
     {
-        $userSession = session('user');
-        if (!$userSession) {
+        $user = session()->get('user');
+
+        if (!$user) {
             return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
         }
 
-        // Fetch fresh user data from DB to get updated foto
-        $userModel = new \App\Models\UserModel();
-        $user = $userModel->find($userSession['id']);
+        $roles = [
+            1 => 'Kepala Lab',
+            2 => 'Asisten',
+            3 => 'Dosen',
+            4 => 'Mahasiswa'
+        ];
 
-        if (!$user) {
-            return redirect()->to('/login')->with('error', 'User tidak ditemukan.');
+        $user['role_id'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
+
+        // Ambil ID dengan aman
+        $userId = $user['id'] ?? $user['id_user'] ?? null;
+
+        $publikasiModel = new \App\Models\PublikasiModel();
+        $proyekModel    = new \App\Models\ProyekRisetModel();
+
+        if ($userId) {
+            $publicationData = $publikasiModel->getDataWithUser()
+                                              ->where('publikasi.id_user', $userId)
+                                              ->findAll();
+                                              
+            $proyekData = $proyekModel->where('id_user', $userId)->findAll();
+        } else {
+            $publicationData = [];
+            $proyekData = [];
         }
 
-        return view('auth/profile', ['title' => 'Profile', 'user' => $user]);
+        // KITA TES DEBUG DI SINI
+        
+
+        $data = [
+            'title'           => 'Profil Saya | ' . $user['nama'],
+            'user'            => $user,
+            'publicationData' => $publicationData,
+            'proyekData'      => $proyekData
+        ];
+
+        return view('auth/profile', $data);
     }
        public function logout()
     {

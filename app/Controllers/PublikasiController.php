@@ -64,6 +64,7 @@ class PublikasiController extends BaseController
         $data = [
             'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
             'link_publikasi'    => $this->request->getPost('link_publikasi'),
+            'judul'             => $this->request->getPost('judul'),
             'kategori'          => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
             'penulis_pendamping'=> $this->request->getPost('penulis_pendamping'),
@@ -91,6 +92,7 @@ class PublikasiController extends BaseController
     $data = [
         'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
         'link_publikasi'    => $this->request->getPost('link_publikasi'),
+        'judul'             => $this->request->getPost('judul'),
         'kategori'          => $this->request->getPost('kategori'),
         'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
         'penulis_pendamping'=> $this->request->getPost('penulis_pendamping'),
