@@ -1,5 +1,4 @@
 <div class="container my-5">
-    <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -53,7 +52,6 @@
                     <button id="export-pdf-btn" class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> PDF
                     </button>
-                    <!-- Tombol tambah data -->
                     <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
                         <i class="fas fa-plus me-1"></i> Tambah
                     </button>
@@ -71,7 +69,7 @@
                             <th>No.</th>
                             <th>Judul</th>
                             <th>Deskripsi</th>
-                            <th>File URL</th>
+                            <th>File Modul</th>
                             <th>Jadwal</th>
                             <th>Aksi</th>
                         </tr>
@@ -83,14 +81,22 @@
                                     <td><?= esc($i + 1) ?></td>
                                     <td><?= esc($row['judul']) ?></td>
                                     <td><?= esc($row['deskripsi']) ?></td>
+                                    
                                     <td>
                                         <?php if (!empty($row['file_url'])): ?>
-                                            <a href="<?= base_url('modul-praktikum/preview/'.$row['file_url']) ?>" target="_blank" class="badge bg-info text-dark">👁️ Preview</a>
+                                            <div class="d-flex flex-column gap-1">
+                                                <a href="<?= base_url('modul-praktikum/preview/'.$row['file_url']) ?>" target="_blank" class="btn btn-sm btn-outline-success" style="font-size: 11px;">
+                                                    <i class="fas fa-eye me-1"></i> Buka
+                                                </a>
+                                                <a href="<?= base_url('modul-praktikum/download/'.$row['file_url']) ?>" class="btn btn-sm btn-outline-primary" style="font-size: 11px;">
+                                                    <i class="fas fa-download me-1"></i> Unduh
+                                                </a>
+                                            </div>
                                         <?php else: ?>
-                                            <span class="text-muted">-</span>
+                                            <span class="text-muted fst-italic">Kosong</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= esc($row['jadwal_tanggal']) ?></td>
+                                    <td><?= esc($row['jadwal_tanggal'] ?? '-') ?></td>
                                     <td>
                                         <button class="btn btn-sm btn-warning btn-edit"
                                             data-id="<?= $row['id_modul'] ?>"
@@ -119,7 +125,6 @@
     </main>
 </div>
 
-<!-- Modal Tambah -->
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form action="/modul-praktikum/create" method="post" enctype="multipart/form-data" class="modal-content">
@@ -135,9 +140,9 @@
                     <textarea name="deskripsi" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">File PDF</label>
-                    <input type="file" name="file_modul" class="form-control" accept=".pdf" placeholder="Pilih file PDF">
-                    <small class="text-muted d-block mt-1">Format: PDF | Ukuran maksimal: 10MB</small>
+                    <label class="form-label">File Modul</label>
+                    <input type="file" name="file_modul" class="form-control" accept=".pdf, .docx, .doc" placeholder="Pilih file Dokumen">
+                    <small class="text-muted d-block mt-1">Format: PDF, DOCX | Ukuran maksimal: 10MB</small>
                 </div>
                 <div class="mb-3">
                     <label class="form-label"> ID Jadwal</label>
@@ -145,6 +150,7 @@
                         <option value="">-- Pilih Jadwal --</option>
                         <?php foreach ($jadwalList as $jadwal): ?>
                             <option value="<?= $jadwal['id_jadwal'] ?>">
+                                <?= isset($jadwal['tanggal']) ? date('d-m-Y', strtotime($jadwal['tanggal'])) : '' ?> 
                                 <?= isset($jadwal['waktu_mulai']) ? '(' . $jadwal['waktu_mulai'] . ' - ' . $jadwal['waktu_selesai'] . ')' : '' ?>
                             </option>
                         <?php endforeach; ?>
@@ -159,7 +165,6 @@
     </div>
 </div>
 
-<!-- Modal Edit -->
 <div class="modal fade" id="modalEdit" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form id="formEdit" method="post" enctype="multipart/form-data" class="modal-content">
@@ -176,9 +181,9 @@
                     <textarea name="deskripsi" id="edit-deskripsi" class="form-control" required></textarea>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">File PDF</label>
-                    <input type="file" name="file_modul" id="edit-file" class="form-control" accept=".pdf">
-                    <small class="text-muted d-block mt-1">Format: PDF | Ukuran maksimal: 10MB | Kosongkan jika tidak ingin mengubah file</small>
+                    <label class="form-label">File Modul</label>
+                    <input type="file" name="file_modul" id="edit-file" class="form-control" accept=".pdf, .docx, .doc">
+                    <small class="text-muted d-block mt-1">Format: PDF, DOCX | Ukuran maksimal: 10MB | Kosongkan jika tidak ingin mengubah file</small>
                     <div id="current-file-info" class="mt-2"></div>
                 </div>
                 
@@ -188,6 +193,7 @@
                         <option value="">-- Pilih Jadwal --</option>
                         <?php foreach ($jadwalList as $jadwal): ?>
                             <option value="<?= $jadwal['id_jadwal'] ?>">
+                                <?= isset($jadwal['tanggal']) ? date('d-m-Y', strtotime($jadwal['tanggal'])) : '' ?> 
                                 <?= isset($jadwal['waktu_mulai']) ? '(' . $jadwal['waktu_mulai'] . ' - ' . $jadwal['waktu_selesai'] . ')' : '' ?>
                             </option>
                         <?php endforeach; ?>
@@ -268,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Tampilkan informasi file saat ini
             const fileInfo = document.getElementById('current-file-info');
             if (currentFile) {
-                fileInfo.innerHTML = `<small class="text-success"><i class="fas fa-file-pdf me-1"></i>File saat ini: <a href="<?= base_url('modul-praktikum/preview/') ?>${currentFile}" target="_blank">${currentFile}</a></small>`;
+                fileInfo.innerHTML = `<small class="text-success"><i class="fas fa-file-alt me-1"></i>File saat ini: <a href="<?= base_url('modul-praktikum/preview/') ?>${currentFile}" target="_blank">${currentFile}</a></small>`;
             } else {
                 fileInfo.innerHTML = '<small class="text-muted">Belum ada file</small>';
             }

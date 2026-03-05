@@ -21,7 +21,6 @@ class AuthUi extends BaseController
             1 => 'Kepala Lab',
             2 => 'Asisten',
             3 => 'Dosen',
-            4 => 'Mahasiswa'
         ];
 
         $user['role_id'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
