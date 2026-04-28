@@ -68,6 +68,9 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/repositori_admin','Home::repositori_admin');
     $routes->get('/rekrutmen_admin','RekrutController::admin');
 
+
+
+
     // $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
     $routes->get('/berita_admin','beritaController::admin');
     $routes->get('/peserta-praktikum_admin','PesertaPraktikumController::admin');
@@ -105,6 +108,7 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('rekrutmen/delete/(:num)', 'RekrutController::delete/$1'); // Hapus
 
 
+
     $routes->post('asisten/store', 'UserController::store');   // Tambah data
     $routes->post('asisten/update/(:num)', 'UserController::update/$1'); // Update data
     $routes->get('asisten/delete/(:num)', 'UserController::delete/$1'); // Hapus data
@@ -119,6 +123,10 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->post('peserta-praktikum/update/(:num)', 'PesertaPraktikumController::update/$1'); // Update data
     $routes->get('peserta-praktikum/delete/(:num)', 'PesertaPraktikumController::delete/$1'); // Hapus data
 
+    $routes->get('visi-misi_admin','VisiMisiController::index');
+    $routes->post('visi-misi_admin/store', 'VisiMisiController::create');   // Tambah data
+    $routes->post('visi-misi_admin/update/(:num)', 'VisiMisiController::update/$1'); // Update data
+    $routes->post('visi-misi_admin/delete/(:num)', 'VisiMisiController::delete/$1'); // Hapus data
 
     // file: app/Config/Routes.php
 

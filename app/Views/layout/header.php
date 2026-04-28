@@ -204,12 +204,10 @@ $isDosen   = ($roleName === 'Dosen');
                 <i class="fas fa-flask"></i>Praktikum
             </a>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Peraturan</a></li>
-                <li><a class="dropdown-item" href="#">Kelompok</a></li>
+                
                 <li><a class="dropdown-item" href="/jadwal">Jadwal</a></li>
-                <li><a class="dropdown-item" href="/peserta-praktikum">Nilai</a></li>
                 <li><a class="dropdown-item" href="/modul_praktikum">Modul</a></li>
-                <li><a class="dropdown-item" href="#">Perizinan</a></li>
+                
             </ul>
         </li>
 
@@ -257,6 +255,7 @@ $isDosen   = ($roleName === 'Dosen');
                     <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
                     <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
                     <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
+                    <li><a class="dropdown-item" href="/visi-misi_admin">Kelola Content Visi Misi</a></li>
 
                 <?php elseif ($isDosen): ?>
                     <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
