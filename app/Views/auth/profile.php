@@ -1,27 +1,11 @@
-<?php
-// Data user dari controller (fresh from DB)
-if (!isset($user)) {
-    $user = session('user');
-}
-
-// Mapping role_id ke nama role
-$roles = [
-    1 => 'Kepala Laboratorium',
-    2 => 'Asisten',
-    3 => 'Mahasiswa',
-    4 => 'Dosen',
-];
-
-$roleName = $roles[$user['role_id']] ?? 'Anggota';
-?>
+<?= $this->include('layout/header') ?>
+<?= $this->include('sections/slider') ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
-
-    <!-- Bootstrap & Font Awesome -->
+    <title><?= esc($title ?? 'Profile') ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 </head>
@@ -30,15 +14,13 @@ $roleName = $roles[$user['role_id']] ?? 'Anggota';
 
 <div class="container my-5">
 
-    <div class="card shadow-lg border-0 rounded-4">
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
         <div class="card-body p-4">
-
-            <!-- Header + Logout -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="mb-0">
-                    <i class="fas fa-user-circle me-2 text-primary"></i>Profil Pengguna
+                    <i class="fas fa-user-circle me-2 text-primary"></i>Profil Saya
                 </h4>
-
+                
                 <a href="<?= base_url('logout') ?>"
                    class="btn btn-outline-danger btn-sm"
                    onclick="return confirm('Yakin ingin logout?')">
@@ -47,87 +29,182 @@ $roleName = $roles[$user['role_id']] ?? 'Anggota';
             </div>
 
             <div class="row align-items-center">
-                <!-- Avatar -->
                 <div class="col-md-3 text-center mb-3 mb-md-0">
                     <?php if (!empty($user['foto'])): ?>
-                        <img
-                            src="/<?= esc($user['foto']) ?>"
-                            class="rounded-circle shadow-sm border"
-                            alt="Foto <?= esc($user['nama']) ?>"
-                            style="width: 150px; height: 150px; object-fit: cover;"
-                            onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'"
-                        >
+                        <img src="<?= base_url(esc($user['foto'])) ?>"
+                             class="rounded-circle shadow-sm border"
+                             alt="Foto <?= esc($user['nama']) ?>"
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
                     <?php else: ?>
-                        <img
-                            src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>"
-                            class="rounded-circle shadow-sm border"
-                            alt="Foto <?= esc($user['nama']) ?>"
-                        >
+                        <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>"
+                             class="rounded-circle shadow-sm border"
+                             alt="Foto <?= esc($user['nama']) ?>"
+                             style="width: 150px; height: 150px; object-fit: cover;">
                     <?php endif; ?>
                 </div>
 
-                <!-- Informasi User -->
                 <div class="col-md-9">
                     <h5 class="mb-1"><?= esc($user['nama']) ?></h5>
 
                     <p class="text-muted mb-1">
-                        <i class="fas fa-user-tag me-2 text-primary"></i>
-                        <?= esc($roleName) ?>
+                        <i class="fas fa-user-tag me-2 text-primary"></i><?= esc($user['role_id'] ?? 'Anggota') ?>
                     </p>
-
                     <p class="text-muted mb-2">
-                        <i class="fas fa-id-badge me-2"></i>
-                        <?= esc($user['nomor']) ?>
+                        <i class="fas fa-id-badge me-2"></i><?= esc($user['nomor'] ?? '-') ?>
                     </p>
 
-                    <?php if ($roleName === 'Dosen'): ?>
-                        <!-- Khusus Dosen -->
-                        <h6 class="mt-3 mb-2">
-                            <i class="fas fa-brain me-2 text-primary"></i>
-                            Keahlian Dosen
-                        </h6>
-
+                    <?php if (strtolower($user['role_id'] ?? '') === 'dosen'): ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-brain me-2 text-primary"></i>Keahlian Dosen</h6>
                         <div class="mb-3">
                             <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Machine Learning</span>
                             <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Data Mining</span>
                             <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Artificial Intelligence</span>
                         </div>
                     <?php else: ?>
-                        <!-- Selain Dosen -->
                         <p class="text-muted">
-                            <i class="fas fa-graduation-cap me-2"></i>
-                            <?= esc($user['jurusan'] ?? 'Anggota Laboratorium') ?>
+                            <i class="fas fa-graduation-cap me-2"></i><?= esc($user['jurusan'] ?? 'Anggota Laboratorium') ?>
                         </p>
                     <?php endif; ?>
 
-                    <!-- Platform Penelitian -->
-                    <h6 class="mt-3 mb-2">
-                        <i class="fas fa-link me-2 text-primary"></i>
-                        Platform Penelitian
-                    </h6>
-
+                    <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
                     <div class="d-flex gap-3 fs-5">
-                        <a href="#" class="text-dark" title="Google Scholar">
-                            <i class="fas fa-graduation-cap"></i>
-                        </a>
-                        <a href="#" class="text-dark" title="SINTA">
-                            <i class="fas fa-book"></i>
-                        </a>
-                        <a href="#" class="text-dark" title="GitHub">
-                            <i class="fab fa-github"></i>
-                        </a>
-                        <a href="#" class="text-dark" title="LinkedIn">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
+                        <a href="#" class="text-dark" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                        <a href="#" class="text-dark" title="SINTA"><i class="fas fa-book"></i></a>
+                        <a href="#" class="text-dark" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-dark" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
                     </div>
-
                 </div>
             </div>
-
         </div>
+    </div>
+
+    <div class="row">
+        
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white p-4 border-bottom-0">
+                    <h5 class="mb-0"><i class="fas fa-book-open text-primary me-2"></i>Publikasi Ilmiah Saya</h5>
+                </div>
+                <div class="card-body px-4 pb-4 pt-0">
+                    <?php if (empty($publicationData)): ?>
+                        <div class="alert alert-light text-muted border text-center">
+                            Belum ada publikasi tercatat.
+                        </div>
+                    <?php else: ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($publicationData as $pub): ?>
+                                <li class="list-group-item px-0 py-3">
+                                    <h6 class="mb-1 text-dark fw-bold"><?= esc($pub['judul'] ?? '-') ?></h6>
+                                    
+                                    <div class="mb-2 text-muted small">
+                                        <?php if(!empty($pub['jenis_publikasi'])): ?>
+                                            <span class="badge bg-secondary me-1 text-uppercase"><?= esc($pub['jenis_publikasi']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if(!empty($pub['kategori'])): ?>
+                                            <span class="badge bg-info text-dark me-2"><?= esc($pub['kategori']) ?></span>
+                                        <?php endif; ?>
+                                        
+                                        <span class="me-2"><i class="far fa-calendar-alt me-1"></i><?= esc($pub['tahun'] ?? '-') ?></span>
+                                    </div>
+                                    
+                                    <div class="mb-2 text-muted small">
+                                        <span><i class="fas fa-users me-1"></i> 
+                                            <strong>Utama:</strong> <?= esc($pub['penulis_utama'] ?? $user['nama']) ?> 
+                                            <?php if(!empty($pub['penulis_pendamping'])): ?>
+                                                | <strong>Pendamping:</strong> <?= esc($pub['penulis_pendamping']) ?>
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+
+                                    <p class="mb-2 text-muted small"><?= esc($pub['deskripsi'] ?? 'Tidak ada deskripsi.') ?></p>
+                                    
+                                    <div class="d-flex gap-2 mt-2">
+                                        <?php if (!empty($pub['link_publikasi'])): ?>
+                                            <a href="<?= esc($pub['link_publikasi']) ?>" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i> Jurnal
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if (!empty($pub['link_doi'])): ?>
+                                            <a href="<?= esc($pub['link_doi']) ?>" target="_blank" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-link me-1"></i> DOI
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-4 h-100">
+                <div class="card-header bg-white p-4 border-bottom-0">
+                    <h5 class="mb-0"><i class="fas fa-flask text-success me-2"></i>Proyek Riset Saya</h5>
+                </div>
+                <div class="card-body px-4 pb-4 pt-0">
+                    <?php 
+                    // Cek ketersediaan data (jika di controller nama variabelnya $proyekData atau $proyekRiset)
+                    $dataProyek = $proyekData ?? $proyekRiset ?? []; 
+                    if (empty($dataProyek)): 
+                    ?>
+                        <div class="alert alert-light text-muted border text-center">
+                            Belum ada proyek riset tercatat.
+                        </div>
+                    <?php else: ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($dataProyek as $proyek): ?>
+                                <li class="list-group-item px-0 py-3">
+                                    <h6 class="mb-1 text-dark fw-bold"><?= esc($proyek['judul'] ?? '-') ?></h6>
+                                    
+                                    <div class="mb-2 mt-2 text-muted small">
+                                        <?php 
+                                            // Menentukan warna badge status
+                                            $statusProyek = strtolower($proyek['status'] ?? '');
+                                            $badgeClass = 'bg-secondary-subtle text-secondary'; // Default
+                                            
+                                            if (strpos($statusProyek, 'sedang') !== false) {
+                                                $badgeClass = 'bg-primary-subtle text-primary border-primary-subtle border';
+                                            } elseif (strpos($statusProyek, 'akan') !== false) {
+                                                $badgeClass = 'bg-warning-subtle text-warning border-warning-subtle border';
+                                            } elseif (strpos($statusProyek, 'selesai') !== false) {
+                                                $badgeClass = 'bg-success-subtle text-success border-success-subtle border';
+                                            }
+                                        ?>
+                                        <span class="badge <?= $badgeClass ?> me-2 text-uppercase">
+                                            <?= esc($proyek['status'] ?? 'Draft') ?>
+                                        </span>
+                                        
+                                        <span class="me-2">
+                                            <i class="far fa-clock me-1"></i> 
+                                            <?= esc($proyek['tahun_mulai'] ?? '-') ?> - <?= esc($proyek['tahun_selesai'] ?? 'Selesai') ?>
+                                        </span>
+                                    </div>
+
+                                    <div class="mb-2 text-muted small">
+                                        <?php if(!empty($proyek['mitra'])): ?>
+                                            <span class="me-3"><i class="fas fa-handshake me-1"></i> <?= esc($proyek['mitra']) ?></span>
+                                        <?php endif; ?>
+                                        <?php if(!empty($proyek['sumber_dana'])): ?>
+                                            <span><i class="fas fa-coins me-1"></i> <?= esc($proyek['sumber_dana']) ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <p class="mb-0 text-muted small"><?= esc($proyek['deskripsi'] ?? 'Tidak ada deskripsi.') ?></p>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
 
 </body>
 </html>
+<?= $this->include('layout/footer') ?>

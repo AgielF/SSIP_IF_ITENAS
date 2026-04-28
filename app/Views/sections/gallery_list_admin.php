@@ -1,54 +1,30 @@
 <style>
-    .fm-content {
-        padding: 30px;
-        background-color: #ffffff;
-    }
-    .fm-table thead th {
-        background-color: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
-        font-weight: 600;
-    }
-    .fm-table tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-    .nav-tabs .nav-link {
-        color: #555;
-        font-weight: 500;
-    }
-    .nav-tabs .nav-link.active {
-        color: #0d6efd;
-        border-color: #dee2e6 #dee2e6 #fff;
-    }
+    .fm-content { padding: 30px; background-color: #ffffff; }
+    .fm-table thead th { background-color: #f8f9fa; border-bottom: 2px solid #dee2e6; font-weight: 600; }
+    .fm-table tbody tr:hover { background-color: #f8f9fa; }
+    .nav-tabs .nav-link { color: #555; font-weight: 500; }
+    .nav-tabs .nav-link.active { color: #0d6efd; border-color: #dee2e6 #dee2e6 #fff; }
+    .img-thumbnail-table { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; }
     @media print {
         body * { visibility: hidden; }
         #printable-area, #printable-area * { visibility: visible; }
         #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
         .btn, .nav-tabs, #search-input, #sort-filter, #items-per-page-filter,
-        #pagination-controls, label, #record-info, .non-printable {
-            display: none !important;
-        }
+        #pagination-controls, label, #record-info, .non-printable { display: none !important; }
     }
 </style>
 
 <div class="container my-5">
-    <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span id="successMessage"></span>
-                </div>
+                <div class="toast-body"><i class="fas fa-check-circle me-2"></i><span id="successMessage"></span></div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
-
         <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <span id="errorMessage"></span>
-                </div>
+                <div class="toast-body"><i class="fas fa-exclamation-triangle me-2"></i><span id="errorMessage"></span></div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
         </div>
@@ -56,28 +32,27 @@
 
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
-            <a class="nav-link active" href="#">Daftar Galeri</a>
+            <a class="nav-link active" href="#">Daftar Kelola Galeri</a>
         </li>
     </ul>
 
-    <main class="fm-content card rounded-0 rounded-bottom border-top-0">
+    <main class="fm-content card rounded-0 rounded-bottom border-top-0 shadow-sm">
         <div class="card-body">
             <div id="printable-area">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
-                    <h4 class="mb-0">Daftar Galeri</h4>
+                    <h4 class="mb-0 fw-bold"><i class="fas fa-images text-primary me-2"></i>Kelola Galeri Lab</h4>
                     
                     <div class="d-flex align-items-center gap-2 flex-wrap non-printable">
-                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
+                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari keterangan..." style="width: auto;">
                         
                         <div class="d-flex align-items-center">
-                            <label for="sort-filter">Urutkan:</label>
-<select id="sort-filter" class="form-select form-select-sm"
-        onchange="location.href='?sort=' + this.value">
-    <option value="DESC" <?= ($sort === 'DESC') ? 'selected' : '' ?>>Terbaru</option>
-    <option value="ASC" <?= ($sort === 'ASC') ? 'selected' : '' ?>>Terlama</option>
-</select>
-
+                            <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
+                            <select id="sort-filter" class="form-select form-select-sm" onchange="location.href='?sort=' + this.value">
+                                <option value="DESC" <?= ($sort === 'DESC') ? 'selected' : '' ?>>Terbaru</option>
+                                <option value="ASC" <?= ($sort === 'ASC') ? 'selected' : '' ?>>Terlama</option>
+                            </select>
                         </div>
+
                         <div class="d-flex align-items-center">
                             <label for="items-per-page-filter" class="form-label me-2 mb-0 small text-nowrap">Tampilkan:</label>
                             <select class="form-select form-select-sm" id="items-per-page-filter">
@@ -86,132 +61,177 @@
                                 <option value="all">Semua</option>
                             </select>
                         </div>
+
                         <button id="export-pdf-btn" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf me-1"></i> PDF
                         </button>
+
                         <button id="add-data-btn" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDataModal">
-                            <i class="fas fa-plus me-1"></i> Tambah Data
+                            <i class="fas fa-plus me-1"></i> Tambah Media
                         </button>
                     </div>
                 </div>
 
                 <p class="text-muted small mb-3" id="record-info">Menampilkan data...</p>
 
-                <div class="table-responsive">
-                    <table class="table fm-table table-hover" id="galeri-table">
-                        <thead>
+                <div class="table-responsive border rounded">
+                    <table class="table fm-table table-hover align-middle mb-0" id="galeri-table">
+                        <thead class="table-light">
                             <tr>
-                                <th>ID</th>
-                                <th>admin penyunting</th>
+                                <th>No.</th>
+                                <th>Pengunggah</th>
                                 <th>Kategori</th>
                                 <th>Keterangan</th>
-                                <th>File</th>
-                                <th>Tanggal Upload</th>
-                                <th class="non-printable">Aksi</th>
+                                <th>Pratinjau / File URL</th>
+                                <th>Tgl Upload</th>
+                                <th class="text-center non-printable">Aksi</th>
                             </tr>
                         </thead>
-
                         <tbody>
-    <?php if (!empty($media_items['rows'])) : ?>
-        <?php foreach ($media_items['rows'] as $row) : ?>
-            <tr>
-                <td><?= esc($row[0]) ?></td> <!-- ID -->
-                <td><?= esc($row[1]) ?></td> <!-- Kategori -->
-                <td><?= esc($row[2]) ?></td> <!-- Keterangan -->
-                <td><?= esc($row[3]) ?></td> <!-- File -->
-                <td><?= esc($row[4]) ?></td> <!-- Tanggal -->
-                <td><?= esc($row[5]) ?></td> <!-- Tanggal -->
-                <td class="non-printable">
-                    <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"
-                            data-id="<?= $row[0] ?>"
-                            data-kategori="<?= esc($row[1]) ?>"
-                            data-keterangan="<?= esc($row[2]) ?>"
-                            data-file="<?= esc($row[3]) ?>">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <a href="<?= site_url('galeri_admin/delete/'.$row[0]) ?>"
-                       class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('Hapus data ini?')">
-                        <i class="fas fa-trash-alt"></i>
-                    </a>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    <?php else : ?>
-        <tr>
-            <td colspan="6" class="text-center text-muted">Data tidak ditemukan.</td>
-        </tr>
-    <?php endif; ?>
-</tbody>
-
-
+                            <?php if (!empty($media_items['rows'])) : ?>
+                                <?php foreach ($media_items['rows'] as $idx => $row) : ?>
+                                    <tr>
+                                        <td><?= esc($idx + 1) ?></td>
+                                        <td><?= esc($row[1] ?? 'Admin') ?></td>
+                                        <td>
+                                            <span class="badge bg-<?= strtolower($row[2]) === 'video' ? 'danger' : 'info' ?>">
+                                                <?= esc(strtoupper($row[2])) ?>
+                                            </span>
+                                        </td>
+                                        <td><?= esc($row[3]) ?></td>
+                                        <td>
+                                            <?php if (strtolower($row[2]) === 'video'): ?>
+                                                <a href="<?= esc($row[4]) ?>" target="_blank" class="text-primary small text-decoration-none">
+                                                    <i class="fab fa-youtube me-1"></i> Link Video
+                                                </a>
+                                            <?php else: ?>
+                                                <a href="<?= base_url('uploads/galeri/' . $row[4]) ?>" target="_blank">
+                                                    <img src="<?= base_url('uploads/galeri/' . $row[4]) ?>" 
+                                                         alt="Galeri" 
+                                                         class="img-thumbnail-table"
+                                                         onerror="this.src='https://placehold.co/80x50/E2E8F0/334155?text=Img'">
+                                                </a>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td><?= date('d/m/Y', strtotime($row[5])) ?></td>
+                                        <td class="text-center non-printable">
+                                            <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"
+                                                    data-id="<?= $row[0] ?>"
+                                                    data-kategori="<?= esc(strtolower($row[2])) ?>"
+                                                    data-keterangan="<?= esc($row[3]) ?>"
+                                                    data-file="<?= esc($row[4]) ?>">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </button>
+                                            <a href="<?= site_url('galeri_admin/delete/'.$row[0]) ?>"
+                                               class="btn btn-sm btn-outline-danger"
+                                               onclick="return confirm('Apakah Anda yakin ingin menghapus media ini secara permanen?')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        <i class="fas fa-folder-open mb-2 fs-3 text-secondary"></i><br>
+                                        Belum ada data galeri.
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
                     </table>
                 </div>
             </div>
             
-            <nav>
+            <nav class="mt-4">
                 <ul class="pagination pagination-sm justify-content-end" id="pagination-controls"></ul>
             </nav>
         </div>
     </main>
 </div>
 
-<!-- Modal Tambah Data -->
 <div class="modal fade" id="addDataModal" tabindex="-1">
     <div class="modal-dialog">
-        <form class="modal-content" action="<?= site_url('galeri_admin/store') ?>" method="post">
+        <form class="modal-content" action="<?= site_url('galeri_admin/create') ?>" method="post" enctype="multipart/form-data">
             <div class="modal-header">
-                <h5 class="modal-title">Tambah Data Baru</h5>
+                <h5 class="modal-title">Tambah Media Galeri</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label">Kategori</label>
-                    <input type="text" name="kategori" class="form-control" required>
+                    <label class="form-label fw-semibold">Pilih Tipe Media</label>
+                    <select name="kategori" id="addKategori" class="form-select" required>
+                        <option value="foto">Upload Foto</option>
+                        <option value="video">Embed Video (YouTube)</option>
+                    </select>
                 </div>
+                
                 <div class="mb-3">
-                    <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" class="form-control" required></textarea>
+                    <label class="form-label fw-semibold">Judul / Keterangan</label>
+                    <textarea name="keterangan" class="form-control" rows="2" placeholder="Masukkan keterangan kegiatan..." required></textarea>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">File (URL/Path)</label>
-                    <input type="text" name="file_url" class="form-control">
+
+                <div class="mb-3" id="addAreaFoto">
+                    <label class="form-label fw-semibold">Upload Gambar</label>
+                    <input type="file" name="gambar" id="addInputFoto" class="form-control" accept="image/*" required>
+                    <small class="text-muted d-block mt-1">Format: JPG, PNG, JPEG. (Otomatis di-crop 16:9)</small>
+                </div>
+
+                <div class="mb-3" id="addAreaVideo" style="display: none;">
+                    <label class="form-label fw-semibold">Link Embed Video</label>
+                    <input type="url" name="link_video" id="addInputVideo" class="form-control" placeholder="https://www.youtube.com/embed/xxxxxx">
+                    <small class="text-muted d-block mt-1">Gunakan link embed. Contoh: https://www.youtube.com/embed/dQw4w9WgXcQ</small>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary">Simpan Media</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Modal Edit Data -->
+
 <div class="modal fade" id="editDataModal" tabindex="-1">
     <div class="modal-dialog">
-        <form method="post" id="editForm" class="modal-content">
+        <form method="post" id="editForm" class="modal-content" enctype="multipart/form-data">
             <div class="modal-header">
-                <h5 class="modal-title">Edit Data</h5>
+                <h5 class="modal-title">Edit Media Galeri</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" name="id_galeri" id="edit-id">
+                
                 <div class="mb-3">
-                    <label class="form-label">Kategori</label>
-                    <input type="text" name="kategori" id="edit-kategori" class="form-control" required>
+                    <label class="form-label fw-semibold">Tipe Media</label>
+                    <select name="kategori" id="editKategori" class="form-select" required>
+                        <option value="foto">Foto</option>
+                        <option value="video">Video (YouTube)</option>
+                    </select>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Keterangan</label>
-                    <textarea name="keterangan" id="edit-keterangan" class="form-control" required></textarea>
+                    <label class="form-label fw-semibold">Judul / Keterangan</label>
+                    <textarea name="keterangan" id="edit-keterangan" class="form-control" rows="2" required></textarea>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">File (URL/Path)</label>
-                    <input type="text" name="file_url" id="edit-file" class="form-control">
+
+                <div class="mb-3" id="editAreaFoto">
+                    <label class="form-label fw-semibold">Ganti Gambar Baru</label>
+                    <input type="file" name="gambar" id="editInputFoto" class="form-control" accept="image/*">
+                    <small class="text-muted d-block mt-1">Biarkan kosong jika tidak ingin mengganti gambar.</small>
+                    <div id="current-image-info" class="mt-2 text-primary small"></div>
                 </div>
+
+                <div class="mb-3" id="editAreaVideo" style="display: none;">
+                    <label class="form-label fw-semibold">Ubah Link Embed Video</label>
+                    <input type="url" name="link_video" id="editInputVideo" class="form-control">
+                    <small class="text-muted d-block mt-1">Masukkan URL Embed YouTube yang baru.</small>
+                </div>
+
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
         </form>
     </div>
@@ -219,29 +239,74 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Toast notification handling
+    
+    // --- 1. HANDLING TOAST NOTIFICATION ---
     <?php if (session()->getFlashdata('success')): ?>
         const successToast = new bootstrap.Toast(document.getElementById('successToast'));
         document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
         successToast.show();
-        setTimeout(() => successToast.hide(), 3000);
+        setTimeout(() => successToast.hide(), 4000);
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
         const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
         document.getElementById('errorMessage').textContent = '<?= session()->getFlashdata('error') ?>';
         errorToast.show();
-        setTimeout(() => errorToast.hide(), 3000);
+        setTimeout(() => errorToast.hide(), 4000);
     <?php endif; ?>
+
+
+    // --- 2. LOGIKA DYNAMIC FORM (FOTO VS VIDEO) ---
+    function toggleFormFields(kategori, areaFoto, areaVideo, inputFoto, inputVideo) {
+        if (kategori === 'video') {
+            areaFoto.style.display = 'none';
+            areaVideo.style.display = 'block';
+            inputFoto.removeAttribute('required');  
+            inputVideo.setAttribute('required', 'required'); 
+        } else {
+            areaFoto.style.display = 'block';
+            areaVideo.style.display = 'none';
+            inputVideo.removeAttribute('required'); 
+            // Kita tidak force inputFoto 'required' saat Edit (karena user mungkin gak mau ganti foto)
+            // Khusus modal Tambah baru diatur di bawah.
+        }
+    }
+
+    // Event untuk Modal Tambah
+    const addKategori = document.getElementById('addKategori');
+    addKategori.addEventListener('change', function() {
+        toggleFormFields(this.value, 
+            document.getElementById('addAreaFoto'), 
+            document.getElementById('addAreaVideo'), 
+            document.getElementById('addInputFoto'), 
+            document.getElementById('addInputVideo')
+        );
+        // Khusus saat nambah data foto, input file WAJIB diisi
+        if(this.value === 'foto') {
+            document.getElementById('addInputFoto').setAttribute('required', 'required');
+        }
+    });
+
+    // Event untuk Modal Edit (Menyesuaikan saat kategori diubah)
+    const editKategori = document.getElementById('editKategori');
+    editKategori.addEventListener('change', function() {
+        toggleFormFields(this.value, 
+            document.getElementById('editAreaFoto'), 
+            document.getElementById('editAreaVideo'), 
+            document.getElementById('editInputFoto'), 
+            document.getElementById('editInputVideo')
+        );
+    });
+
+
+    // --- 3. FILTER, SORT & PAGINATION TABLE ---
     const searchInput = document.getElementById('search-input');
     const table = document.getElementById('galeri-table');
-    const tableRows = Array.from(table.querySelectorAll('tbody tr'));
+    const tableRows = Array.from(table.querySelectorAll('tbody tr')).filter(row => !row.innerText.includes('Belum ada data'));
     const sortFilter = document.getElementById('sort-filter');
     const itemsPerPageFilter = document.getElementById('items-per-page-filter');
     const recordInfo = document.getElementById('record-info');
     const paginationControls = document.getElementById('pagination-controls');
-    const exportPdfBtn = document.getElementById('export-pdf-btn');
-
     let currentPage = 1;
 
     function updateTable() {
@@ -253,25 +318,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         rows = rows.filter(row => row.style.display !== 'none');
 
-        // Sorting berdasarkan tanggal
-        const headers = table.querySelectorAll('thead th');
-        let dateIndex = -1;
-        headers.forEach((th, i) => {
-            if (th.innerText.toLowerCase().includes('tanggal')) dateIndex = i;
-        });
-        if (dateIndex >= 0) {
-            rows.sort((a, b) => {
-                const dateA = new Date(a.cells[dateIndex].innerText);
-                const dateB = new Date(b.cells[dateIndex].innerText);
-                return sortFilter.value === 'newest' ? dateB - dateA : dateA - dateB;
-            });
-        }
-
-        // Pagination
         const perPage = itemsPerPageFilter.value === 'all' ? rows.length : parseInt(itemsPerPageFilter.value, 10);
         const totalRows = rows.length;
         const totalPages = Math.ceil(totalRows / perPage) || 1;
         if (currentPage > totalPages) currentPage = 1;
+        
         const startIndex = (currentPage - 1) * perPage;
         const endIndex = startIndex + perPage;
 
@@ -312,26 +363,49 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     searchInput.addEventListener('keyup', () => { currentPage = 1; updateTable(); });
-    sortFilter.addEventListener('change', () => { currentPage = 1; updateTable(); });
     itemsPerPageFilter.addEventListener('change', () => { currentPage = 1; updateTable(); });
-    exportPdfBtn.addEventListener('click', () => window.print());
+    document.getElementById('export-pdf-btn').addEventListener('click', () => window.print());
 
-    updateTable();
+    updateTable(); // Init pagination
 
-    // === Edit Modal ===
+
+    // --- 4. ISI DATA KE MODAL EDIT ---
     const editButtons = document.querySelectorAll(".btn-edit");
     const editModal = new bootstrap.Modal(document.getElementById("editDataModal"));
     const editForm = document.getElementById("editForm");
+    const currentImageInfo = document.getElementById("current-image-info");
 
     editButtons.forEach(btn => {
         btn.addEventListener("click", function () {
-            document.getElementById("edit-id").value = this.dataset.id;
-            document.getElementById("edit-kategori").value = this.dataset.kategori;
-            document.getElementById("edit-keterangan").value = this.dataset.keterangan;
-            document.getElementById("edit-file").value = this.dataset.file;
-            editForm.action = "<?= site_url('galeri_admin/update/') ?>" + this.dataset.id;
+            const id = this.dataset.id;
+            const kategori = this.dataset.kategori; // foto atau video
+            const keterangan = this.dataset.keterangan;
+            const fileData = this.dataset.file; // berisi url youtube ATAU nama file .jpg
+
+            document.getElementById("edit-id").value = id;
+            document.getElementById("editKategori").value = kategori;
+            document.getElementById("edit-keterangan").value = keterangan;
+            
+            // Trigger perubahan form UI (Foto vs Video)
+            editKategori.dispatchEvent(new Event('change'));
+
+            // Mengisi data lama ke input
+            if (kategori === 'video') {
+                document.getElementById('editInputVideo').value = fileData;
+                currentImageInfo.innerHTML = ''; 
+            } else {
+                document.getElementById('editInputVideo').value = '';
+                if (fileData) {
+                    currentImageInfo.innerHTML = `<i class="fas fa-image me-1"></i> File saat ini: <b><a href="<?= base_url('uploads/galeri/') ?>${fileData}" target="_blank">${fileData}</a></b>`;
+                } else {
+                    currentImageInfo.innerHTML = '';
+                }
+            }
+
+            editForm.action = "<?= site_url('galeri_admin/update/') ?>" + id;
             editModal.show();
         });
     });
+
 });
 </script>

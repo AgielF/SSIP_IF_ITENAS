@@ -25,6 +25,10 @@ $routes->get('/repositori', 'Home::repositori');
 $routes->get('/rekrutmen', 'RekrutController::index');
 
 $routes->get('/modul_praktikum', 'modulPraktikumController::index');
+// Route khusus untuk preview/download file yang menangkap nama file di URL
+$routes->get('modul-praktikum/preview/(:any)', 'modulPraktikumController::preview/$1');
+// Route khusus untuk MEMAKSA unduh file (Download)
+$routes->get('modul-praktikum/download/(:any)', 'modulPraktikumController::download/$1');
 
 // $routes->get('/user_profile', 'Home::user_profile');
 $routes->get('/topic_detail/(:segment)', 'TopicController::detail/$1');

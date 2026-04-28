@@ -135,27 +135,63 @@ public function login()
 
   public function profile()
 {
-    // Ambil data user dari session
+    // 1. Ambil data user dari session
     $user = session()->get('user');
 
     if (!$user) {
-        // Jika belum login, redirect ke login
+        // Jika belum login, redirect ke halaman login
         return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
     }
 
-    // Mapping role
+    // 2. Mapping role
     $roles = [
         1 => 'Admin',
         2 => 'Asisten',
-        3 => 'Mahasiswa',
-        4 => 'Dosen',
+        3 => 'Dosen',
+        
     ];
 
-    // Pastikan array user aman
-    $user['role'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
+    // Override role_id dengan nama role (karena di view kamu memanggilnya dengan $user['role_id'])
+    $user['role_id'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
 
-    return view('auth/profile', ['user' => $user]);
+    // 3. Ambil ID user dari session dengan aman
+    // Kita cek apakah disimmpan sebagai 'id' atau 'id_user'
+    $userId = $user['id'] ?? $user['id_user'] ?? null;
+
+    // 4. Instansiasi Model
+    $publikasiModel = new \App\Models\PublikasiModel();
+    $proyekModel    = new \App\Models\ProyekRisetModel();
+
+    // 5. Query data Publikasi & Proyek Riset
+    if ($userId) {
+        // ✅ Memanggil getDataWithUser() agar tabel users ter-join dan 'penulis_utama' terbaca
+        $publicationData = $publikasiModel->getDataWithUser()
+                                          ->where('publikasi.id_user', $userId)
+                                          ->findAll();
+                                          
+        // Mengambil data proyek riset biasa (sesuaikan dengan field di ProyekRisetModel)
+        $proyekData = $proyekModel->where('id_user', $userId)->findAll();
+    } else {
+        // Jika karena alasan tertentu ID tidak terbaca, kirim array kosong agar tidak error di view
+        $publicationData = [];
+        $proyekData = [];
+    }
+    dd([
+        '1. Isi Session User' => $user,
+        '2. ID User yg Digunakan' => $userId,
+        '3. Hasil Data Publikasi' => $publicationData,
+        '4. Hasil Data Proyek' => $proyekData
+    ]);
+
+    // 6. Siapkan data untuk dikirim ke view
+    $data = [
+        'title'           => 'Profil Saya | ' . $user['nama'],
+        'user'            => $user,
+        'publicationData' => $publicationData,
+        'proyekData'      => $proyekData
+    ];
+
+    return view('auth/profile', $data);
 }
-
 
 }
