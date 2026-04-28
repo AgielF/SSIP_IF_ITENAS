@@ -30,7 +30,6 @@
 </style>
 
 <div class="container my-5">
-    <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -88,21 +87,18 @@
                         <th>Jurusan</th>
                         <th>No. Telp</th>
                         <th>Role</th>
-                        <th class="non-printable">Aksi</th>
+                        <th>Periode</th> <th class="non-printable">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($asisten)): ?>
                         <?php foreach ($asisten as $i => $person): ?>
                             <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>" data-user-id="<?= esc($person['id']) ?>" data-role-id="<?= esc($person['role_id'] ?? '') ?>">
-                                <td></td> <!-- Nomor diisi oleh JS -->
-                                <td><?= esc($person['nomor'] ?? '') ?></td>
+                                <td></td> <td><?= esc($person['nomor'] ?? '') ?></td>
                                 <td><?= esc($person['nama']) ?></td>
                                 <td><?= esc($person['jurusan'] ?? '') ?></td>
-                                <td>-</td> <!-- No phone field in current data -->
-                                <td>
+                                <td>-</td> <td>
                                     <?php 
-                                    // Tampilkan role_name dari database, atau fallback ke role field
                                     $roleDisplay = '';
                                     if (isset($person['role_name'])) {
                                         $roleDisplay = $person['role_name'] === 'admin' ? 'Kepala Laboratorium' : ucfirst($person['role_name']);
@@ -115,8 +111,11 @@
                                     <span class="badge bg-secondary"><?= esc($roleDisplay) ?></span>
                                 </td>
                                 <td>
+                                    <span class="badge bg-info text-dark"><?= esc($person['nama_periode'] ?? '-') ?></span>
+                                </td>
+                                <td>
                                     <div class="btn-group">
-                                        <button class="btn btn-light btn-sm edit-btn" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
+                                        <button class="btn btn-light btn-sm edit-btn" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
@@ -148,7 +147,6 @@
     </div>
 </div>
 
-<!-- Modal untuk Tambah/Edit Data -->
 <div class="modal fade" id="dataModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -158,8 +156,7 @@
             </div>
             <div class="modal-body">
                 <form id="data-form">
-                    <!-- Input form akan dirender oleh JavaScript di sini -->
-                </form>
+                    </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -170,6 +167,9 @@
 </div>
 
 <script>
+// Melemparkan data periode dari PHP ke Javascript untuk dirender di modal
+const listPeriode = <?= json_encode($listPeriode ?? []) ?>;
+
 document.addEventListener('DOMContentLoaded', function () {
     // Toast notification handling
     <?php if (session()->getFlashdata('success')): ?>
@@ -185,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         errorToast.show();
         setTimeout(() => errorToast.hide(), 3000);
     <?php endif; ?>
+    
     const tableBody = document.querySelector('#adminTable tbody');
     const allRows = Array.from(tableBody.querySelectorAll('tr'));
     const searchInput = document.getElementById('search-input');
@@ -233,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Render Body & Numbering
         tableBody.innerHTML = ''; // Clear table
         if (paginatedRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
                 row.cells[0].textContent = startIndex + index + 1; // Fill number
@@ -293,6 +294,13 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('add-data-btn').addEventListener('click', () => {
         currentState.editingIndex = null;
         modalTitle.textContent = 'Tambah Anggota Baru';
+        
+        // Membangun opsi dropdown periode
+        let periodeOptions = '<option value="">-- Pilih Periode --</option>';
+        listPeriode.forEach(p => {
+            periodeOptions += `<option value="${p.id_periode}">${p.nama_periode}</option>`;
+        });
+
         const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
             <div class="mb-3"><label class="form-label">Nomor <span class="text-danger">*</span></label><input type="text" class="form-control" name="nomor" required></div>
             <div class="mb-3"><label class="form-label">Nama <span class="text-danger">*</span></label><input type="text" class="form-control" name="nama" required></div>
@@ -300,13 +308,27 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan"></div>
             <div class="mb-3"><label class="form-label">Foto</label><input type="file" class="form-control" name="foto" accept="image/*"></div>
             <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
-        <select class="form-select" name="role_id" required>
-            <option value="1">Kepala Laboratorium</option>
-            <option value="2">Asisten</option>
-            <option value="3">Dosen</option>
-        </select>
-    </div>`;
+                <select class="form-select" name="role_id" id="dynamic-role-select" required>
+                    <option value="1">Kepala Laboratorium</option>
+                    <option value="2">Asisten</option>
+                    <option value="3">Dosen</option>
+                    <option value="4">Praktikan</option>
+                </select>
+            </div>
+            <div class="mb-3" id="dynamic-periode-container" style="display:none;">
+                <label class="form-label">Periode Kepengurusan</label>
+                <select class="form-select" name="id_periode">
+                    ${periodeOptions}
+                </select>
+            </div>`;
+        
         modalForm.innerHTML = formHtml;
+        
+        // Event Listener untuk memunculkan dropdown periode jika role Asisten (id = 2) dipilih
+        document.getElementById('dynamic-role-select').addEventListener('change', function() {
+            document.getElementById('dynamic-periode-container').style.display = this.value === '2' ? 'block' : 'none';
+        });
+
         dataModal.show();
     });
 
@@ -348,16 +370,11 @@ document.addEventListener('DOMContentLoaded', function () {
             let method = 'POST';
 
             if (currentState.editingIndex !== null) {
-                // For edit, we need to get the user ID from the data
                 const rowIndex = currentState.editingIndex;
                 const userData = allRows[rowIndex];
-                const userId = userData.dataset.userId; // Get user ID from data attribute
+                const userId = userData.dataset.userId; 
                 url = baseUrl + `/admin/users/update/${userId}`;
                 method = 'POST';
-                // No need for _method field - CodeIgniter route is already POST
-                console.log('Update URL:', url, 'User ID:', userId, 'Role ID:', data.role_id);
-            } else {
-                console.log('Create URL:', url);
             }
 
             const response = await fetch(url, {
@@ -368,32 +385,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 body: formData
             });
 
-            console.log('Response status:', response.status);
-            console.log('Response headers:', response.headers);
-            console.log('Response content-type:', response.headers.get('content-type'));
-
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error('Response error:', errorText);
-                
-                // Try to parse as JSON for better error message
                 let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                 try {
                     const errorJson = JSON.parse(errorText);
                     if (errorJson.message) {
                         errorMessage = errorJson.message;
                     }
-                } catch (e) {
-                    // Not JSON, use text as is
-                }
+                } catch (e) {}
                 
-                // If 401 or 403, redirect to login
                 if (response.status === 401 || response.status === 403) {
                     alert('Session expired. Please login again.');
                     window.location.href = '/login';
                     return;
                 }
-                
                 throw new Error(errorMessage);
             }
 
@@ -401,16 +407,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 result = await response.json();
-                console.log('Response result:', result);
             } else {
                 const textResult = await response.text();
-                console.log('Response text:', textResult);
-                // Try to parse as JSON anyway
                 try {
                     result = JSON.parse(textResult);
-                    console.log('Parsed JSON result:', result);
                 } catch (e) {
-                    console.error('Failed to parse response as JSON:', e);
                     throw new Error('Response is not valid JSON');
                 }
             }
@@ -421,7 +422,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert((result && result.message) || 'Terjadi kesalahan');
             }
         } catch (error) {
-            console.error('Fetch error:', error);
             alert('Network error: ' + error.message);
         }
     });
@@ -439,6 +439,20 @@ document.addEventListener('DOMContentLoaded', function () {
             const rowData = allRows[rowIndex];
             modalTitle.textContent = 'Edit Anggota';
 
+            // Ambil data nama periode dari attribut dataset tombol edit
+            const currentPeriodeName = target.dataset.periodeName || '';
+            
+            // Membangun opsi dropdown periode dengan status 'selected'
+            let periodeOptions = '<option value="">-- Pilih Periode --</option>';
+            listPeriode.forEach(p => {
+                const isSelected = (p.nama_periode === currentPeriodeName) ? 'selected' : '';
+                periodeOptions += `<option value="${p.id_periode}" ${isSelected}>${p.nama_periode}</option>`;
+            });
+
+            // Tentukan apakah dropdown periode harus tampil di awal (hanya jika role Asisten)
+            const isAsisten = rowData.dataset.roleId === '2';
+            const displayPeriode = isAsisten ? 'block' : 'none';
+
             const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
                 <div class="mb-3"><label class="form-label">Nomor</label><input type="text" class="form-control" name="nomor" value="${rowData.cells[1].textContent}"></div>
                 <div class="mb-3"><label class="form-label">Nama</label><input type="text" class="form-control" name="nama" value="${rowData.cells[2].textContent}"></div>
@@ -446,13 +460,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="mb-3"><label class="form-label">Jurusan</label><input type="text" class="form-control" name="jurusan" value="${rowData.cells[3].textContent}"></div>
                 <div class="mb-3"><label class="form-label">Foto</label><input type="file" class="form-control" name="foto" accept="image/*"></div>
                 <div class="mb-3"><label class="form-label">Role</label>
-                    <select class="form-select" name="role_id">
+                    <select class="form-select" name="role_id" id="dynamic-role-select-edit">
                         <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Kepala Laboratorium</option>
                         <option value="2" ${rowData.dataset.roleId === '2' ? 'selected' : ''}>Asisten</option>
                         <option value="3" ${rowData.dataset.roleId === '3' ? 'selected' : ''}>Dosen</option>
+                        <option value="4" ${rowData.dataset.roleId === '4' ? 'selected' : ''}>Praktikan</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="dynamic-periode-container-edit" style="display:${displayPeriode};">
+                    <label class="form-label">Periode Kepengurusan</label>
+                    <select class="form-select" name="id_periode">
+                        ${periodeOptions}
                     </select>
                 </div>`;
+            
             modalForm.innerHTML = formHtml;
+
+            // Event Listener untuk modal Edit
+            document.getElementById('dynamic-role-select-edit').addEventListener('change', function() {
+                document.getElementById('dynamic-periode-container-edit').style.display = this.value === '2' ? 'block' : 'none';
+            });
+
             dataModal.show();
         }
 
@@ -469,31 +497,19 @@ document.addEventListener('DOMContentLoaded', function () {
                         [csrfTokenName]: csrfTokenValue
                     })
                 }).then(async response => {
-                    console.log('Delete response status:', response.status);
-                    console.log('Delete response content-type:', response.headers.get('content-type'));
-
                     if (!response.ok) {
                         const errorText = await response.text();
-                        console.error('Delete response error:', errorText);
-                        
-                        // Try to parse as JSON for better error message
                         let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                         try {
                             const errorJson = JSON.parse(errorText);
-                            if (errorJson.message) {
-                                errorMessage = errorJson.message;
-                            }
-                        } catch (e) {
-                            // Not JSON, use text as is
-                        }
+                            if (errorJson.message) errorMessage = errorJson.message;
+                        } catch (e) {}
                         
-                        // If 401 or 403, redirect to login
                         if (response.status === 401 || response.status === 403) {
                             alert('Session expired. Please login again.');
                             window.location.href = '/login';
                             return;
                         }
-                        
                         throw new Error(errorMessage);
                     }
 
@@ -501,15 +517,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('application/json')) {
                         result = await response.json();
-                        console.log('Delete response result:', result);
                     } else {
                         const textResult = await response.text();
-                        console.log('Delete response text:', textResult);
                         try {
                             result = JSON.parse(textResult);
-                            console.log('Delete parsed JSON result:', result);
                         } catch (e) {
-                            console.error('Failed to parse delete response as JSON:', e);
                             throw new Error('Response is not valid JSON');
                         }
                     }
@@ -520,7 +532,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         alert((result && result.message) || 'Gagal menghapus data');
                     }
                 }).catch(error => {
-                    console.error('Delete fetch error:', error);
                     alert('Network error: ' + error.message);
                 });
             }

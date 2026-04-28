@@ -10,12 +10,17 @@ class UserModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'foto', 'created_at', 'updated_at'];
     
-    // FUNGSI YANG SUDAH ADA (TIDAK DIUBAH)
+    // 🔹 DIUBAH: Fungsi ini sekarang melakukan JOIN untuk mengambil data periode
     public function getAsistenLab() 
     {
-        return $this->where('role_id', 2)->findAll();
+        return $this->select('users.*, periode.nama_periode')
+            ->join('asisten_periode', 'asisten_periode.id_user = users.id', 'left')
+            ->join('periode', 'periode.id_periode = asisten_periode.id_periode', 'left')
+            ->where('users.role_id', 2)
+            ->findAll();
     }
     
+    // FUNGSI YANG SUDAH ADA (TIDAK DIUBAH)
     public function getDosenLab()
     {
         // Sesuai seed: dosen memiliki role_id = 3
@@ -41,7 +46,7 @@ class UserModel extends Model
     {
         // 1. Panggil fungsi lain di dalam kelas ini menggunakan "$this"
         $admin = $this->admin();
-        $asisten = $this->getAsistenLab();
+        $asisten = $this->getAsistenLab(); // 🔹 Variabel $asisten ini sekarang membawa field "nama_periode"
         $dosen = $this->getDosenLab();
         $praktikan = $this->praktikan();
 
@@ -66,7 +71,8 @@ class UserModel extends Model
 
         return $allPersonnel;
     }
-     protected function hashPassword(array $data){
+    
+    protected function hashPassword(array $data){
 
         if (isset($data['data']['password'])) {
             $data['data']['password'] = password_hash($data['data']['password'], PASSWORD_DEFAULT);
@@ -76,9 +82,9 @@ class UserModel extends Model
     }
 
     public function verifyPassword(string $password, string $hash): bool
-        {
-            return password_verify($password, $hash);
-        }
+    {
+        return password_verify($password, $hash);
+    }
 
     protected $beforeInsert = ['hashPassword'];
     protected $beforeUpdate = ['hashPassword'];

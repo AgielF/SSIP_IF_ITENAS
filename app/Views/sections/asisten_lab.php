@@ -22,9 +22,15 @@
                         <label for="period-filter" class="form-label me-2 mb-0">Periode:</label>
                         <select class="form-select form-select-sm" id="period-filter" style="width: auto;">
                             <option value="semua">Semua</option>
-                            <option value="2023/2024">2023/2024</option>
-                            <option value="2022/2023" selected>2022/2023</option>
-                            <option value="2021/2022">2021/2022</option>
+                            <?php if (!empty($listPeriode)): ?>
+                                <?php foreach ($listPeriode as $p): ?>
+                                    <option value="<?= esc($p['nama_periode']) ?>"><?= esc($p['nama_periode']) ?></option>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <option value="2023/2024">2023/2024</option>
+                                <option value="2022/2023" selected>2022/2023</option>
+                                <option value="2021/2022">2021/2022</option>
+                            <?php endif; ?>
                         </select>
                     </div>
                     </div>
@@ -34,8 +40,7 @@
         <div class="row g-4 filterable-items">
             <?php if (!empty($asisten)): ?>
                 <?php foreach ($asisten as $i => $a): ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12 filter-item" data-role="<?= esc(strtolower($a['role'] ?? '')) ?>" data-period="2022/2023">
-                    <!-- Debug: Role value is <?= esc($a['role'] ?? 'N/A') ?> -->
+                <div class="col-lg-3 col-md-4 col-sm-6 col-12 filter-item" data-role="<?= esc(strtolower($a['role'] ?? '')) ?>" data-period="<?= esc($a['nama_periode'] ?? 'semua') ?>">
                     <div class="card h-100 shadow-sm">
                         <div class="position-relative">
                             <div class="role-badge bg-primary text-white py-1 px-2 rounded position-absolute top-0 end-0 m-2 small">
@@ -60,7 +65,7 @@
                                 <?= esc($a['nomor'] ?? 'N/A') ?>
                             </p>
                              <p class="card-text text-muted small mb-3">
-                                2023/2024
+                                <?= esc($a['nama_periode'] ?? '-') ?>
                             </p>
                             <div class="d-flex justify-content-center gap-2">
                                 <a href="#" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">

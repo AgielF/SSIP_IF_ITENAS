@@ -256,6 +256,7 @@ $isDosen   = ($roleName === 'Dosen');
                     <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
                     <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
                     <li><a class="dropdown-item" href="/visi-misi_admin">Kelola Content Visi Misi</a></li>
+                    <li><a class="dropdown-item" href="/periode_admin">Kelola Periode Asisten</a></li>
 
                 <?php elseif ($isDosen): ?>
                     <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>

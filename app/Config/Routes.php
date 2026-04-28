@@ -73,7 +73,11 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
     $routes->get('/rekrutmen_admin','RekrutController::admin');
 
 
-
+    // Rute CRUD Periode
+    $routes->get('/periode_admin', 'PeriodeController::index');
+    $routes->post('/periode_admin/store', 'PeriodeController::store');
+    $routes->post('/periode_admin/update/(:num)', 'PeriodeController::update/$1');
+    $routes->get('/periode_admin/delete/(:num)', 'PeriodeController::delete/$1');
 
     // $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
     $routes->get('/berita_admin','beritaController::admin');
