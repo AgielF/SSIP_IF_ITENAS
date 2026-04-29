@@ -9,26 +9,28 @@
 
     .org-chart { padding: 30px 0; }
     .level { display: flex; justify-content: center; align-items: stretch; gap : 20px; margin: 30px 0; position: relative; flex-wrap: wrap; }
-    .person-card {
-        background: white;
-        border-radius: 15px;
-        padding: 25px;
-        margin: 15px;
-        width: 260px;
-        height: 180px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        min-width: 220px; max-width: 280px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 2px solid transparent;
-        cursor: pointer;
-        text-decoration: none;
-        color: inherit;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        position: relative;
+    .person-card { 
+        background: white; 
+        border-radius: 15px; 
+        padding: 20px; 
+        margin: 0; 
+        width: 250px; 
+        min-width: 250px;
+        max-width: 250px;
+        height: 230px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        border: 2px solid transparent; 
+        cursor: pointer; 
+        text-decoration: none; 
+        color: inherit; 
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; 
+        justify-content: center; 
+        position: relative; 
     }
+
     .person-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); text-decoration: none; color: inherit; border-color: #006994 !important; }
     .person-card .person-name:hover, .person-card .person-role:hover { color: inherit; }
     .person-card::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 20px; height: 20px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23006994'%3E%3Cpath d='M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z'/%3E%3C/svg%3E") no-repeat center; background-size: contain; opacity: 0.6; }
@@ -40,18 +42,18 @@
         font-weight: bold; 
         margin-bottom: 8px; 
         color: #333; 
-        text-align: center;
+        text-align: center; 
         line-height: 1.3;
         width: 100%;
-        white-space: normal; 
-        text-overflow: ellipsis;
-        overflow: hidden;
+        
+        /* Trik membatasi teks maksimal 2 baris */
         display: -webkit-box;
         -webkit-line-clamp: 2;
-        line-clamp: 2;
+        line-clamp: 2; /* <--- Tambahkan baris standar ini */
         -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-
     .person-role { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
     .person-icon { font-size: 48px; margin-bottom: 15px; }
     .person-avatar img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
