@@ -69,27 +69,13 @@ class Auth extends ResourceController
 
 
 //    
-public function login()
-{
-    try {
-        // untuk mencegah brute force attack
-        if ($this->isIPBlocked()) {
-            log_message('critical', 'Blocked login attempt from blacklisted IP: ' . $this->request->getIPAddress());
-            return redirect()->back()->with('error', 'Akses ditolak. Silakan hubungi administrator.');
-        }
+    public function login()
+    {
+        try {
+            // Rate Limiting: buat cek login attempt per IP
+            $this->checkRateLimit();
 
-        // Rate Limiting: buat cek login attempt per IP
-        $this->checkRateLimit();
-
-        // Capthca untuk mencegah bot setelah 3 kali gagal login
-        $failedCount = session()->get('login_attempts_' . $this->request->getIPAddress()) ?? 0;
-        if ($failedCount >= 3) {
-            $captchaResponse = $this->request->getPost('captcha');
-            if (!$captchaResponse || !$this->verifyCaptcha($captchaResponse)) {
-                return redirect()->back()->withInput()
-                    ->with('error', 'Captcha harus diisi dengan benar');
-            }
-        }
+        // Rate limiting sudah cukup untuk mencegah brute force
 
         $nomor    = trim($this->request->getPost('nomor'));
         $password = trim($this->request->getPost('password'));
@@ -263,7 +249,7 @@ public function login()
             return;
         }
 
-        // Block if too many attempts
+        // Block temporarily if too many attempts
         if ($attempts >= 5) { // Max 5 attempts per minute
             $remainingTime = 60 - (time() - $lastAttempt);
             $seconds = ceil($remainingTime);
@@ -322,40 +308,8 @@ public function login()
         ]);
     }
 
-    /**
-     * Verify captcha answer
-     */
-    private function verifyCaptcha($userAnswer)
-    {
-        $correctAnswer = session()->get('captcha_answer');
-        return $userAnswer == $correctAnswer;
-    }
 
-    /**
-     * Check if IP is blocked due to security violations
-     */
-    private function isIPBlocked()
-    {
-        $ip = $this->request->getIPAddress();
 
-        // Check permanent blacklist (implement in database for production)
-        $blacklist = ['127.0.0.1']; // Example - implement proper blacklist
-        if (in_array($ip, $blacklist)) {
-            return true;
-        }
 
-        // Check temporary block (too many failed attempts in short time)
-        $failedCount = session()->get('login_attempts_' . $ip) ?? 0;
-        $lastAttempt = session()->get('last_attempt_' . $ip) ?? 0;
-
-        // Block permanently if more than 10 failed attempts in 24 hours
-        if ($failedCount >= 10 && (time() - $lastAttempt) < 86400) { // 24 hours
-            // Log permanent block
-            log_message('critical', 'IP permanently blocked due to excessive failed attempts: ' . $ip);
-            return true;
-        }
-
-        return false;
-    }
 
 }
