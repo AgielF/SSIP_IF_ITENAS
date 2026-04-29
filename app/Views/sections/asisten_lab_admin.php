@@ -30,6 +30,7 @@
 </style>
 
 <div class="container my-5">
+    <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -85,19 +86,20 @@
                         <th>NRP/NIDN</th>
                         <th>Nama</th>
                         <th>Jurusan</th>
-                        <th>No. Telp</th>
                         <th>Role</th>
-                        <th>Periode</th> <th class="non-printable">Aksi</th>
+                        <th>Periode</th> 
+                        <th class="non-printable">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($asisten)): ?>
                         <?php foreach ($asisten as $i => $person): ?>
                             <tr data-timestamp="<?= strtotime($person['created_at'] ?? time()) ?>" data-user-id="<?= esc($person['id']) ?>" data-role-id="<?= esc($person['role_id'] ?? '') ?>">
-                                <td></td> <td><?= esc($person['nomor'] ?? '') ?></td>
+                                <td></td> 
+                                <td><?= esc($person['nomor'] ?? '') ?></td>
                                 <td><?= esc($person['nama']) ?></td>
                                 <td><?= esc($person['jurusan'] ?? '') ?></td>
-                                <td>-</td> <td>
+                                <td>
                                     <?php 
                                     $roleDisplay = '';
                                     if (isset($person['role_name'])) {
@@ -156,7 +158,7 @@
             </div>
             <div class="modal-body">
                 <form id="data-form">
-                    </form>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -167,11 +169,9 @@
 </div>
 
 <script>
-// Melemparkan data periode dari PHP ke Javascript untuk dirender di modal
 const listPeriode = <?= json_encode($listPeriode ?? []) ?>;
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Toast notification handling
     <?php if (session()->getFlashdata('success')): ?>
         const successToast = new bootstrap.Toast(document.getElementById('successToast'));
         document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
@@ -207,16 +207,14 @@ document.addEventListener('DOMContentLoaded', function () {
         itemsPerPage: 5,
         currentPage: 1,
         searchTerm: '',
-        editingIndex: null // For tracking edit mode
+        editingIndex: null 
     };
 
     function updateView() {
-        // 1. Filter
         let processedRows = allRows.filter(row =>
             row.textContent.toLowerCase().includes(currentState.searchTerm)
         );
 
-        // 2. Sort
         processedRows.sort((a, b) => {
             const timeA = parseInt(a.dataset.timestamp, 10);
             const timeB = parseInt(b.dataset.timestamp, 10);
@@ -224,20 +222,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         const totalRows = processedRows.length;
-
-        // 3. Pagination
         const limit = currentState.itemsPerPage === 'all' ? totalRows : parseInt(currentState.itemsPerPage, 10);
         const startIndex = (currentState.currentPage - 1) * limit;
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        // Render Body & Numbering
-        tableBody.innerHTML = ''; // Clear table
+        tableBody.innerHTML = ''; 
         if (paginatedRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
-                row.cells[0].textContent = startIndex + index + 1; // Fill number
+                row.cells[0].textContent = startIndex + index + 1; 
                 tableBody.appendChild(row);
             });
         }
@@ -246,7 +241,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const endRecord = Math.min(endIndex, totalRows);
         recordInfo.textContent = `Menampilkan ${startRecord}-${endRecord} dari ${totalRows} data.`;
 
-        // Render Pagination
         renderPagination(totalRows, limit);
     }
 
@@ -290,12 +284,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     exportPdfBtn.addEventListener('click', () => window.print());
 
-    // Add new data button
     document.getElementById('add-data-btn').addEventListener('click', () => {
         currentState.editingIndex = null;
         modalTitle.textContent = 'Tambah Anggota Baru';
         
-        // Membangun opsi dropdown periode
         let periodeOptions = '<option value="">-- Pilih Periode --</option>';
         listPeriode.forEach(p => {
             periodeOptions += `<option value="${p.id_periode}">${p.nama_periode}</option>`;
@@ -312,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="1">Kepala Laboratorium</option>
                     <option value="2">Asisten</option>
                     <option value="3">Dosen</option>
-                    <option value="4">Praktikan</option>
+                    
                 </select>
             </div>
             <div class="mb-3" id="dynamic-periode-container" style="display:none;">
@@ -324,7 +316,6 @@ document.addEventListener('DOMContentLoaded', function () {
         
         modalForm.innerHTML = formHtml;
         
-        // Event Listener untuk memunculkan dropdown periode jika role Asisten (id = 2) dipilih
         document.getElementById('dynamic-role-select').addEventListener('change', function() {
             document.getElementById('dynamic-periode-container').style.display = this.value === '2' ? 'block' : 'none';
         });
@@ -332,30 +323,22 @@ document.addEventListener('DOMContentLoaded', function () {
         dataModal.show();
     });
 
-    // Save data button
     saveDataBtn.addEventListener('click', async () => {
         const form = modalForm;
         const formData = new FormData(form);
-
-        // Get form data as object for validation
         const data = {};
         for (let [key, value] of formData.entries()) {
             data[key] = value;
         }
 
-        // Basic validation
         let isValid = true;
         let errorMessage = '';
 
         if (currentState.editingIndex === null) {
-            // For create
             if (!data.nomor || !data.nama || !data.password || !data.role_id) {
                 isValid = false;
                 errorMessage = 'Semua field yang wajib diisi harus diisi!';
             }
-        } else {
-            // For edit, no required fields
-            isValid = true;
         }
 
         if (!isValid) {
@@ -364,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         try {
-            // Use site_url helper for proper URL generation
             const baseUrl = '<?= site_url() ?>';
             let url = baseUrl + '/admin/users/create';
             let method = 'POST';
@@ -390,9 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
                 try {
                     const errorJson = JSON.parse(errorText);
-                    if (errorJson.message) {
-                        errorMessage = errorJson.message;
-                    }
+                    if (errorJson.message) errorMessage = errorJson.message;
                 } catch (e) {}
                 
                 if (response.status === 401 || response.status === 403) {
@@ -426,7 +406,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Table action buttons
     tableBody.addEventListener('click', function(e) {
         const target = e.target.closest('button');
         if (!target) return;
@@ -439,17 +418,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const rowData = allRows[rowIndex];
             modalTitle.textContent = 'Edit Anggota';
 
-            // Ambil data nama periode dari attribut dataset tombol edit
             const currentPeriodeName = target.dataset.periodeName || '';
             
-            // Membangun opsi dropdown periode dengan status 'selected'
             let periodeOptions = '<option value="">-- Pilih Periode --</option>';
             listPeriode.forEach(p => {
                 const isSelected = (p.nama_periode === currentPeriodeName) ? 'selected' : '';
                 periodeOptions += `<option value="${p.id_periode}" ${isSelected}>${p.nama_periode}</option>`;
             });
 
-            // Tentukan apakah dropdown periode harus tampil di awal (hanya jika role Asisten)
             const isAsisten = rowData.dataset.roleId === '2';
             const displayPeriode = isAsisten ? 'block' : 'none';
 
@@ -464,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Kepala Laboratorium</option>
                         <option value="2" ${rowData.dataset.roleId === '2' ? 'selected' : ''}>Asisten</option>
                         <option value="3" ${rowData.dataset.roleId === '3' ? 'selected' : ''}>Dosen</option>
-                        <option value="4" ${rowData.dataset.roleId === '4' ? 'selected' : ''}>Praktikan</option>
+                        
                     </select>
                 </div>
                 <div class="mb-3" id="dynamic-periode-container-edit" style="display:${displayPeriode};">
@@ -476,7 +452,6 @@ document.addEventListener('DOMContentLoaded', function () {
             
             modalForm.innerHTML = formHtml;
 
-            // Event Listener untuk modal Edit
             document.getElementById('dynamic-role-select-edit').addEventListener('change', function() {
                 document.getElementById('dynamic-periode-container-edit').style.display = this.value === '2' ? 'block' : 'none';
             });
@@ -538,7 +513,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Initial render
     updateView();
 });
 </script>
