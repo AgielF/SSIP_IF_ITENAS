@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateGaleriUmum extends Migration
+class CreateGaleriUmumTable extends Migration
 {
     public function up()
     {
@@ -42,4 +42,4 @@ class CreateGaleriUmum extends Migration
     {
         $this->forge->dropTable('galeri_umum');
     }
-} 
+}

@@ -5,16 +5,22 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use App\Models\UserModel;
 use App\Models\RoleModel;
+use App\Models\PeriodeModel;
+use App\Models\AsistenPeriodeModel;
 
 class Users extends BaseController
 {
-    protected $userModel;
-    protected $roleModel;
+    protected UserModel $userModel;
+    protected RoleModel $roleModel;
+    protected PeriodeModel $periodeModel;
+    protected AsistenPeriodeModel$asistenPeriodeModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->roleModel = new RoleModel();
+        $this->periodeModel = new PeriodeModel();
+        $this->asistenPeriodeModel = new AsistenPeriodeModel();
     }
 
     // List semua users
@@ -64,8 +70,9 @@ class Users extends BaseController
         $password = $this->request->getPost('password');
         $jurusan = $this->request->getPost('jurusan');
         $role_id = $this->request->getPost('role_id');
+        $id_periode = $this->request->getPost('id_periode');
 
-        log_message('debug', 'Create data: ' . json_encode([$nomor, $nama, $jurusan, $role_id]));
+        log_message('debug', 'Create data: ' . json_encode([$nomor, $nama, $jurusan, $role_id, $id_periode]));
 
         // Check for duplicate nomor
         $existingUser = $this->userModel->where('nomor', $nomor)->first();
@@ -80,6 +87,9 @@ class Users extends BaseController
             return redirect()->back()->with('error', 'Nomor sudah digunakan')->withInput();
         }
 
+        // Start transaction
+        $this->userModel->db->transStart();
+
         // First, insert user without foto
         $data = [
             'nomor' => $nomor,
@@ -91,6 +101,7 @@ class Users extends BaseController
 
         $userId = $this->userModel->insert($data);
         if (!$userId) {
+            $this->userModel->db->transRollback();
             log_message('debug', 'Failed to save user');
             if ($isAjax) {
                 return $this->response
@@ -98,6 +109,16 @@ class Users extends BaseController
                     ->setJSON(['success' => false, 'message' => 'Failed to create user']);
             }
             return redirect()->back()->with('error', 'Failed to create user')->withInput();
+        }
+
+        // If user is asisten (role 2) and id_periode is provided, insert into asisten_periode
+        if ($role_id == 2 && !empty($id_periode)) {
+            $this->asistenPeriodeModel->insert([
+                'id_user' => $userId,
+                'id_periode' => $id_periode,
+                'jabatan' => 'Asisten Praktikum',
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
         }
 
         // Handle file upload
@@ -116,6 +137,9 @@ class Users extends BaseController
             $this->userModel->update($userId, ['foto' => $fotoPath]);
         }
 
+        // Complete transaction
+        $this->userModel->db->transComplete();
+
         log_message('debug', 'User saved successfully');
         if ($isAjax) {
             return $this->response
@@ -126,14 +150,14 @@ class Users extends BaseController
     }
 
     // Edit user
-    public function edit($id)
+    public function edit(int $id)
     {
         // Redirect ke asisten_admin, form edit ada di modal
         return redirect()->to('/asisten_admin');
     }
 
     // Update user
-    public function update($id)
+    public function update(int $id)
     {
         // Get current user data
         $user = $this->userModel->find($id);
@@ -155,6 +179,7 @@ class Users extends BaseController
         $nama = $this->request->getPost('nama');
         $jurusan = $this->request->getPost('jurusan');
         $role_id = $this->request->getPost('role_id');
+        $id_periode = $this->request->getPost('id_periode');
 
         log_message('debug', 'Update data: ' . json_encode(['nomor' => $nomor, 'nama' => $nama, 'jurusan' => $jurusan, 'role_id' => $role_id]));
         log_message('debug', 'Current user role_id: ' . $user['role_id']);
@@ -216,8 +241,12 @@ class Users extends BaseController
             $data['foto'] = 'uploads/photos/' . $id . '/' . $newName;
         }
 
+        // Start transaction
+        $this->userModel->db->transStart();
+
         // If no data to update, return success
         if (empty($data)) {
+            $this->userModel->db->transComplete();
             if ($this->request->isAJAX()) {
                 return $this->response
                     ->setContentType('application/json')
@@ -227,6 +256,39 @@ class Users extends BaseController
         }
 
         if ($this->userModel->update($id, $data)) {
+            // Handle periode update for asisten
+            if ($role_id == 2) {
+                if (!empty($id_periode)) {
+                    // Check if relation already exists
+                    $existingRelasi = $this->asistenPeriodeModel->where('id_user', $id)->first();
+
+                    if ($existingRelasi) {
+                        // Update if exists
+                        $this->asistenPeriodeModel->update($existingRelasi['id'], [
+                            'id_periode' => $id_periode,
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ]);
+                    } else {
+                        // Insert new if not exists
+                        $this->asistenPeriodeModel->insert([
+                            'id_user' => $id,
+                            'id_periode' => $id_periode,
+                            'jabatan' => 'Asisten Praktikum',
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                } else {
+                    // If role is asisten but no periode selected, remove relation
+                    $this->asistenPeriodeModel->where('id_user', $id)->delete();
+                }
+            } else {
+                // If role changed away from asisten, remove periode relation
+                $this->asistenPeriodeModel->where('id_user', $id)->delete();
+            }
+
+            // Complete transaction
+            $this->userModel->db->transComplete();
+
             if ($this->request->isAJAX()) {
                 return $this->response
                     ->setContentType('application/json')
@@ -234,6 +296,7 @@ class Users extends BaseController
             }
             return redirect()->to('/asisten_admin')->with('success', 'User updated successfully');
         } else {
+            $this->userModel->db->transRollback();
             if ($this->request->isAJAX()) {
                 return $this->response
                     ->setContentType('application/json')
@@ -244,7 +307,7 @@ class Users extends BaseController
     }
 
     // Delete user
-    public function delete($id)
+    public function delete(int $id)
     {
         if ($this->userModel->delete($id)) {
             if ($this->request->isAJAX()) {
@@ -266,13 +329,23 @@ class Users extends BaseController
     // Buat asisten_lab_admin view
     public function asistenAdmin()
     {
-        $users = $this->userModel->select('users.*, roles.role_name as role')
+        $users = $this->userModel->select('users.*, roles.role_name as role, periode.nama_periode')
             ->join('roles', 'roles.id = users.role_id', 'left')
+            ->join('asisten_periode', 'asisten_periode.id_user = users.id', 'left')
+            ->join('periode', 'periode.id_periode = asisten_periode.id_periode', 'left')
             ->findAll();
+
+        // Process users
+        $processedUsers = [];
+        foreach ($users as $user) {
+            $user['nama_periode'] = $user['nama_periode'] ?? '-';
+            $processedUsers[] = $user;
+        }
 
         $data = [
             'title' => 'Kelola Anggota Laboratorium',
-            'asisten' => $users // Pass raw user data, let the view handle formatting
+            'asisten' => $processedUsers, // Pass raw user data, let the view handle formatting
+            'listPeriode' => $this->periodeModel->findAll()
         ];
 
         return view('asisten_admin_list_view', $data);

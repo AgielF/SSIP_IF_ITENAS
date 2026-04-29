@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateBerita extends Migration
+class CreateBeritaTable extends Migration
 {
     public function up()
     {
@@ -51,4 +51,4 @@ class CreateBerita extends Migration
     {
         $this->forge->dropTable('berita');
     }
-} 
+}

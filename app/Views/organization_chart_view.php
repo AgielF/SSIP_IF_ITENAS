@@ -3,17 +3,55 @@
 <?= $this->section('content') ?>
 
 <style>
-    /* --- CSS ASLI DARI ANDA (TIDAK DIUBAH) --- */
+    *, *::before, *::after { 
+        box-sizing: border-box; 
+    }
+
     .org-chart { padding: 30px 0; }
-    .level { display: flex; justify-content: center; align-items: center; margin: 30px 0; position: relative; flex-wrap: wrap; }
-    .person-card { background: white; border-radius: 15px; padding: 25px; margin: 0 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); min-width: 220px; max-width: 280px; min-height: 180px; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 2px solid transparent; cursor: pointer; text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .level { display: flex; justify-content: center; align-items: stretch; gap : 20px; margin: 30px 0; position: relative; flex-wrap: wrap; }
+    .person-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin: 15px;
+        width: 260px;
+        height: 180px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        min-width: 220px; max-width: 280px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
     .person-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); text-decoration: none; color: inherit; border-color: #006994 !important; }
     .person-card .person-name:hover, .person-card .person-role:hover { color: inherit; }
     .person-card::after { content: ''; position: absolute; bottom: 10px; right: 10px; width: 20px; height: 20px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23006994'%3E%3Cpath d='M14,3V5H17.59L7.76,14.83L9.17,16.24L19,6.41V10H21V3M19,19H5V5H12V3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V12H19V19Z'/%3E%3C/svg%3E") no-repeat center; background-size: contain; opacity: 0.6; }
     .person-card.kepala-lab { border-color: #ffd700; background: linear-gradient(135deg, #fff8dc, #f0e68c); }
     .person-card.dosen-lab { border-color: #3498db; background: linear-gradient(135deg, #e8f4fd, #b8d4e3); }
     .person-card.asisten-lab { border-color: #27ae60; background: linear-gradient(135deg, #e8f5e8, #c8e6c9); }
-    .person-name { font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #333; white-space: normal; word-break: break-word; text-align: center; }
+    .person-name { 
+        font-size: 16px; 
+        font-weight: bold; 
+        margin-bottom: 8px; 
+        color: #333; 
+        text-align: center;
+        line-height: 1.3;
+        width: 100%;
+        white-space: normal; 
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
     .person-role { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
     .person-icon { font-size: 48px; margin-bottom: 15px; }
     .person-avatar img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; margin-bottom: 15px; }
@@ -33,12 +71,20 @@
     .stat-card:hover { transform: translateY(-2px); }
     .stat-number { font-size: 32px; font-weight: bold; color: #006994; display: block; margin-bottom: 5px; }
     .stat-label { font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-    .page-title { text-align: center; margin-bottom: 40px; color: #006994; }
-    .page-title h1 { font-size: 36px; font-weight: bold; margin-bottom: 10px; }
-    .page-title p { font-size: 18px; color: #666; }
+    .page-title { 
+        text-align: center; 
+        margin-bottom: 40px; 
+        color: #006994; }
+    .page-title h1 { 
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 10px; }
+    .page-title p { 
+        font-size: 18px; 
+        color: #666; }
     @media (max-width: 768px) {
         .level { flex-direction: column; }
-        .person-card { margin: 15px 0; min-width: 280px; }
+        .person-card { margin: 15px 0; width: 280px; }
         .horizontal-line { display: none; }
         .level-title { font-size: 24px; }
         .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }

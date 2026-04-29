@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreatePublikasi extends Migration
+class CreatePublikasiTable extends Migration
 {
     public function up()
     {
@@ -19,6 +19,11 @@ class CreatePublikasi extends Migration
                 'type' => 'ENUM',
                 'constraint' => ['jurnal', 'prosiding', 'paten'],
             ],
+            'judul' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ],
             'link_publikasi' => [
                 'type' => 'TEXT',
             ],
@@ -26,8 +31,56 @@ class CreatePublikasi extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => 100,
             ],
+            'topik' => [
+                'type' => 'ENUM',
+                'constraint' => [
+                    'machine learning',
+                    'data mining',
+                    'deep learning',
+                    'artificial intelligence',
+                    'expert system',
+                    'smart system'
+                ],
+                'null' => true,
+            ],
             'tanggal_publikasi' => [
                 'type' => 'DATE',
+            ],
+            'penulis_pendamping' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ],
+            'volume' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+                'null' => true,
+            ],
+            'nomor' => [
+                'type' => 'VARCHAR',
+                'constraint' => 50,
+                'null' => true,
+            ],
+            'tahun' => [
+                'type' => 'YEAR',
+                'null' => true,
+            ],
+            'link_doi' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'link_gdrive' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'conference' => [
+                'type' => 'VARCHAR',
+                'constraint' => 255,
+                'null' => true,
+            ],
+            'deskripsi' => [
+                'type' => 'TEXT',
+                'null' => true,
             ],
             'id_user' => [
                 'type' => 'INT',
@@ -51,4 +104,4 @@ class CreatePublikasi extends Migration
     {
         $this->forge->dropTable('publikasi');
     }
-} 
+}

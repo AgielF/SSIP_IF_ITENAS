@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateModulPraktikum extends Migration
+class CreateModulPraktikumTable extends Migration
 {
     public function up()
     {
@@ -43,4 +43,4 @@ class CreateModulPraktikum extends Migration
     {
         $this->forge->dropTable('modul_praktikum');
     }
-} 
+}

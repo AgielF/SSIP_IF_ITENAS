@@ -20,7 +20,11 @@ class DatabaseSeeder extends Seeder
         $this->call('GaleriUmumSeeder');
         $this->call('ModulPraktikumSeeder');
         $this->call('PesertaPraktikumSeeder');
-        $this->call('VisiMisiSeeder'); 
+        $this->call('VisiMisiSeeder');
         $this->call('PublikasiSeeder');
+        $this->call('asistenSeeder');
+        $this->call('ProjectLabSeeder');
+        $this->call('PeriodeSeeder');
+        $this->call('AsistenPeriodeSeeder');
     }
 }

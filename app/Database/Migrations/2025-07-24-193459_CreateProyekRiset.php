@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateProyekRiset extends Migration
+class CreateProyekRisetTable extends Migration
 {
     public function up()
     {
@@ -18,6 +18,18 @@ class CreateProyekRiset extends Migration
             'judul' => [
                 'type' => 'VARCHAR',
                 'constraint' => 100,
+            ],
+            'topik' => [
+                'type' => 'ENUM',
+                'constraint' => [
+                    'machine learning',
+                    'data mining',
+                    'deep learning',
+                    'artificial intelligence',
+                    'expert system',
+                    'smart system'
+                ],
+                'null' => true,
             ],
             'deskripsi' => [
                 'type' => 'TEXT',
@@ -35,6 +47,11 @@ class CreateProyekRiset extends Migration
             ],
             'tahun_selesai' => [
                 'type' => 'YEAR',
+            ],
+            'status' => [
+                'type' => 'ENUM',
+                'constraint' => ['akan dilaksanakan', 'sedang dilaksanakan', 'selesai'],
+                'default' => 'akan dilaksanakan',
             ],
             'id_user' => [
                 'type' => 'INT',
@@ -58,4 +75,4 @@ class CreateProyekRiset extends Migration
     {
         $this->forge->dropTable('proyek_riset');
     }
-} 
+}

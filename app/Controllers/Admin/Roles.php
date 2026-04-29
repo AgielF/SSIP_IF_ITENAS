@@ -21,7 +21,7 @@ class Roles extends ResourceController
         $data = $this->model->find($id);
         if ($data) {
             return $this->respond($data);
-        }
+        }   
         return $this->failNotFound('Role tidak ditemukan');
     }
 

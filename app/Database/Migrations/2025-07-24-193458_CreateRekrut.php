@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateRekrut extends Migration
+class CreateRekrutTable extends Migration
 {
     public function up()
     {
@@ -58,4 +58,4 @@ class CreateRekrut extends Migration
     {
         $this->forge->dropTable('rekrut');
     }
-} 
+}

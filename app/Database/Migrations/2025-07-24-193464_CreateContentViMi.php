@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateContentViMi extends Migration
+class CreateContentVisiMisiTable extends Migration
 {
     public function up()
     {
@@ -39,4 +39,4 @@ class CreateContentViMi extends Migration
     {
         $this->forge->dropTable('content_visi_misi');
     }
-} 
+}
