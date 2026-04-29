@@ -141,6 +141,21 @@
             color: #002366;
         }
 
+        /* ===== BACK LINK ===== */
+        .back-link {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
         /* ===== RIGHT ===== */
         .auth-right {
             background: white;
@@ -212,6 +227,14 @@
                 </button>
 
             </form>
+
+            <!-- BACK TO HOME LINK -->
+            <div style="margin-top: 20px;">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Kembali ke Homepage
+                </a>
+            </div>
 
         </div>
     </div>

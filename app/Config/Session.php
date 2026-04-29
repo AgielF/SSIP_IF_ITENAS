@@ -124,4 +124,13 @@ class Session extends BaseConfig
      * seconds.
      */
     public int $lockMaxRetries = 300;
+
+    /**
+     * --------------------------------------------------------------------------
+     * Secure Cookie Settings (Production Security)
+     * --------------------------------------------------------------------------
+     */
+    public bool $cookieSecure = true;      // Only send over HTTPS
+    public bool $cookieHTTPOnly = true;    // Prevent JavaScript access
+    public string $cookieSameSite = 'Strict'; // CSRF protection
 }

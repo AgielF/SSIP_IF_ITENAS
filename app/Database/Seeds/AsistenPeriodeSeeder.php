@@ -23,27 +23,35 @@ class AsistenPeriodeSeeder extends Seeder
         // Dan seterusnya
 
         foreach ($asisten as $person) {
-            // Ekstrak tahun dari nomor (format: 15202[tahun]00X)
-            $nomor = $person['nomor'];
-            $tahun = substr($nomor, 5, 2); // Ambil digit ke-6 dan 7 dari nomor
+            // cek apakah asisten sudah memiliki relasi dengan periode
+            $existingRelation = $this->db->table('asisten_periode')
+                ->where('id_user', $person['id'])
+                ->get()
+                ->getRow();
 
-            // Map tahun ke periode
-            $periodeMap = [
-                '22' => 1, // Periode ID 1 untuk 2022/2023
-                '23' => 2, // Periode ID 2 untuk 2023/2024
-                '24' => 3, // Periode ID 3 untuk 2024/2025
-                '25' => 4, // Periode ID 4 untuk 2025/2026
-            ];
+            if (!$existingRelation) {
+                // Ekstrak tahun dari nomor (format: 15202[tahun]00X)
+                $nomor = $person['nomor'];
+                $tahun = substr($nomor, 5, 2); // Ambil digit ke-6 dan 7 dari nomor
 
-            $periodeId = $periodeMap[$tahun] ?? 4; // Default ke periode terbaru jika tidak match
+                // Map tahun ke periode
+                $periodeMap = [
+                    '22' => 1, // Periode ID 1 untuk 2022/2023
+                    '23' => 2, // Periode ID 2 untuk 2023/2024
+                    '24' => 3, // Periode ID 3 untuk 2024/2025
+                    '25' => 4, // Periode ID 4 untuk 2025/2026
+                ];
 
-            $asistenPeriodeData[] = [
-                'id_user' => $person['id'],
-                'id_periode' => $periodeId,
-                'jabatan' => 'Asisten Praktikum',
-                'created_at' => Time::now(),
-                'updated_at' => Time::now(),
-            ];
+                $periodeId = $periodeMap[$tahun] ?? 4; // Default ke periode terbaru jika tidak match
+
+                $asistenPeriodeData[] = [
+                    'id_user' => $person['id'],
+                    'id_periode' => $periodeId,
+                    'jabatan' => 'Asisten Praktikum',
+                    'created_at' => Time::now(),
+                    'updated_at' => Time::now(),
+                ];
+            }
         }
 
         if (!empty($asistenPeriodeData)) {

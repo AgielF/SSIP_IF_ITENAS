@@ -49,7 +49,7 @@ class AsistenSeeder extends Seeder
                 $this->db->table('users')->where('nomor', $asisten['nomor'])->update($updateData);
                 echo "Updated asisten: {$asisten['nama']} ({$asisten['nomor']})\n";
             } else {
-                // Insert baru
+                // Insert baru hanya jika benar-benar belum ada
                 $newAsisten = [
                     'nomor' => $asisten['nomor'],
                     'nama' => $asisten['nama'],

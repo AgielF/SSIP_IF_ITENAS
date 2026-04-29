@@ -9,6 +9,7 @@ use App\Models\AsistenJadwalModel;
 use App\Models\JadwalModel;
 use App\Models\PublikasiModel;
 use App\Models\RoleModel;
+use App\Models\ProyekRisetModel;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -16,11 +17,12 @@ class Auth extends ResourceController
 {
     use ResponseTrait;
 
-    private $userModel;
-    private $asistenJadwalModel;
-    private $jadwalModel;
-    private $publikasiModel;
-    private $roleModel;
+    private UserModel $userModel;
+    private AsistenJadwalModel $asistenJadwalModel;
+    private JadwalModel $jadwalModel;
+    private PublikasiModel $publikasiModel;
+    private RoleModel $roleModel;
+    private ProyekRisetModel $proyekRisetModel;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class Auth extends ResourceController
         $this->jadwalModel = new JadwalModel();
         $this->publikasiModel = new PublikasiModel();
         $this->roleModel = new RoleModel();
+        $this->proyekRisetModel = new ProyekRisetModel();
     }
 
     /**
@@ -69,23 +72,77 @@ class Auth extends ResourceController
 public function login()
 {
     try {
+        // untuk mencegah brute force attack
+        if ($this->isIPBlocked()) {
+            log_message('critical', 'Blocked login attempt from blacklisted IP: ' . $this->request->getIPAddress());
+            return redirect()->back()->with('error', 'Akses ditolak. Silakan hubungi administrator.');
+        }
+
+        // Rate Limiting: buat cek login attempt per IP
+        $this->checkRateLimit();
+
+        // Capthca untuk mencegah bot setelah 3 kali gagal login
+        $failedCount = session()->get('login_attempts_' . $this->request->getIPAddress()) ?? 0;
+        if ($failedCount >= 3) {
+            $captchaResponse = $this->request->getPost('captcha');
+            if (!$captchaResponse || !$this->verifyCaptcha($captchaResponse)) {
+                return redirect()->back()->withInput()
+                    ->with('error', 'Captcha harus diisi dengan benar');
+            }
+        }
+
         $nomor    = trim($this->request->getPost('nomor'));
         $password = trim($this->request->getPost('password'));
 
+        // validasi input dasar
         if (!$nomor || !$password) {
+            $this->recordFailedAttempt();
             return redirect()->back()->withInput()
                 ->with('error', 'Nomor dan password harus diisi');
+        }
+
+        // untuk mencegah serangan XSS
+        $nomor = filter_var(trim($nomor), FILTER_SANITIZE_STRING);
+        $password = filter_var(trim($password), FILTER_SANITIZE_STRING);
+
+        // Validate nomor format (NIM format) - prevent SQL injection
+        if (!preg_match('/^[0-9]{9}$/', $nomor)) {
+            $this->recordFailedAttempt();
+            return redirect()->back()->withInput()
+                ->with('error', 'Format NIM tidak valid (9 digit angka)');
+        }
+
+        // Cek password minimal 6 karakter
+        if (strlen($password) < 6) {
+            $this->recordFailedAttempt();
+            return redirect()->back()->withInput()
+                ->with('error', 'Password minimal 6 karakter');
+        }
+
+        // mencegah SQL injection
+        $suspicious = ['\'', '"', ';', '--', '/*', '*/', 'xp_', 'union', 'select', 'drop', 'delete'];
+        foreach ($suspicious as $pattern) {
+            if (stripos($nomor, $pattern) !== false || stripos($password, $pattern) !== false) {
+                $this->recordFailedAttempt();
+                log_message('warning', 'Suspicious login attempt detected from IP: ' . $this->request->getIPAddress());
+                return redirect()->back()->withInput()
+                    ->with('error', 'Input tidak valid');
+            }
         }
 
         $user = $this->userModel->where('nomor', $nomor)->first();
 
         if (!$user || !$this->userModel->verifyPassword($password, $user['password'])) {
+            $this->recordFailedAttempt();
             return redirect()->back()->withInput()
                 ->with('error', 'NIM / Username atau Password salah');
         }
 
+        // reset login gagal counter jika login berhasil
+        $this->resetFailedAttempts();
+
         // JWT
-        $key = getenv('JWT_SECRET') ?: 'your-secret-key';
+        $key = getenv('JWT_SECRET') ?: 'bin2hex(random_bytes(32))';
         $payload = [
             'iat'     => time(),
             'exp'     => time() + 86400,
@@ -112,8 +169,15 @@ public function login()
             ? redirect()->to('/asisten_admin')
             : redirect()->to('/profile');
 
-    } catch (\Throwable $e) {
+    } catch (\Exception $e) {
         log_message('error', $e->getMessage());
+
+        // menangani error rate limit secara khusus
+        if (str_contains($e->getMessage(), 'Terlalu banyak percobaan')) {
+            return redirect()->back()->withInput()
+                ->with('error', $e->getMessage());
+        }
+
         return redirect()->back()->with('error', 'Terjadi kesalahan saat login');
     }
 }
@@ -127,11 +191,6 @@ public function login()
 
     return redirect()->to('/login')->with('success', 'Berhasil logout');
 }
-
-    /**
-     * Profile endpoint
-     */
-   use ResponseTrait;
 
   public function profile()
 {
@@ -159,8 +218,8 @@ public function login()
     $userId = $user['id'] ?? $user['id_user'] ?? null;
 
     // 4. Instansiasi Model
-    $publikasiModel = new \App\Models\PublikasiModel();
-    $proyekModel    = new \App\Models\ProyekRisetModel();
+    $publikasiModel = new PublikasiModel();
+    $proyekModel    = new ProyekRisetModel();
 
     // 5. Query data Publikasi & Proyek Riset
     if ($userId) {
@@ -176,12 +235,7 @@ public function login()
         $publicationData = [];
         $proyekData = [];
     }
-    dd([
-        '1. Isi Session User' => $user,
-        '2. ID User yg Digunakan' => $userId,
-        '3. Hasil Data Publikasi' => $publicationData,
-        '4. Hasil Data Proyek' => $proyekData
-    ]);
+    // Debug code removed for production
 
     // 6. Siapkan data untuk dikirim ke view
     $data = [
@@ -193,5 +247,115 @@ public function login()
 
     return view('auth/profile', $data);
 }
+
+    /**
+     * Rate Limiting Methods
+     */
+    private function checkRateLimit()
+    {
+        $ip = $this->request->getIPAddress();
+        $attempts = session()->get('login_attempts_' . $ip) ?? 0;
+        $lastAttempt = session()->get('last_attempt_' . $ip) ?? 0;
+
+        // Reset counter if more than 1 minute has passed
+        if (time() - $lastAttempt > 60) { // 1 minute
+            $this->resetFailedAttempts();
+            return;
+        }
+
+        // Block if too many attempts
+        if ($attempts >= 5) { // Max 5 attempts per minute
+            $remainingTime = 60 - (time() - $lastAttempt);
+            $seconds = ceil($remainingTime);
+
+            throw new \Exception("Terlalu banyak percobaan login. Coba lagi dalam {$seconds} detik.");
+        }
+    }
+
+    private function recordFailedAttempt()
+    {
+        $ip = $this->request->getIPAddress();
+        $attempts = session()->get('login_attempts_' . $ip) ?? 0;
+
+        session()->set([
+            'login_attempts_' . $ip => $attempts + 1,
+            'last_attempt_' . $ip => time()
+        ]);
+
+        // Log failed login attempts for security monitoring
+        log_message('warning', 'Failed login attempt from IP: ' . $ip . ', Attempt: ' . ($attempts + 1) . ', User-Agent: ' . $this->request->getUserAgent());
+    }
+
+    private function resetFailedAttempts()
+    {
+        $ip = $this->request->getIPAddress();
+
+        session()->remove([
+            'login_attempts_' . $ip,
+            'last_attempt_' . $ip
+        ]);
+    }
+
+    // untuk generate captcha sederhana (misal: 2 angka + atau -)
+    public function generateCaptcha()
+    {
+        $num1 = rand(1, 10);
+        $num2 = rand(1, 10);
+        $operation = rand(0, 1) ? '+' : '-';
+
+        if ($operation === '-') {
+            // hasil harus selalu +
+            if ($num1 < $num2) {
+                [$num1, $num2] = [$num2, $num1];
+            }
+        }
+
+        $question = "$num1 $operation $num2";
+        $answer = $operation === '+' ? $num1 + $num2 : $num1 - $num2;
+
+        // simpan hasil di session untuk verifikasi
+        session()->set('captcha_answer', $answer);
+
+        return $this->response->setJSON([
+            'question' => $question,
+            'success' => true
+        ]);
+    }
+
+    /**
+     * Verify captcha answer
+     */
+    private function verifyCaptcha($userAnswer)
+    {
+        $correctAnswer = session()->get('captcha_answer');
+        return $userAnswer == $correctAnswer;
+    }
+
+    /**
+     * Check if IP is blocked due to security violations
+     */
+    private function isIPBlocked()
+    {
+        $ip = $this->request->getIPAddress();
+
+        // Check permanent blacklist (implement in database for production)
+        $blacklist = ['127.0.0.1']; // Example - implement proper blacklist
+        if (in_array($ip, $blacklist)) {
+            return true;
+        }
+
+        // Check temporary block (too many failed attempts in short time)
+        $failedCount = session()->get('login_attempts_' . $ip) ?? 0;
+        $lastAttempt = session()->get('last_attempt_' . $ip) ?? 0;
+
+        // Block permanently if more than 10 failed attempts in 24 hours
+        if ($failedCount >= 10 && (time() - $lastAttempt) < 86400) { // 24 hours
+            // Log permanent block
+            log_message('critical', 'IP permanently blocked due to excessive failed attempts: ' . $ip);
+            return true;
+        }
+
+        return false;
+    }
 
 }

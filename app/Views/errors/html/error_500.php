@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page Not Found - SSIP ITENAS</title>
+    <title>Server Error - SSIP ITENAS</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
             margin: 0;
             padding: 0;
             min-height: 100vh;
@@ -53,10 +53,10 @@
 </head>
 <body>
     <div class="error-container">
-        <h1 class="error-code">404</h1>
-        <h2 class="error-message">Halaman Tidak Ditemukan</h2>
+        <h1 class="error-code">500</h1>
+        <h2 class="error-message">Kesalahan Server Internal</h2>
         <p class="error-description">
-            Maaf, halaman yang Anda cari tidak tersedia atau telah dipindahkan.
+            Terjadi kesalahan pada server. Tim teknis telah diberitahu dan sedang memperbaikinya.
         </p>
         <a href="/" class="btn-home">Kembali ke Beranda</a>
     </div>

@@ -8,64 +8,26 @@ class UsersSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            [
-                'nomor' => '152022001',
-                'nama' => 'Jeffry Sukmawidiajja',
-                'no_telp' => '08123456789',
-                'jurusan' => 'Informatika',
-                'role_id' => 1, // admin
-                'password' => 'admin123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022002',
-                'nama' => 'Mohammad Rohman',
-                'no_telp' => '08234567890',
-                'jurusan' => 'Informatika',
-                'role_id' => 2, // asisten
-                'password' => 'asisten123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => 'D001',
-                'nama' => 'Dr. Sarah Wijaya',
-                'no_telp' => '08111222333',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // dosen
-                'password' => 'dosen123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => 'D002',
-                'nama' => 'Prof. Bambang Sutrisno',
-                'no_telp' => '08222333444',
-                'jurusan' => 'Informatika',
-                'role_id' => 3, // dosen
-                'password' => 'dosen123', // Delete kalau kebutuhan yang harus password unique
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
-            [
-                'nomor' => '152022005',
-                'nama' => 'Ahmad Fauzi',
-                'no_telp' => '08555666777',
-                'jurusan' => 'Informatika',
-                'role_id' => 2, // asisten
-                'password' => 'asisten123',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ],
+        $userData = [
+            ['nomor' => '152022001', 'nama' => 'Jasman Pardede', 'no_telp' => '081234567890', 'jurusan' => 'Informatika', 'role_id' => 1], // Admin/Kepala Lab
+            ['nomor' => '152022002', 'nama' => 'Prof. Siti Nurhaliza, Ph.D', 'no_telp' => '081234567891', 'jurusan' => 'Informatika', 'role_id' => 3],
+            ['nomor' => '152022003', 'nama' => 'Dr. Budi Santoso, M.T', 'no_telp' => '081234567892', 'jurusan' => 'Informatika', 'role_id' => 3],
+            ['nomor' => '152022004', 'nama' => 'Dr. Rina Sari, M.Kom', 'no_telp' => '081234567893', 'jurusan' => 'Informatika', 'role_id' => 3],
+            ['nomor' => '152022005', 'nama' => 'Dr. Eko Prasetyo, Ph.D', 'no_telp' => '081234567894', 'jurusan' => 'Informatika', 'role_id' => 3],
         ];
 
-        // Cek users ada atau tidak
-        foreach ($data as $user) {
+        foreach ($userData as $user) {
+            // Check if user already exists by nomor
             $existing = $this->db->table('users')->where('nomor', $user['nomor'])->get()->getRow();
-            if ($existing) {
-                // Update data kecuali password (jangan timpa password yang sudah di-hash)
+            if (!$existing) {
+                // Different password for admin vs dosen
+                $password = ($user['role_id'] == 1) ? 'admin123' : 'dosen123';
+                $user['password'] = password_hash($password, PASSWORD_DEFAULT);
+                $user['created_at'] = date('Y-m-d H:i:s');
+                $user['updated_at'] = date('Y-m-d H:i:s');
+                $this->db->table('users')->insert($user);
+            } else {
+                // Update existing user data (important for admin data changes)
                 $updateData = [
                     'nama' => $user['nama'],
                     'no_telp' => $user['no_telp'],
@@ -73,11 +35,14 @@ class UsersSeeder extends Seeder
                     'role_id' => $user['role_id'],
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
+
+                // Only update password if role changed or it's admin
+                if ($existing->role_id != $user['role_id'] || $user['role_id'] == 1) {
+                    $password = ($user['role_id'] == 1) ? 'admin123' : 'dosen123';
+                    $updateData['password'] = password_hash($password, PASSWORD_DEFAULT);
+                }
+
                 $this->db->table('users')->where('nomor', $user['nomor'])->update($updateData);
-            } else {
-                // Add user baru - pastikan password di-hash
-                $user['password'] = password_hash($user['password'], PASSWORD_DEFAULT);
-                $this->db->table('users')->insert($user);
             }
         }
 

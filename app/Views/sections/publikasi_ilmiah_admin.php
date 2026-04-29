@@ -235,78 +235,105 @@ foreach ($publicationData as $row) {
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <div class="mb-3">
-                                                            <label>Jenis Publikasi</label>
-                                                            <select name="jenis_publikasi" class="form-control">
-                                                                <option value="jurnal" <?= $row['jenis_publikasi']=='jurnal'?'selected':'' ?>>Jurnal</option>
-                                                                <option value="prosiding" <?= $row['jenis_publikasi']=='prosiding'?'selected':'' ?>>Prosiding</option>
-                                                                <option value="paten" <?= $row['jenis_publikasi']=='paten'?'selected':'' ?>>Paten</option>
-                                                            </select>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Jenis Publikasi</label>
+                                                                    <select name="jenis_publikasi" class="form-select">
+                                                                        <option value="jurnal" <?= $row['jenis_publikasi']=='jurnal'?'selected':'' ?>>Jurnal</option>
+                                                                        <option value="prosiding" <?= $row['jenis_publikasi']=='prosiding'?'selected':'' ?>>Prosiding</option>
+                                                                        <option value="paten" <?= $row['jenis_publikasi']=='paten'?'selected':'' ?>>Paten</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Judul</label>
+                                                                    <input type="text" name="judul" class="form-control" value="<?= esc($row['judul']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Penulis Utama <span class="text-danger">*</span></label>
+                                                                    <select name="id_user" class="form-select" required>
+                                                                        <option value="">-- Pilih Penulis --</option>
+                                                                        <?php foreach ($allUsers ?? [] as $user): ?>
+                                                                            <option value="<?= $user['id'] ?>" <?= $row['id_user'] == $user['id'] ? 'selected' : '' ?>>
+                                                                                <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                                                                            </option>
+                                                                        <?php endforeach; ?>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Penulis Pendamping</label>
+                                                                    <select name="penulis_pendamping" class="form-select">
+                                                                        <option value="">-- Pilih Penulis Pendamping (Opsional) --</option>
+                                                                        <?php foreach ($allUsers ?? [] as $user): ?>
+                                                                            <option value="<?= esc($user['nama']) ?>" <?= esc($row['penulis_pendamping']) == esc($user['nama']) ? 'selected' : '' ?>>
+                                                                                <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                                                                            </option>
+                                                                        <?php endforeach; ?>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Kategori</label>
+                                                                    <input type="text" name="kategori" class="form-control" value="<?= esc($row['kategori']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Topik</label>
+                                                                    <select name="topik" class="form-select" required>
+                                                                        <option value="">-- Pilih Topik --</option>
+                                                                        <option value="machine learning" <?= $row['topik']=='machine learning'?'selected':'' ?>>Machine Learning</option>
+                                                                        <option value="system expert" <?= $row['topik']=='system expert'?'selected':'' ?>>System Expert</option>
+                                                                        <option value="smart system" <?= $row['topik']=='smart system'?'selected':'' ?>>Smart System</option>
+                                                                        <option value="artificial-intelligence" <?= $row['topik']=='artificial-intelligence'?'selected':'' ?>>Artificial Intelligence</option>
+                                                                        <option value="data mining" <?= $row['topik']=='data mining'?'selected':'' ?>>Data Mining</option>
+                                                                        <option value="deep learning" <?= $row['topik']=='deep learning'?'selected':'' ?>>Deep Learning</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Tanggal Publikasi</label>
+                                                                    <input type="date" name="tanggal_publikasi" class="form-control" value="<?= esc($row['tanggal_publikasi']) ?>">
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Volume</label>
+                                                                    <input type="text" name="volume" class="form-control" value="<?= esc($row['volume']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Nomor</label>
+                                                                    <input type="text" name="nomor" class="form-control" value="<?= esc($row['nomor']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Tahun</label>
+                                                                    <input type="text" name="tahun" class="form-control" value="<?= esc($row['tahun']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Conference</label>
+                                                                    <input type="text" name="conference" class="form-control" value="<?= esc($row['conference']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Link Publikasi</label>
+                                                                    <input type="text" name="link_publikasi" class="form-control" value="<?= esc($row['link_publikasi']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Link DOI</label>
+                                                                    <input type="text" name="link_doi" class="form-control" value="<?= esc($row['link_doi']) ?>">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Link GDrive</label>
+                                                                    <input type="text" name="link_gdrive" class="form-control" value="<?= esc($row['link_gdrive']) ?>">
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-12">
+                                                                <div class="mb-3">
+                                                                    <label class="form-label">Deskripsi</label>
+                                                                    <textarea name="deskripsi" class="form-control" rows="3"><?= esc($row['deskripsi']) ?></textarea>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label>Judul</label>
-                                                            <input type="text" name="judul" class="form-control" value="<?= esc($row['judul']) ?>">
-                                                        </div>
-                                                         <div class="mb-3">
-                                                            <label>Link Publikasi</label>
-                                                            <input type="text" name="link_publikasi" class="form-control" value="<?= esc($row['link_publikasi']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Kategori</label>
-                                                            <input type="text" name="kategori" class="form-control" value="<?= esc($row['kategori']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Tanggal Publikasi</label>
-                                                            <input type="date" name="tanggal_publikasi" class="form-control" value="<?= esc($row['tanggal_publikasi']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Penulis Pendamping</label>
-                                                            <input type="text" name="penulis_pendamping" class="form-control" value="<?= esc($row['penulis_pendamping']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Volume</label>
-                                                            <input type="text" name="volume" class="form-control" value="<?= esc($row['volume']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Nomor</label>
-                                                            <input type="text" name="nomor" class="form-control" value="<?= esc($row['nomor']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Tahun</label>
-                                                            <input type="text" name="tahun" class="form-control" value="<?= esc($row['tahun']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Link DOI</label>
-                                                            <input type="text" name="link_doi" class="form-control" value="<?= esc($row['link_doi']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Link GDrive</label>
-                                                            <input type="text" name="link_gdrive" class="form-control" value="<?= esc($row['link_gdrive']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Conference</label>
-                                                            <input type="text" name="conference" class="form-control" value="<?= esc($row['conference']) ?>">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label>Deskripsi</label>
-                                                            <textarea name="deskripsi" class="form-control"><?= esc($row['deskripsi']) ?></textarea>
-                                                        </div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Topik</label>
-                                                        <select name="topik" class="form-select" required>
-                                                            <option value="">-- Pilih Topik --</option>
-                                                            <option value="machine learning" <?= $row['topik']=='machine learning'?'selected':'' ?>>Machine Learning</option>
-                                                            <option value="system expert" <?= $row['topik']=='system expert'?'selected':'' ?>>System Expert</option>
-                                                            <option value="smart system" <?= $row['topik']=='smart system'?'selected':'' ?>>Smart System</option>
-                                                            <option value="artificial-intelligence" <?= $row['topik']=='artificial-intelligence'?'selected':'' ?>>Artificial Intelligence</option>
-                                                            <option value="data mining" <?= $row['topik']=='data mining'?'selected':'' ?>>Data Mining</option>
-                                                            <option value="deep learning" <?= $row['topik']=='deep learning'?'selected':'' ?>>Deep Learning</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                    </div> <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                                        <button type="submit" class="btn btn-primary">Simpan</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -338,78 +365,106 @@ foreach ($publicationData as $row) {
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Jenis Publikasi</label>
-                        <select name="jenis_publikasi" class="form-control">
-                            <option value="jurnal">Jurnal</option>
-                            <option value="prosiding">Prosiding</option>
-                            <option value="paten">Paten</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label>Judul</label>
-                        <input type="text" name="judul" class="form-control">
-                    </div>
-                      <div class="mb-3">
-                        <label>Link Publikasi</label>
-                        <input type="text" name="link_publikasi" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Kategori</label>
-                        <input type="text" name="kategori" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Tanggal Publikasi</label>
-                        <input type="date" name="tanggal_publikasi" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Penulis Pendamping</label>
-                        <input type="text" name="penulis_pendamping" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Volume</label>
-                        <input type="text" name="volume" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Nomor</label>
-                        <input type="text" name="nomor" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Tahun</label>
-                        <input type="text" name="tahun" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Link DOI</label>
-                        <input type="text" name="link_doi" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Link GDrive</label>
-                        <input type="text" name="link_gdrive" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Conference</label>
-                        <input type="text" name="conference" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Deskripsi</label>
-                        <textarea name="deskripsi" class="form-control"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Topik</label>
-                        <select name="topik" class="form-select" required>
-                            <option value="">-- Pilih Topik --</option>
-                            <option value="machine learning">Machine Learning</option>
-                            <option value="system expert">System Expert</option>
-                            <option value="smart system">Smart System</option>
-                            <option value="artificial-intelligence">Artificial Intelligence</option>
-                            <option value="data mining">Data Mining</option>
-                            <option value="deep learning">Deep Learning</option>
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Jenis Publikasi</label>
+                                <select name="jenis_publikasi" class="form-select">
+                                    <option value="jurnal">Jurnal</option>
+                                    <option value="prosiding">Prosiding</option>
+                                    <option value="paten">Paten</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Judul</label>
+                                <input type="text" name="judul" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Penulis Utama <span class="text-danger">*</span></label>
+                                <select name="id_user" class="form-select" required>
+                                    <option value="">-- Pilih Penulis --</option>
+                                    <?php foreach ($allUsers ?? [] as $user): ?>
+                                        <option value="<?= $user['id'] ?>">
+                                            <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Penulis Pendamping</label>
+                                <select name="penulis_pendamping" class="form-select">
+                                    <option value="">-- Pilih Penulis Pendamping (Opsional) --</option>
+                                    <?php foreach ($allUsers ?? [] as $user): ?>
+                                        <option value="<?= esc($user['nama']) ?>">
+                                            <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Kategori</label>
+                                <input type="text" name="kategori" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Topik</label>
+                                <select name="topik" class="form-select" required>
+                                    <option value="">-- Pilih Topik --</option>
+                                    <option value="machine learning">Machine Learning</option>
+                                    <option value="system expert">System Expert</option>
+                                    <option value="smart system">Smart System</option>
+                                    <option value="artificial-intelligence">Artificial Intelligence</option>
+                                    <option value="data mining">Data Mining</option>
+                                    <option value="deep learning">Deep Learning</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Publikasi</label>
+                                <input type="date" name="tanggal_publikasi" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Volume</label>
+                                <input type="text" name="volume" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Nomor</label>
+                                <input type="text" name="nomor" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tahun</label>
+                                <input type="text" name="tahun" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Conference</label>
+                                <input type="text" name="conference" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Link Publikasi</label>
+                                <input type="text" name="link_publikasi" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Link DOI</label>
+                                <input type="text" name="link_doi" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Link GDrive</label>
+                                <input type="text" name="link_gdrive" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <div class="mb-3">
+                                <label class="form-label">Deskripsi</label>
+                                <textarea name="deskripsi" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">Simpan</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan</button>
                 </div>
             </form>
         </div>
@@ -417,9 +472,93 @@ foreach ($publicationData as $row) {
 </div>
 
 <script>
-// ... (Sisa script panjang yang kamu punya sebelumnya bisa diletakkan di bawah sini jika masih dibutuhkan untuk fitur lainnya, 
-// namun fitur form edit/delete/store sudah di-handle oleh form submission standar CodeIgniter seperti di atas).
+// Simple functionality for publikasi admin
+document.addEventListener('DOMContentLoaded', function() {
 
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target)) {
+                const results = searchInput.parentNode.querySelector('.search-results');
+                if (results) {
+                    results.remove();
+                }
+            }
+        });
+
+        // Allow manual entry for penulis pendamping
+        if (hiddenInput) {
+            searchInput.addEventListener('blur', function() {
+                // If user typed something not in dropdown, keep it
+                setTimeout(() => {
+                    hiddenInput.value = this.value;
+                }, 100);
+            });
+        }
+    });
+    initializeSearchableDropdown('search-penulis-utama-add', 'penulis-utama-add');
+    initializeSearchableDropdown('search-penulis-pendamping-add', 'penulis-pendamping-add', 'penulis-pendamping-hidden-add');
+
+    // Initialize searchable dropdowns for edit modals when they open
+    document.addEventListener('shown.bs.modal', function(event) {
+        const modal = event.target;
+        if (modal.classList.contains('modal') && modal.id.startsWith('editModal')) {
+            const publikasiId = modal.id.replace('editModal', '');
+
+            // Initialize dropdowns for this specific modal
+            setTimeout(() => {
+                initializeSearchableDropdown('search-penulis-utama-' + publikasiId, 'penulis-utama-' + publikasiId);
+                initializeSearchableDropdown('search-penulis-pendamping-' + publikasiId, 'penulis-pendamping-' + publikasiId, 'penulis-pendamping-hidden-' + publikasiId);
+            }, 100);
+        }
+    });
+
+    // Export PDF functionality
+    document.getElementById('export-pdf-btn').addEventListener('click', function() {
+        window.print();
+    });
+
+    // Toast notifications
+    <?php if (session()->getFlashdata('success')): ?>
+        // Success toast
+        const successToast = document.createElement('div');
+        successToast.className = 'toast align-items-center text-white bg-success border-0 position-fixed';
+        successToast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        successToast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?= session()->getFlashdata('success') ?>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        document.body.appendChild(successToast);
+        const bsToast = new bootstrap.Toast(successToast);
+        bsToast.show();
+        setTimeout(() => successToast.remove(), 5000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        // Error toast
+        const errorToast = document.createElement('div');
+        errorToast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed';
+        errorToast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        errorToast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?= session()->getFlashdata('error') ?>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        document.body.appendChild(errorToast);
+        const bsToast = new bootstrap.Toast(errorToast);
+        bsToast.show();
+        setTimeout(() => errorToast.remove(), 5000);
+    <?php endif; ?>
+
+// Export PDF functionality
 document.getElementById('export-pdf-btn').addEventListener('click', function() {
     window.print();
 });

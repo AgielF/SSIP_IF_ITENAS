@@ -5,12 +5,12 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-// publik
-$routes->get('/', 'Home::index');
+// publik - with page caching for better performance
+$routes->get('/', 'Home::index', ['filter' => 'pagecache']);
 
-$routes->get('/berita', 'beritaController::index');
+$routes->get('/berita', 'beritaController::index', ['filter' => 'pagecache']);
 
-$routes->get('/asisten', 'UserController::index');
+$routes->get('/asisten', 'UserController::index', ['filter' => 'pagecache']);
 
 $routes->get('/jadwal', 'JadwalController::index');
 $routes->get('/jadwal-praktikum', 'JadwalController::praktikum');
@@ -37,7 +37,7 @@ $routes->get('/topic_detail/(:segment)', 'TopicController::detail/$1');
 $routes->get('/penelitian/(:segment)', 'TopicController::detail/$1');
 $routes->get('/asisten/(:num)', 'UserController::profil/$1');
 
-$routes->get('/organisasi', 'OrganizationController::index');
+$routes->get('/organisasi', 'OrganizationController::index', ['filter' => 'pagecache']);
 
 $routes->get('contact', 'ContactController::index');
 $routes->post('contact/send', 'ContactController::send');
@@ -66,7 +66,7 @@ $routes->get('/project-lab', 'ProjectLabController::index');
 $routes->get('/project-lab/(:num)', 'ProjectLabController::detail/$1');
 
 // routes khusus admin, dilindungi filter admin
-$routes->group('', ['filter' => 'admin'], function($routes) {
+$routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
     $routes->get('/asisten_admin', 'UserController::getDataAdmin');
     $routes->get('/galeri_admin', 'GaleriUmumController::admin');
     $routes->get('/repositori_admin','Home::repositori_admin');
@@ -145,7 +145,7 @@ $routes->group('', ['filter' => 'admin'], function($routes) {
 });
 
 // Admin (1) dan Asisten (2)
-$routes->group('', ['filter' => 'role:1,2'], function($routes) {
+$routes->group('', ['filter' => 'role:1,2', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
 
     //jadwal admin
     $routes->get('/jadwal_admin', 'JadwalController::admin');
@@ -158,7 +158,7 @@ $routes->group('', ['filter' => 'role:1,2'], function($routes) {
 
 
 // Admin (1) dan Dosen(3)
-$routes->group('', ['filter' => 'role:1,3'], function($routes) {
+$routes->group('', ['filter' => 'role:1,3', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
 
     // PENELITIAN PROYEK RISET
     $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');

@@ -1,4 +1,38 @@
+<?php
+// Mencegah error Intelephense / Undefined variable
+$proyek = $proyek ?? [];
+$allUsers = $allUsers ?? [];
+?>
 <div class="container my-5">
+    <style>
+        .form-select {
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            appearance: none;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-select:focus {
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .form-select option {
+            padding: 0.375rem 0.75rem;
+        }
+    </style>
     <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -98,12 +132,15 @@
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary btn-edit"
                                             data-id="<?= $row['id_proyek'] ?>"
+                                            data-id-user="<?= $row['id_user'] ?>"
                                             data-judul="<?= esc($row['judul']) ?>"
                                             data-deskripsi="<?= esc($row['deskripsi']) ?>"
                                             data-mitra="<?= esc($row['mitra']) ?>"
                                             data-sumber="<?= esc($row['sumber_dana']) ?>"
                                             data-mulai="<?= esc($row['tahun_mulai']) ?>"
                                             data-selesai="<?= esc($row['tahun_selesai']) ?>"
+                                            data-topik="<?= esc($row['topik']) ?>"
+                                            data-status="<?= esc($row['status']) ?>"
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
@@ -134,49 +171,74 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3"><label class="form-label">Judul</label>
-                    <input type="text" name="judul" class="form-control" required>
-                </div>
-                <div class="mb-3"><label class="form-label">Deskripsi</label>
-                    <textarea name="deskripsi" class="form-control" required></textarea>
-                </div>
-                <div class="mb-3"><label class="form-label">Mitra</label>
-                    <input type="text" name="mitra" class="form-control">
-                </div>
-                <div class="mb-3"><label class="form-label">Sumber Dana</label>
-                    <input type="text" name="sumber_dana" class="form-control">
-                </div>
                 <div class="row">
-                    <div class="col"><label class="form-label">Tahun Mulai</label>
-                        <input type="number" name="tahun_mulai" class="form-control">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Penulis Utama <span class="text-danger">*</span></label>
+                            <select name="id_user" class="form-select" required>
+                                <option value="">-- Pilih Penulis --</option>
+                                <?php foreach ($allUsers as $user): ?>
+                                    <option value="<?= $user['id'] ?>">
+                                        <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Judul</label>
+                            <input type="text" name="judul" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Topik</label>
+                            <select name="topik" class="form-select" required>
+                                <option value="">-- Pilih Topik --</option>
+                                <option value="machine learning">Machine Learning</option>
+                                <option value="data mining">Data Mining</option>
+                                <option value="deep learning">Deep Learning</option>
+                                <option value="artificial intelligence">Artificial Intelligence</option>
+                                <option value="expert system">Expert System</option>
+                                <option value="smart system">Smart System</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" class="form-select" required>
+                                <option value="akan dilaksanakan">Akan Dilaksanakan</option>
+                                <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
+                                <option value="selesai">Selesai</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="col"><label class="form-label">Tahun Selesai</label>
-                        <input type="number" name="tahun_selesai" class="form-control">
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Mitra</label>
+                            <input type="text" name="mitra" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Sumber Dana</label>
+                            <input type="text" name="sumber_dana" class="form-control">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Tahun Mulai</label>
+                                <input type="number" name="tahun_mulai" class="form-control">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label">Tahun Selesai</label>
+                                <input type="number" name="tahun_selesai" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+                        </div>
                     </div>
                 </div>
-            </div>
-<div class="mb-3">
-    <label class="form-label">Topik</label>
-    <select name="topik" class="form-select" required>
-        <option value="">-- Pilih Topik --</option>
-        <option value="machine learning">Machine Learning</option>
-        <option value="system expert">System Expert</option>
-        <option value="smart system">Smart System</option>
-        <option value="artificial-intelligence">Artificial Intelligence</option>
-        <option value="data mining">Data Mining</option>
-        <option value="deep learning">Deep Learning</option>
-    </select>
-</div>
-
-<div class="mb-3">
-    <label class="form-label">Status</label>
-    <select name="status" class="form-select" required>
-        <option value="akan dilaksanakan">Akan Dilaksanakan</option>
-        <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
-        <option value="selesai">Selesai</option>
-    </select>
-</div>
-            <div class="modal-footer">
+            </div> <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Simpan</button>
             </div>
@@ -194,6 +256,17 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" name="id_proyek" id="edit-id">
+                <div class="mb-3">
+                    <label class="form-label">Penulis Utama <span class="text-danger">*</span></label>
+                    <select name="id_user" id="edit-id-user" class="form-select" required>
+                        <option value="">-- Pilih Penulis --</option>
+                        <?php foreach ($allUsers as $user): ?>
+                            <option value="<?= $user['id'] ?>">
+                                <?= esc($user['nama']) ?> (<?= $user['role_id'] == 1 ? 'Kepala Lab' : ($user['role_id'] == 2 ? 'Asisten' : 'Dosen') ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <div class="mb-3"><label class="form-label">Judul</label>
                     <input type="text" name="judul" id="edit-judul" class="form-control" required>
                 </div>
@@ -216,24 +289,25 @@
                 </div>
             </div>
             <div class="mb-3">
-    <label class="form-label">Topik</label>
-    <select name="topik" id="edit-topik" class="form-select" required>
-        <option value="machine learning">machine learning</option>
-        <option value="system expert">expert system</option>
-        <option value="smart system">smart system</option>
-        <option value="artificial-intelligence">artificial intelligence</option>
-        <option value="data mining">data mining</option>
-        <option value="deep learning">deep learning</option>
-    </select>
-</div>
-<div class="mb-3">
-    <label class="form-label">Status</label>
-    <select name="status" id="edit-status" class="form-select" required>
-        <option value="akan dilaksanakan">Akan Dilaksanakan</option>
-        <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
-        <option value="selesai">Selesai</option>
-    </select>
-</div>
+                <label class="form-label">Topik</label>
+                <select name="topik" id="edit-topik" class="form-select" required>
+                    <option value="">-- Pilih Topik --</option>
+                    <option value="machine learning">Machine Learning</option>
+                    <option value="data mining">Data Mining</option>
+                    <option value="deep learning">Deep Learning</option>
+                    <option value="artificial intelligence">Artificial Intelligence</option>
+                    <option value="expert system">Expert System</option>
+                    <option value="smart system">Smart System</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" id="edit-status" class="form-select" required>
+                    <option value="akan dilaksanakan">Akan Dilaksanakan</option>
+                    <option value="sedang dilaksanakan">Sedang Dilaksanakan</option>
+                    <option value="selesai">Selesai</option>
+                </select>
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                 <button type="submit" class="btn btn-primary">Update</button>
@@ -300,12 +374,17 @@ document.addEventListener('DOMContentLoaded', function () {
         btn.addEventListener('click', function () {
             document.getElementById('formEdit').action = "/proyek-riset/update/" + this.dataset.id;
             document.getElementById('edit-id').value = this.dataset.id;
+            document.getElementById('edit-id-user').value = this.dataset.idUser || ''; // Penulis
             document.getElementById('edit-judul').value = this.dataset.judul;
             document.getElementById('edit-deskripsi').value = this.dataset.deskripsi;
             document.getElementById('edit-mitra').value = this.dataset.mitra;
             document.getElementById('edit-sumber').value = this.dataset.sumber;
             document.getElementById('edit-mulai').value = this.dataset.mulai;
             document.getElementById('edit-selesai').value = this.dataset.selesai;
+
+            // Set selected values for dropdowns
+            document.getElementById('edit-topik').value = this.dataset.topik || '';
+            document.getElementById('edit-status').value = this.dataset.status || '';
         });
     });
 </script>

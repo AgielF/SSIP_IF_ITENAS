@@ -11,31 +11,31 @@ class PeriodeSeeder extends Seeder
     {
         $periodeData = [
             [
-                'nama_periode' => 'Genap 2022/2023',
+                'nama_periode' => '2022/2023',
                 'tahun' => 2022,
-                'created_at' => Time::now(),
-                'updated_at' => Time::now(),
             ],
             [
-                'nama_periode' => 'Genap 2023/2024',
+                'nama_periode' => '2023/2024',
                 'tahun' => 2023,
-                'created_at' => Time::now(),
-                'updated_at' => Time::now(),
             ],
             [
-                'nama_periode' => 'Genap 2024/2025',
+                'nama_periode' => '2024/2025',
                 'tahun' => 2024,
-                'created_at' => Time::now(),
-                'updated_at' => Time::now(),
             ],
             [
-                'nama_periode' => 'Genap 2025/2026',
+                'nama_periode' => '2025/2026',
                 'tahun' => 2025,
-                'created_at' => Time::now(),
-                'updated_at' => Time::now(),
             ],
         ];
 
-        $this->db->table('periode')->insertBatch($periodeData);
+        foreach ($periodeData as $periode) {
+            // Cek apakah periode sudah ada berdasarkan nama_periode
+            $existing = $this->db->table('periode')->where('nama_periode', $periode['nama_periode'])->get()->getRow();
+            if (!$existing) {
+                $periode['created_at'] = Time::now();
+                $periode['updated_at'] = Time::now();
+                $this->db->table('periode')->insert($periode);
+            }
+        }
     }
 }

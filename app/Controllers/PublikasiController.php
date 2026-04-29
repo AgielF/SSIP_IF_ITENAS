@@ -20,7 +20,11 @@ class PublikasiController extends BaseController
     }
 
     public function getDataAdmin()
-{
+    {
+        $userModel = new \App\Models\UserModel();
+
+        // Get all users for dropdown selection (dosen and asisten only)
+        $allUsers = $userModel->whereIn('role_id', [1, 2, 3])->findAll();
     $search   = $this->request->getVar('search');
         $kategori = $this->request->getVar('kategori');
         $sort     = $this->request->getVar('sort') ?? 'newest';
@@ -51,6 +55,7 @@ class PublikasiController extends BaseController
             'kategori'        => $kategori,
             'sort'            => $sort,
             'limit'           => $limit,
+            'allUsers'        => $allUsers, // For dropdown selection
         ];
 
         return view('publikasi_ilmiah_admin_list_view', $data);
@@ -59,7 +64,22 @@ class PublikasiController extends BaseController
 
     public function store()
     {
-         $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+        // Validate that user is admin (role_id = 1)
+        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat menambah publikasi.');
+        }
+
+        $selectedUserId = $this->request->getPost('id_user'); // Selected author from dropdown
+
+        // Validate selected user exists and is dosen/asisten
+        $userModel = new \App\Models\UserModel();
+        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [2, 3])->first();
+        if (!$selectedUser) {
+            return redirect()->back()->withInput()->with('error', 'Penulis yang dipilih tidak valid.');
+        }
+
+        // Handle penulis pendamping from dropdown
+        $penulisPendamping = $this->request->getPost('penulis_pendamping');
 
         $data = [
             'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
@@ -67,18 +87,17 @@ class PublikasiController extends BaseController
             'judul'             => $this->request->getPost('judul'),
             'kategori'          => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-            'penulis_pendamping'=> $this->request->getPost('penulis_pendamping'),
+            'penulis_pendamping'=> $penulisPendamping,
             'volume'            => $this->request->getPost('volume'),
-            'topik'            => $this->request->getPost('topik'),
+            'topik'             => $this->request->getPost('topik'),
             'nomor'             => $this->request->getPost('nomor'),
             'tahun'             => $this->request->getPost('tahun'),
             'link_doi'          => $this->request->getPost('link_doi'),
             'link_gdrive'       => $this->request->getPost('link_gdrive'),
             'conference'        => $this->request->getPost('conference'),
             'deskripsi'         => $this->request->getPost('deskripsi'),
-            'id_user'           => $userId, // Default admin
+            'id_user'           => $selectedUserId, // Use selected user as author
             'created_at'        => date('Y-m-d H:i:s'),
-            'updated_at'        => date('Y-m-d H:i:s')
         ];
 
         $this->publikasiModel->insert($data);
@@ -86,27 +105,42 @@ class PublikasiController extends BaseController
     }
 
     public function update($id_publikasi)
-{
-     $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user
+    {
+        // Validate that user is admin (role_id = 1)
+        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat mengedit publikasi.');
+        }
 
-    $data = [
-        'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
-        'link_publikasi'    => $this->request->getPost('link_publikasi'),
-        'judul'             => $this->request->getPost('judul'),
-        'kategori'          => $this->request->getPost('kategori'),
-        'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
-        'penulis_pendamping'=> $this->request->getPost('penulis_pendamping'),
-        'volume'            => $this->request->getPost('volume'),
-         'topik'            => $this->request->getPost('topik'),
-        'nomor'             => $this->request->getPost('nomor'),
-        'tahun'             => $this->request->getPost('tahun'),
-        'link_doi'          => $this->request->getPost('link_doi'),
-        'link_gdrive'       => $this->request->getPost('link_gdrive'),
-        'conference'        => $this->request->getPost('conference'),
-        'deskripsi'         => $this->request->getPost('deskripsi'),
-        'id_user'           => $userId,
-        'updated_at'        => date('Y-m-d H:i:s')
-    ];
+        $selectedUserId = $this->request->getPost('id_user'); // Selected author from dropdown
+
+        // Validate selected user exists and is dosen/asisten
+        $userModel = new \App\Models\UserModel();
+        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [1, 2, 3])->first();
+        if (!$selectedUser) {
+            return redirect()->back()->with('error', 'Penulis yang dipilih tidak valid.');
+        }
+
+        // Handle penulis pendamping from dropdown
+        $penulisPendamping = $this->request->getPost('penulis_pendamping');
+
+        $data = [
+            'jenis_publikasi'   => $this->request->getPost('jenis_publikasi'),
+            'link_publikasi'    => $this->request->getPost('link_publikasi'),
+            'judul'             => $this->request->getPost('judul'),
+            'kategori'          => $this->request->getPost('kategori'),
+            'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
+            'penulis_pendamping'=> $penulisPendamping,
+            'volume'            => $this->request->getPost('volume'),
+            'topik'             => $this->request->getPost('topik'),
+            'nomor'             => $this->request->getPost('nomor'),
+            'tahun'             => $this->request->getPost('tahun'),
+            'link_doi'          => $this->request->getPost('link_doi'),
+            'link_gdrive'       => $this->request->getPost('link_gdrive'),
+            'conference'        => $this->request->getPost('conference'),
+            'deskripsi'         => $this->request->getPost('deskripsi'),
+            'id_user'           => $selectedUserId, // Use selected user as author
+            'updated_at'        => date('Y-m-d H:i:s')
+        ];
 
     $this->publikasiModel->update($id_publikasi, $data);
     return redirect()->to('/publikasi-ilmiah_admin')->with('success', 'Publikasi berhasil diperbarui');

@@ -92,6 +92,12 @@ class JadwalController extends BaseController
 
     public function store()
     {
+        // Validasi untuk memastikan hanya admin atau asisten (role_id = 1 atau 2) yang dapat mengelola jadwal
+        $user = session()->get('user');
+        if (!$user || !in_array($user['role_id'], [1, 2])) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin atau asisten yang dapat mengelola jadwal.');
+        }
+
         $data = [
             'id_event'      => $this->request->getPost('id_event'),
             'tanggal'       => $this->request->getPost('tanggal'),
@@ -120,6 +126,12 @@ class JadwalController extends BaseController
 
     public function update($id)
     {
+        // Validate that user is admin or asisten (role_id = 1 or 2)
+        $user = session()->get('user');
+        if (!$user || !in_array($user['role_id'], [1, 2])) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin atau asisten yang dapat mengelola jadwal.');
+        }
+
         $data = [
             'id_event'      => $this->request->getPost('id_event'),
             'tanggal'       => $this->request->getPost('tanggal'),
@@ -148,6 +160,12 @@ class JadwalController extends BaseController
 
     public function delete($id)
     {
+        // Validate that user is admin or asisten (role_id = 1 or 2)
+        $user = session()->get('user');
+        if (!$user || !in_array($user['role_id'], [1, 2])) {
+            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin atau asisten yang dapat mengelola jadwal.');
+        }
+
         $this->jadwalModel->delete($id);
         return redirect()->to('/jadwal_admin')->with('success', 'Jadwal berhasil dihapus');
     }

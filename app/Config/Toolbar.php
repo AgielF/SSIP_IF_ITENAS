@@ -34,16 +34,14 @@ class Toolbar extends BaseConfig
      * @var list<class-string>
      */
     public array $collectors = [
-        Timers::class,
-        Database::class,
-        Logs::class,
-        //troubleshooting looping terus menerus pada routes lokal comentkan Views::class dan ubah CI_ENVIRONMENT = PRODUCTION pada .env
- 
-        //Views::class,
-        // \CodeIgniter\Debug\Toolbar\Collectors\Cache::class,
-        Files::class,
-        Routes::class,
-        Events::class,
+        // Disabled for better performance - re-enable if needed for debugging
+        // Timers::class,
+        // Database::class,
+        // Logs::class,
+        // Views::class,
+        // Files::class,
+        // Routes::class,
+        // Events::class,
     ];
 
     /**

@@ -46,12 +46,12 @@ class AdminFilter implements FilterInterface
 
         try {
             $jwtSecret = getenv('JWT_SECRET');
-            if (empty($jwtSecret) || $jwtSecret === 'your-secret-key') {
-                log_message('error', 'JWT_SECRET not set or using default value! This is a security risk.');
+            if (empty($jwtSecret) || strlen($jwtSecret) < 32) {
+                log_message('error', 'JWT_SECRET not set or too short! This is a security risk.');
                 if (ENVIRONMENT === 'production') {
-                    throw new \RuntimeException('JWT_SECRET must be configured in production environment');
+                    throw new \RuntimeException('JWT_SECRET must be configured with minimum 32 characters in production environment');
                 }
-                $jwtSecret = 'your-secret-key'; // Fallback for development only
+                $jwtSecret = bin2hex(random_bytes(32)); // Generate secure fallback for development
             }
             $decoded = JWT::decode($token, new Key($jwtSecret, 'HS256'));
 

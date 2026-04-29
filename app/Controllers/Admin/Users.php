@@ -121,10 +121,40 @@ class Users extends BaseController
             ]);
         }
 
-        // Handle file upload
+        // Handle file upload with security validation
         $fotoPath = null;
         $foto = $this->request->getFile('foto');
         if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            // validasi keamanan untuk file upload
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $maxSize = 2 * 1024 * 1024; // 2MB untuk per 1 file
+
+            if (!in_array($foto->getMimeType(), $allowedTypes)) {
+                return redirect()->back()->with('error', 'Tipe file tidak didukung. Hanya JPEG, PNG, GIF, dan WebP yang diperbolehkan.');
+            }
+
+            if ($foto->getSize() > $maxSize) {
+                return redirect()->back()->with('error', 'Ukuran file terlalu besar. Maksimal 2MB.');
+            }
+
+            // Validasi untuk memastikan ekstensi file sesuai dengan MIME type
+            $extension = strtolower($foto->getExtension());
+            $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!in_array($extension, $validExtensions)) {
+                return redirect()->back()->with('error', 'Ekstensi file tidak valid.');
+            }
+
+            // Cek nama file untuk karakter yang mencurigakan
+            $originalName = $foto->getName();
+            if (preg_match('/[<>:"\/\\|?*\x00-\x1f]/', $originalName)) {
+                return redirect()->back()->with('error', 'Nama file mengandung karakter tidak valid.');
+            }
+
+            // untuk mencegah direktori yang tidak diinginkan
+            if (strpos($originalName, '..') !== false || strpos($originalName, '/') !== false || strpos($originalName, '\\') !== false) {
+                return redirect()->back()->with('error', 'Nama file tidak valid.');
+            }
+
             $uploadPath = ROOTPATH . 'public/uploads/photos/' . $userId . '/';
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
@@ -229,9 +259,39 @@ class Users extends BaseController
             $data['password'] = $password;
         }
 
-        // Handle file upload for foto
+        // Handle file upload for foto with security validation
         $foto = $this->request->getFile('foto');
         if ($foto && $foto->isValid() && !$foto->hasMoved()) {
+            // Security validation
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $maxSize = 2 * 1024 * 1024; // 2MB
+
+            if (!in_array($foto->getMimeType(), $allowedTypes)) {
+                return redirect()->back()->with('error', 'Tipe file tidak didukung. Hanya JPEG, PNG, GIF, dan WebP yang diperbolehkan.');
+            }
+
+            if ($foto->getSize() > $maxSize) {
+                return redirect()->back()->with('error', 'Ukuran file terlalu besar. Maksimal 2MB.');
+            }
+
+            // Validate file extension matches MIME type
+            $extension = strtolower($foto->getExtension());
+            $validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!in_array($extension, $validExtensions)) {
+                return redirect()->back()->with('error', 'Ekstensi file tidak valid.');
+            }
+
+            // Additional security: Check filename for suspicious characters
+            $originalName = $foto->getName();
+            if (preg_match('/[<>:"\/\\|?*\x00-\x1f]/', $originalName)) {
+                return redirect()->back()->with('error', 'Nama file mengandung karakter tidak valid.');
+            }
+
+            // Prevent directory traversal
+            if (strpos($originalName, '..') !== false || strpos($originalName, '/') !== false || strpos($originalName, '\\') !== false) {
+                return redirect()->back()->with('error', 'Nama file tidak valid.');
+            }
+
             $uploadPath = ROOTPATH . 'public/uploads/photos/' . $id . '/';
             if (!is_dir($uploadPath)) {
                 mkdir($uploadPath, 0755, true);
