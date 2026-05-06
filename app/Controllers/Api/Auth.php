@@ -34,226 +34,105 @@ class Auth extends ResourceController
         $this->proyekRisetModel = new ProyekRisetModel();
     }
 
-    /**
-     * Login endpoint
-     */
-//     public function login()
-// {
-//     $nomor = $this->request->getPost('nomor');
-//     $password = $this->request->getPost('password');
-
-//     log_message('debug', "Login attempt - Nomor: {$nomor}"); // debug only
-
-//     $user = $this->userModel->where('nomor', $nomor)->first();
-
-//     if (!$user) {
-//         log_message('debug', "User not found for nomor: {$nomor}");
-//         return redirect()->back()->with('error', 'User tidak ditemukan');
-//     }
-
-//     // Debug info (remove in production)
-//     log_message('debug', "DB hash for user {$user['nomor']}: " . substr($user['password'],0,60));
-//     log_message('debug', "password_get_info: " . json_encode(password_get_info($user['password'])));
-
-//     $ok = password_verify($password, $user['password']);
-//     log_message('debug', "password_verify result: " . ($ok ? "OK" : "FAILED"));
-
-//     if (!$ok) {
-//         return redirect()->back()->with('error', 'Password salah');
-//     }
-
-//     // jika ok -> buat token & session seperti sebelumnya
-//     // ...
-// }
-
-
-
-//    
     public function login()
     {
         try {
-            // Rate Limiting: buat cek login attempt per IP
+            // Rate Limiting untuk mencegah brute force
             $this->checkRateLimit();
 
-        // Rate limiting sudah cukup untuk mencegah brute force
+            $nomor    = trim($this->request->getPost('nomor'));
+            $password = $this->request->getPost('password');
 
-        $nomor    = trim($this->request->getPost('nomor'));
-        $password = trim($this->request->getPost('password'));
-
-        // validasi input dasar
-        if (!$nomor || !$password) {
-            $this->recordFailedAttempt();
-            return redirect()->back()->withInput()
-                ->with('error', 'Nomor dan password harus diisi');
-        }
-
-        // untuk mencegah serangan XSS
-        $nomor = filter_var(trim($nomor), FILTER_SANITIZE_STRING);
-        $password = filter_var(trim($password), FILTER_SANITIZE_STRING);
-
-        // Validate nomor format (NIM format) - prevent SQL injection
-        if (!preg_match('/^[0-9]{9}$/', $nomor)) {
-            $this->recordFailedAttempt();
-            return redirect()->back()->withInput()
-                ->with('error', 'Format NIM tidak valid (9 digit angka)');
-        }
-
-        // Cek password minimal 6 karakter
-        if (strlen($password) < 6) {
-            $this->recordFailedAttempt();
-            return redirect()->back()->withInput()
-                ->with('error', 'Password minimal 6 karakter');
-        }
-
-        // mencegah SQL injection
-        $suspicious = ['\'', '"', ';', '--', '/*', '*/', 'xp_', 'union', 'select', 'drop', 'delete'];
-        foreach ($suspicious as $pattern) {
-            if (stripos($nomor, $pattern) !== false || stripos($password, $pattern) !== false) {
+            // Validasi input dasar
+            if (!$nomor || !$password) {
                 $this->recordFailedAttempt();
-                log_message('warning', 'Suspicious login attempt detected from IP: ' . $this->request->getIPAddress());
-                return redirect()->back()->withInput()
-                    ->with('error', 'Input tidak valid');
+                return redirect()->back()->withInput()->with('error', 'Nomor dan password harus diisi');
             }
-        }
 
-        $user = $this->userModel->where('nomor', $nomor)->first();
+            // Sanitasi NIM saja (Password JANGAN disanitasi agar karakter khusus tidak hilang)
+            $nomor = filter_var($nomor, FILTER_SANITIZE_STRING);
 
-        if (!$user || !$this->userModel->verifyPassword($password, $user['password'])) {
-            $this->recordFailedAttempt();
-            return redirect()->back()->withInput()
-                ->with('error', 'NIM / Username atau Password salah');
-        }
+            // Validasi format NIM (9 digit angka)
+            if (!preg_match('/^[0-9]{9}$/', $nomor)) {
+                $this->recordFailedAttempt();
+                return redirect()->back()->withInput()->with('error', 'Format NIM tidak valid (9 digit angka)');
+            }
 
-        // reset login gagal counter jika login berhasil
-        $this->resetFailedAttempts();
+            // Cek password minimal 6 karakter
+            if (strlen($password) < 6) {
+                $this->recordFailedAttempt();
+                return redirect()->back()->withInput()->with('error', 'Password minimal 6 karakter');
+            }
 
-        // JWT
-        $key = getenv('JWT_SECRET') ?: 'bin2hex(random_bytes(32))';
-        $payload = [
-            'iat'     => time(),
-            'exp'     => time() + 86400,
-            'uid'     => $user['id'],
-            'nomor'   => $user['nomor'],
-            'nama'    => $user['nama'],
-            'role_id' => $user['role_id']
-        ];
+            // Cari user di database
+            $user = $this->userModel->where('nomor', $nomor)->first();
 
-        $token = JWT::encode($payload, $key, 'HS256');
+            // Pengecekan Hash Password menggunakan fungsi bawaan PHP yang aman
+            if (!$user || !password_verify($password, $user['password'])) {
+                $this->recordFailedAttempt();
+                return redirect()->back()->withInput()->with('error', 'NIM / Username atau Password salah');
+            }
 
-        session()->set([
-            'token' => $token,
-            'user'  => [
-                'id'      => $user['id'],
+            // Reset login gagal counter jika login berhasil
+            $this->resetFailedAttempts();
+
+            // Setup Token JWT (Aktif 1 Jam)
+            $key = getenv('JWT_SECRET') ?: 'rahasia-kita-bersama';
+            $payload = [
+                'iat'     => time(),
+                'exp'     => time() + 3600, // 3600 detik = 1 jam
+                'uid'     => $user['id'],
                 'nomor'   => $user['nomor'],
                 'nama'    => $user['nama'],
-                'role_id' => $user['role_id'],
-                'foto'    => $user['foto']
-            ]
-        ]);
+                'role_id' => $user['role_id']
+            ];
 
-        return ($user['role_id'] == 1)
-            ? redirect()->to('/asisten_admin')
-            : redirect()->to('/profile');
+            $token = JWT::encode($payload, $key, 'HS256');
 
-    } catch (\Exception $e) {
-        log_message('error', $e->getMessage());
+            // Simpan data di Session (Monolitik)
+            session()->set([
+                'token'         => $token,
+                'login_time'    => time(), // Waktu login dicatat
+                'last_activity' => time(), // Aktivitas terakhir dicatat
+                'user'          => [
+                    'id'      => $user['id'],
+                    'nomor'   => $user['nomor'],
+                    'nama'    => $user['nama'],
+                    'role_id' => $user['role_id'],
+                    'foto'    => $user['foto']
+                ]
+            ]);
 
-        // menangani error rate limit secara khusus
-        if (str_contains($e->getMessage(), 'Terlalu banyak percobaan')) {
-            return redirect()->back()->withInput()
-                ->with('error', $e->getMessage());
+            // Redirect berdasarkan Role
+            return ($user['role_id'] == 1)
+                ? redirect()->to('/asisten_admin')
+                :edirect()->to('/profile');   
+    
+        } catch (\Exception $e) {
+            log_message('error', $e->getMessage());
+
+            if (str_contains($e->getMessage(), 'Terlalu banyak percobaan')) {
+                return redirect()->back()->withInput()->with('error', $e->getMessage());
+            }
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat login');
         }
-
-        return redirect()->back()->with('error', 'Terjadi kesalahan saat login');
-    }
-}
-
-
-
-    public function logout()
-{
-    session()->remove('user');
-    session()->destroy();
-
-    return redirect()->to('/login')->with('success', 'Berhasil logout');
-}
-
-  public function profile()
-{
-    // 1. Ambil data user dari session
-    $user = session()->get('user');
-
-    if (!$user) {
-        // Jika belum login, redirect ke halaman login
-        return redirect()->to('/login')->with('error', 'Anda harus login terlebih dahulu.');
     }
 
-    // 2. Mapping role
-    $roles = [
-        1 => 'Admin',
-        2 => 'Asisten',
-        3 => 'Dosen',
-        
-    ];
-
-    // Override role_id dengan nama role (karena di view kamu memanggilnya dengan $user['role_id'])
-    $user['role_id'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
-
-    // 3. Ambil ID user dari session dengan aman
-    // Kita cek apakah disimmpan sebagai 'id' atau 'id_user'
-    $userId = $user['id'] ?? $user['id_user'] ?? null;
-
-    // 4. Instansiasi Model
-    $publikasiModel = new PublikasiModel();
-    $proyekModel    = new ProyekRisetModel();
-
-    // 5. Query data Publikasi & Proyek Riset
-    if ($userId) {
-        // ✅ Memanggil getDataWithUser() agar tabel users ter-join dan 'penulis_utama' terbaca
-        $publicationData = $publikasiModel->getDataWithUser()
-                                          ->where('publikasi.id_user', $userId)
-                                          ->findAll();
-                                          
-        // Mengambil data proyek riset biasa (sesuaikan dengan field di ProyekRisetModel)
-        $proyekData = $proyekModel->where('id_user', $userId)->findAll();
-    } else {
-        // Jika karena alasan tertentu ID tidak terbaca, kirim array kosong agar tidak error di view
-        $publicationData = [];
-        $proyekData = [];
-    }
-    // Debug code removed for production
-
-    // 6. Siapkan data untuk dikirim ke view
-    $data = [
-        'title'           => 'Profil Saya | ' . $user['nama'],
-        'user'            => $user,
-        'publicationData' => $publicationData,
-        'proyekData'      => $proyekData
-    ];
-
-    return view('auth/profile', $data);
-}
-
-    /**
-     * Rate Limiting Methods
-     */
     private function checkRateLimit()
     {
         $ip = $this->request->getIPAddress();
         $attempts = session()->get('login_attempts_' . $ip) ?? 0;
         $lastAttempt = session()->get('last_attempt_' . $ip) ?? 0;
 
-        // Reset counter if more than 1 minute has passed
-        if (time() - $lastAttempt > 60) { // 1 minute
+        if (time() - $lastAttempt > 60) {
             $this->resetFailedAttempts();
             return;
         }
 
-        // Block temporarily if too many attempts
-        if ($attempts >= 5) { // Max 5 attempts per minute
+        if ($attempts >= 5) {
             $remainingTime = 60 - (time() - $lastAttempt);
             $seconds = ceil($remainingTime);
-
             throw new \Exception("Terlalu banyak percobaan login. Coba lagi dalam {$seconds} detik.");
         }
     }
@@ -268,48 +147,15 @@ class Auth extends ResourceController
             'last_attempt_' . $ip => time()
         ]);
 
-        // Log failed login attempts for security monitoring
         log_message('warning', 'Failed login attempt from IP: ' . $ip . ', Attempt: ' . ($attempts + 1) . ', User-Agent: ' . $this->request->getUserAgent());
     }
 
     private function resetFailedAttempts()
     {
         $ip = $this->request->getIPAddress();
-
         session()->remove([
             'login_attempts_' . $ip,
             'last_attempt_' . $ip
         ]);
     }
-
-    // untuk generate captcha sederhana (misal: 2 angka + atau -)
-    public function generateCaptcha()
-    {
-        $num1 = rand(1, 10);
-        $num2 = rand(1, 10);
-        $operation = rand(0, 1) ? '+' : '-';
-
-        if ($operation === '-') {
-            // hasil harus selalu +
-            if ($num1 < $num2) {
-                [$num1, $num2] = [$num2, $num1];
-            }
-        }
-
-        $question = "$num1 $operation $num2";
-        $answer = $operation === '+' ? $num1 + $num2 : $num1 - $num2;
-
-        // simpan hasil di session untuk verifikasi
-        session()->set('captcha_answer', $answer);
-
-        return $this->response->setJSON([
-            'question' => $question,
-            'success' => true
-        ]);
-    }
-
-
-
-
-
 }
