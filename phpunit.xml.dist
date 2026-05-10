@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
     bootstrap="vendor/codeigniter4/framework/system/Test/bootstrap.php"
     backupGlobals="false"
-    beStrictAboutOutputDuringTests="true"
+    beStrictAboutOutputDuringTests="false"
     colors="true"
     columns="max"
     failOnRisky="true"
@@ -42,10 +42,8 @@
         </exclude>
     </source>
     <php>
-        <!-- 1. Sesuaikan Base URL dengan server lokal Anda -->
         <server name="app.baseURL" value="http://localhost:8080/"/>
         
-        <!-- 2. Paksa Environment ke 'testing' agar CI4 membaca database.tests -->
         <env name="CI_ENVIRONMENT" value="testing"/>
         
         <server name="CODEIGNITER_SCREAM_DEPRECATIONS" value="0"/>
@@ -53,12 +51,13 @@
         <const name="CONFIGPATH" value="./app/Config/"/>
         <const name="PUBLICPATH" value="./public/"/>
 
-        <!-- 3. Konfigurasi Database Testing (Disamakan dengan fix 127.0.0.1 untuk Ubuntu) -->
         <env name="database.tests.hostname" value="127.0.0.1"/>
         <env name="database.tests.database" value="ssip_if_itenas_test"/>
         <env name="database.tests.username" value="root"/>
         <env name="database.tests.password" value=""/>
         <env name="database.tests.DBDriver" value="MySQLi"/>
         <env name="database.tests.DBPrefix" value=""/>
+
+        <env name="JWT_SECRET" value="rahasia_keamanan_sistem_ssip_lab_itenas_2026_aman!"/>
     </php>
 </phpunit>

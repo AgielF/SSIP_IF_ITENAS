@@ -1,0 +1,114 @@
+PHPUnit 10.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.11
+Configuration: /home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/phpunit.xml.dist
+
+Inserted new asisten: Aditya Budi Septiawan (152022006)
+Inserted new asisten: Aliyya Rahmawati Putri (152022007)
+Inserted new asisten: Delisya Pramesti Fitriya (152022008)
+Inserted new asisten: Dindin Imanudin (152022009)
+Inserted new asisten: Fathurrahman Pratama Putra (152022010)
+Inserted new asisten: Felix Angga Resky (152022011)
+Inserted new asisten: Ghinova Klarisa Irawadi (152022012)
+Inserted new asisten: Hikam Hikmatul Huda (152022013)
+Inserted new asisten: Moh Ilyas (152022014)
+Inserted new asisten: Muhamad Rizky (152022015)
+Inserted new asisten: Muhammad Hasby As-shiddiqy (152022016)
+Inserted new asisten: Muhammad Rifqi Yusufi (152022017)
+Inserted new asisten: Nakhwa Ghinayah Rahadatul Aisy (152022018)
+Inserted new asisten: Nasywa Adita Zain (152022019)
+Inserted new asisten: Nazwa Nur Salsa Bella (152022020)
+Inserted new asisten: Nizar Abdul Malik (152022021)
+Inserted new asisten: Raden Muhammad Ariil Al Hafizh (152022022)
+Inserted new asisten: Rizki Saepul Aziz (152022023)
+Inserted new asisten: Sintia Wati (152022024)
+Inserted new asisten: Taras Al Fariz (152022025)
+Inserted new asisten: Tedy Sukma Permana (152022026)
+Assigned assistant 6 to jadwal 1
+Assigned assistant 7 to jadwal 2
+Assigned assistant 8 to jadwal 3
+Assigned assistant 9 to jadwal 4
+Assigned assistant 10 to jadwal 5
+Assigned assistant 11 to jadwal 6
+Assigned assistant 12 to jadwal 7
+Assigned assistant 13 to jadwal 8
+Assigned assistant 14 to jadwal 9
+Assigned assistant 15 to jadwal 10
+Assigned assistant 16 to jadwal 11
+Assigned assistant 17 to jadwal 12
+.Inserted new asisten: Aditya Budi Septiawan (152022006)
+Inserted new asisten: Aliyya Rahmawati Putri (152022007)
+Inserted new asisten: Delisya Pramesti Fitriya (152022008)
+Inserted new asisten: Dindin Imanudin (152022009)
+Inserted new asisten: Fathurrahman Pratama Putra (152022010)
+Inserted new asisten: Felix Angga Resky (152022011)
+Inserted new asisten: Ghinova Klarisa Irawadi (152022012)
+Inserted new asisten: Hikam Hikmatul Huda (152022013)
+Inserted new asisten: Moh Ilyas (152022014)
+Inserted new asisten: Muhamad Rizky (152022015)
+Inserted new asisten: Muhammad Hasby As-shiddiqy (152022016)
+Inserted new asisten: Muhammad Rifqi Yusufi (152022017)
+Inserted new asisten: Nakhwa Ghinayah Rahadatul Aisy (152022018)
+Inserted new asisten: Nasywa Adita Zain (152022019)
+Inserted new asisten: Nazwa Nur Salsa Bella (152022020)
+Inserted new asisten: Nizar Abdul Malik (152022021)
+Inserted new asisten: Raden Muhammad Ariil Al Hafizh (152022022)
+Inserted new asisten: Rizki Saepul Aziz (152022023)
+Inserted new asisten: Sintia Wati (152022024)
+Inserted new asisten: Taras Al Fariz (152022025)
+Inserted new asisten: Tedy Sukma Permana (152022026)
+Assigned assistant 6 to jadwal 1
+Assigned assistant 7 to jadwal 2
+Assigned assistant 8 to jadwal 3
+Assigned assistant 9 to jadwal 4
+Assigned assistant 10 to jadwal 5
+Assigned assistant 11 to jadwal 6
+Assigned assistant 12 to jadwal 7
+Assigned assistant 13 to jadwal 8
+Assigned assistant 14 to jadwal 9
+Assigned assistant 15 to jadwal 10
+Assigned assistant 16 to jadwal 11
+Assigned assistant 17 to jadwal 12
+.Inserted new asisten: Aditya Budi Septiawan (152022006)
+Inserted new asisten: Aliyya Rahmawati Putri (152022007)
+Inserted new asisten: Delisya Pramesti Fitriya (152022008)
+Inserted new asisten: Dindin Imanudin (152022009)
+Inserted new asisten: Fathurrahman Pratama Putra (152022010)
+Inserted new asisten: Felix Angga Resky (152022011)
+Inserted new asisten: Ghinova Klarisa Irawadi (152022012)
+Inserted new asisten: Hikam Hikmatul Huda (152022013)
+Inserted new asisten: Moh Ilyas (152022014)
+Inserted new asisten: Muhamad Rizky (152022015)
+Inserted new asisten: Muhammad Hasby As-shiddiqy (152022016)
+Inserted new asisten: Muhammad Rifqi Yusufi (152022017)
+Inserted new asisten: Nakhwa Ghinayah Rahadatul Aisy (152022018)
+Inserted new asisten: Nasywa Adita Zain (152022019)
+Inserted new asisten: Nazwa Nur Salsa Bella (152022020)
+Inserted new asisten: Nizar Abdul Malik (152022021)
+Inserted new asisten: Raden Muhammad Ariil Al Hafizh (152022022)
+Inserted new asisten: Rizki Saepul Aziz (152022023)
+Inserted new asisten: Sintia Wati (152022024)
+Inserted new asisten: Taras Al Fariz (152022025)
+Inserted new asisten: Tedy Sukma Permana (152022026)
+Assigned assistant 6 to jadwal 1
+Assigned assistant 7 to jadwal 2
+Assigned assistant 8 to jadwal 3
+Assigned assistant 9 to jadwal 4
+Assigned assistant 10 to jadwal 5
+Assigned assistant 11 to jadwal 6
+Assigned assistant 12 to jadwal 7
+Assigned assistant 13 to jadwal 8
+Assigned assistant 14 to jadwal 9
+Assigned assistant 15 to jadwal 10
+Assigned assistant 16 to jadwal 11
+Assigned assistant 17 to jadwal 12
+.                                                                                                                                                       3 / 3 (100%)
+
+Time: 04:32.503, Memory: 18.00 MB
+
+There was 1 PHPUnit test runner warning:
+
+1) No code coverage driver available
+
+OK, but there were issues!
+Tests: 3, Assertions: 63, PHPUnit Warnings: 1.

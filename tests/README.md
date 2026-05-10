@@ -1,118 +1,100 @@
-# Running Application Tests
+# Sistem Informasi Laboratorium SSIP IF ITENAS
 
-This is the quick-start to CodeIgniter testing. Its intent is to describe what
-it takes to set up your application and get it ready to run unit tests.
-It is not intended to be a full description of the test features that you can
-use to test your application. Those details can be found in the documentation.
+Sistem Informasi Laboratorium **Smart System and Information Processing (SSIP)** Institut Teknologi Nasional (ITENAS) Bandung adalah platform manajemen operasional laboratorium yang dibangun menggunakan arsitektur monolitik CodeIgniter 4. Sistem ini dirancang untuk mengelola data asisten, jadwal praktikum, riset dosen, publikasi ilmiah, hingga rekrutmen asisten baru secara terintegrasi.
 
-## Resources
+---
 
-* [CodeIgniter 4 User Guide on Testing](https://codeigniter.com/user_guide/testing/index.html)
-* [PHPUnit docs](https://phpunit.de/documentation.html)
-* [Any tutorials on Unit testing in CI4?](https://forum.codeigniter.com/showthread.php?tid=81830)
+## 🚀 Fitur Utama
 
-## Requirements
+Sistem ini mendukung *Role-Based Access Control (RBAC)* yang ketat untuk tiga peran utama: **Admin (Kepala Lab)**, **Asisten**, dan **Dosen**.
 
-It is recommended to use the latest version of PHPUnit. At the time of this
-writing, we are running version 9.x. Support for this has been built into the
-**composer.json** file that ships with CodeIgniter and can easily be installed
-via [Composer](https://getcomposer.org/) if you don't already have it installed globally.
+### 1. Manajemen Keanggotaan & Role
+- Pengelolaan data pengguna (*Users*) dengan peran spesifik.
+- Manajemen periode aktif laboratorium.
+- Daftar asisten aktif per periode.
 
-```console
-> composer install
-```
+### 2. Operasional Praktikum
+- **Jadwal**: Pengaturan jadwal kegiatan laboratorium (Praktikum, Seminar, Rapat) lengkap dengan informasi ruangan dan waktu.
+- **Modul Praktikum**: Unggah dan kelola modul pembelajaran dalam format digital (PDF).
+- **Peserta**: Monitoring status kelulusan peserta praktikum.
 
-If running under macOS or Linux, you can create a symbolic link to make running tests a touch nicer.
+### 3. Riset & Pengembangan
+- **Proyek Lab**: Manajemen proyek internal laboratorium, termasuk pelacakan teknologi yang digunakan dan anggota tim.
+- **Proyek Riset**: Dokumentasi riset dosen yang mencakup mitra, sumber dana, dan status pelaksanaan.
+- **Publikasi Ilmiah**: Katalog publikasi (Jurnal, Prosiding, Paten) yang dihasilkan oleh civitas lab.
 
-```console
-> ln -s ./vendor/bin/phpunit ./phpunit
-```
+### 4. Informasi & Komunikasi
+- **Berita**: Publikasi pengumuman, seminar, dan workshop.
+- **Galeri**: Dokumentasi kegiatan laboratorium dalam bentuk foto dan video.
+- **Rekrutmen**: Sistem pendaftaran asisten baru yang terintegrasi dengan jadwal dan syarat tertentu.
+- **Visi & Misi**: Halaman informasi profil laboratorium.
 
-You also need to install [XDebug](https://xdebug.org/docs/install) in order
-for code coverage to be calculated successfully. After installing `XDebug`, you must add `xdebug.mode=coverage` in the **php.ini** file to enable code coverage.
+---
 
-## Setting Up
+## 🛠️ Stack Teknologi
 
-A number of the tests use a running database.
-In order to set up the database edit the details for the `tests` group in
-**app/Config/Database.php** or **.env**.
-Make sure that you provide a database engine that is currently running on your machine.
-More details on a test database setup are in the
-[Testing Your Database](https://codeigniter.com/user_guide/testing/database.html) section of the documentation.
+- **Backend Framework**: PHP CodeIgniter 4.x
+- **Database**: MySQL / MariaDB 10.4+
+- **Security**: 
+  - Authentication: Session & JWT (firebase/php-jwt).
+  - RBAC: Filter/Middleware kustom untuk proteksi rute berdasarkan `role_id`.
+- **Testing**: PHPUnit 10.5 dengan *Feature Testing* dan *Database Migration*.
+- **Operating System Development**: Ubuntu Linux.
 
-## Running the tests
+---
 
-The entire test suite can be run by simply typing one command-line command from the main directory.
+## 📊 Skema Database
 
-```console
-> ./phpunit
-```
+Sistem ini menggunakan skema relasional yang kuat dengan integritas data (*Foreign Key*) yang ketat. Berikut adalah tabel-tabel utamanya:
 
-If you are using Windows, use the following command.
+| Tabel | Deskripsi |
+|-------|-----------|
+| `users` | Menyimpan data NRP, Nama, No Telp, dan password terenkripsi. |
+| `roles` | Definisi peran (Admin, Asisten, Dosen, Praktikan). |
+| `jadwal` | Manajemen waktu dan ruangan untuk setiap event. |
+| `berita` | Konten berita dan pengumuman laboratorium. |
+| `rekrut` | Pengaturan lowongan asisten laboratorium. |
+| `project_lab` | Detail proyek internal lab dan teknologi yang digunakan. |
+| `proyek_riset` | Dokumentasi penelitian dosen dan kolaborasi mitra. |
+| `publikasi` | Koleksi karya ilmiah yang telah diterbitkan. |
 
-```console
-> vendor\bin\phpunit
-```
+---
 
-You can limit tests to those within a single test directory by specifying the
-directory name after phpunit.
+## ⚙️ Instalasi & Persiapan
 
-```console
-> ./phpunit app/Models
-```
+Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal (Ubuntu):
 
-## Generating Code Coverage
+1. **Clone Repositori**
+   ```bash
+   git clone [https://github.com/username/SSIP_IF_ITENAS.git](https://github.com/username/SSIP_IF_ITENAS.git)
+   cd SSIP_IF_ITENAS
 
-To generate coverage information, including HTML reports you can view in your browser,
-you can use the following command:
+2. **Instalasi Dependencies**
+   ```bash
+   composer install
 
-```console
-> ./phpunit --colors --coverage-text=tests/coverage.txt --coverage-html=tests/coverage/ -d memory_limit=1024m
-```
+3. **Instalasi Dependencies**
+    Salin file .env.example menjadi .env dan sesuaikan pengaturan database Anda:
+   ```bash
+    database.default.hostname = localhost
+    database.default.database = ssip
+    database.default.username = root
+    database.default.password = password_anda
+    database.default.DBDriver = MySQLi
 
-This runs all of the tests again collecting information about how many lines,
-functions, and files are tested. It also reports the percentage of the code that is covered by tests.
-It is collected in two formats: a simple text file that provides an overview as well
-as a comprehensive collection of HTML files that show the status of every line of code in the project.
+    # JWT Secret (Minimal 32 karakter)
+    JWT_SECRET = rahasia_keamanan_sistem_ssip_lab_itenas_2026_aman!
 
-The text file can be found at **tests/coverage.txt**.
-The HTML files can be viewed by opening **tests/coverage/index.html** in your favorite browser.
+4. **Migrasi & Seeding Database**
+   ```bash
+    php spark migrate
+    php spark db:seed DatabaseSeeder
 
-## PHPUnit XML Configuration
 
-The repository has a ``phpunit.xml.dist`` file in the project root that's used for
-PHPUnit configuration. This is used to provide a default configuration if you
-do not have your own configuration file in the project root.
+## ⚙️ Pengujian (Unit Testing)
 
-The normal practice would be to copy ``phpunit.xml.dist`` to ``phpunit.xml``
-(which is git ignored), and to tailor it as you see fit.
-For instance, you might wish to exclude database tests, or automatically generate
-HTML code coverage reports.
+1. **Menjalankan Tes**
+   ```bash
+   vendor/bin/phpunit tests/Feature/MasterRoleTest.php > hasil_text.txt
 
-## Test Cases
-
-Every test needs a *test case*, or class that your tests extend. CodeIgniter 4
-provides one class that you may use directly:
-* `CodeIgniter\Test\CIUnitTestCase`
-
-Most of the time you will want to write your own test cases that extend `CIUnitTestCase`
-to hold functions and services common to your test suites.
-
-## Creating Tests
-
-All tests go in the **tests/** directory. Each test file is a class that extends a
-**Test Case** (see above) and contains methods for the individual tests. These method
-names must start with the word "test" and should have descriptive names for precisely what
-they are testing:
-`testUserCanModifyFile()` `testOutputColorMatchesInput()` `testIsLoggedInFailsWithInvalidUser()`
-
-Writing tests is an art, and there are many resources available to help learn how.
-Review the links above and always pay attention to your code coverage.
-
-### Database Tests
-
-Tests can include migrating, seeding, and testing against a mock or live database.
-Be sure to modify the test case (or create your own) to point to your seed and migrations
-and include any additional steps to be run before tests in the `setUp()` method.
-See [Testing Your Database](https://codeigniter.com/user_guide/testing/database.html)
-for details.
+   

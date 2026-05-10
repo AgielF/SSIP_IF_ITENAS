@@ -49,6 +49,6 @@ class CreateBeritaTable extends Migration
 
     public function down()
     {
-        $this->forge->dropTable('berita');
+        $this->forge->dropTable('berita',true);
     }
 }

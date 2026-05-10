@@ -8,7 +8,7 @@ use CodeIgniter\Router\RouteCollection;
 // publik - with page caching for better performance
 $routes->get('/', 'Home::index', ['filter' => 'pagecache']);
 
-$routes->get('/berita', 'beritaController::index', ['filter' => 'pagecache']);
+$routes->get('/berita', 'BeritaController::index', ['filter' => 'pagecache']);
 
 $routes->get('/asisten', 'UserController::index', ['filter' => 'pagecache']);
 
@@ -80,7 +80,7 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->get('/periode_admin/delete/(:num)', 'PeriodeController::delete/$1');
 
     // $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
-    $routes->get('/berita_admin','beritaController::admin');
+    $routes->get('/berita_admin','BeritaController::admin');
     $routes->get('/peserta-praktikum_admin','PesertaPraktikumController::admin');
     $routes->get('/events_admin','EventsController::admin');
 
@@ -122,9 +122,9 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->get('asisten/delete/(:num)', 'UserController::delete/$1'); // Hapus data
 
 
-    $routes->post('berita/store', 'beritaController::store');   // Tambah data
-    $routes->post('berita/update/(:num)', 'beritaController::update/$1'); // Update data
-    $routes->get('berita/delete/(:num)', 'beritaController::delete/$1'); // Hapus data
+    $routes->post('berita/store', 'BeritaController::store');   // Tambah data
+    $routes->post('berita/update/(:num)', 'BeritaController::update/$1'); // Update data
+    $routes->get('berita/delete/(:num)', 'BeritaController::delete/$1'); // Hapus data
 
     $routes->get('peserta-praktikum','PesertaPraktikumController::index');
     $routes->post('peserta-praktikum/store', 'PesertaPraktikumController::create');   // Tambah data
