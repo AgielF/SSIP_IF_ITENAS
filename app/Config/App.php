@@ -17,7 +17,7 @@ class App extends BaseConfig
      * E.g., http://example.com/
      */
     public string $baseURL = 'http://localhost:8080/';
-
+    //public string $baseURL = 'https://ssip-itenas.com/'; isi domain
     /**
      * Constructor to set baseURL from environment variable if available
      */
@@ -55,6 +55,7 @@ class App extends BaseConfig
      * from your site URIs, set this variable to an empty string.
      */
     public string $indexPage = 'index.php';
+    //public string $indexPage = ''; comment untuk setup hosting hpanel
 
     /**
      * --------------------------------------------------------------------------
@@ -171,8 +172,9 @@ class App extends BaseConfig
      * secure, the user will be redirected to a secure version of the page
      * and the HTTP Strict Transport Security (HSTS) header will be set.
      */
-    public bool $forceGlobalSecureRequests = (ENVIRONMENT === 'production');
-
+    // public bool $forceGlobalSecureRequests = (ENVIRONMENT === 'production');
+    public bool $forceGlobalSecureRequests = false;
+    //public bool $forceGlobalSecureRequests = true;
     /**
      * --------------------------------------------------------------------------
      * Reverse Proxy IPs
