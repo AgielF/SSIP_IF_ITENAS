@@ -124,14 +124,15 @@
                     </button>
 
                     <!-- Tombol Hapus -->
-    <form action="<?= site_url('rekrutmen/delete/'.$row['id_rekrut']) ?>" 
-          method="post" 
-          class="d-inline delete-form">
-        <?= csrf_field() ?>
-        <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
-            <i class="fas fa-trash"></i>
-        </button>
-    </form>
+                    <form action="<?= site_url('rekrutmen/delete/'.$row['id_rekrut']) ?>" 
+                        method="post" 
+                        class="d-inline delete-form"
+                        onsubmit="return confirm('Apakah Anda yakin ingin menghapus data rekrutmen ini?');">
+                        <?= csrf_field() ?>
+                        <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
                 </td>
             </tr>
         <?php endforeach; ?>

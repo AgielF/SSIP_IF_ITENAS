@@ -93,11 +93,13 @@ class EventsController extends BaseController
 
     // Hapus event
     public function delete($id)
-    {
-        if ($this->eventModel->delete($id)) {
-            return redirect()->to('/events_admin')->with('success', 'Event berhasil dihapus');
-        }
-
-        return redirect()->back()->with('error', 'Gagal menghapus event');
+{
+    if (!is_numeric($id)) return redirect()->to('/events_admin')->with('error', 'ID tidak valid');
+    try {
+        $this->eventModel->delete($id);
+        return redirect()->to('/events_admin')->with('success', 'Event berhasil dihapus');
+    } catch (\Throwable $e) {
+        return redirect()->to('/events_admin')->with('error', 'Gagal menghapus event.');
     }
+}
 }

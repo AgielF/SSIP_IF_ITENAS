@@ -1,3 +1,5 @@
+<meta name="csrf-token" content="<?= csrf_hash() ?>">
+
 <style>
     .fm-content {
         padding: 30px;
@@ -53,7 +55,6 @@
 </style>
 
 <div class="container my-5">
-    <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
         <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
@@ -146,15 +147,16 @@
                                         <td><?= esc($row[5]) ?></td>
                                         <td><?= esc($row[6]) ?></td>
                                         <td><?= esc($row[7]) ?></td>
+                                        <td><?= esc($row[8]) ?></td>
                                         <td class="non-printable">
                                             <button class="btn btn-sm btn-outline-secondary me-1 btn-edit"
                                                 data-id="<?= $row[0] ?>"
-                                                data-id_event="<?= esc($row[8] ?? '') ?>"
-                                                data-tanggal="<?= esc($row[9]) ?>"
-                                                data-waktu_mulai="<?= esc($row[10]) ?>"
-                                                data-waktu_selesai="<?= esc($row[11]) ?>"
-                                                data-ruangan="<?= esc($row[12]) ?>"
-                                                data-kelas="<?= esc($row[13]) ?>"
+                                                data-id_event="<?= esc($row[9] ?? '') ?>"
+                                                data-tanggal="<?= esc($row[10]) ?>"
+                                                data-waktu_mulai="<?= esc($row[11]) ?>"
+                                                data-waktu_selesai="<?= esc($row[12]) ?>"
+                                                data-ruangan="<?= esc($row[13]) ?>"
+                                                data-kelas="<?= esc($row[14]) ?>"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#editDataModal">
                                                 <i class="fas fa-pencil-alt"></i>
@@ -165,11 +167,17 @@
                                                 data-bs-target="#assignAsistenModal">
                                                 <i class="fas fa-user-plus"></i>
                                             </button>
-                                            <a href="<?= site_url('jadwal/delete/'.$row[0]) ?>"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Hapus data ini?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
+                                            
+                                            <form action="<?= site_url('jadwal/delete/'.$row[0]) ?>" 
+                                                  method="POST" 
+                                                  class="d-inline" 
+                                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus jadwal ini?');">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
+
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -190,10 +198,10 @@
     </main>
 </div>
 
-<!-- Modal Tambah -->
 <div class="modal fade" id="addDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form class="modal-content" action="<?= site_url('jadwal/store') ?>" method="post">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Jadwal</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -244,10 +252,10 @@
     </div>
 </div>
 
-<!-- Modal Edit -->
 <div class="modal fade" id="editDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form class="modal-content" id="editForm" method="post">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Edit Jadwal</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -299,7 +307,6 @@
     </div>
 </div>
 
-<!-- Modal Assign Asisten -->
 <div class="modal fade" id="assignAsistenModal" tabindex="-1" style="z-index: 1055;" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-white shadow-lg border">
@@ -313,8 +320,7 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Pilih Asisten Laboratorium</label>
                         <div id="asisten-list" class="border rounded p-3 bg-light" style="max-height: 300px; overflow-y: auto;">
-                            <!-- Asisten list will be loaded here -->
-                        </div>
+                            </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light">
@@ -342,6 +348,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorToast.show();
         setTimeout(() => errorToast.hide(), 3000);
     <?php endif; ?>
+    
     const searchInput = document.getElementById('search-input');
     const table = document.getElementById('jadwal-table');
     const tableRows = Array.from(table.querySelectorAll('tbody tr'));

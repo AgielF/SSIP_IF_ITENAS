@@ -99,10 +99,15 @@
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
-                                        <a href="/events/delete/<?= $row['id_event'] ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus event ini?')"> <i class="fas fa-trash"></i></a>
-                                    </td>
+                                        <form action="<?= base_url('/events/delete/' . $row['id_event']) ?>" 
+                                            method="POST" 
+                                            class="d-inline" 
+                                            onsubmit="return confirm('Hapus event ini?');">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else : ?>

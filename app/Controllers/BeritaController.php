@@ -99,9 +99,13 @@ class BeritaController extends BaseController
 
     // ❌ Hapus berita
     public function delete($id)
-    {
+{
+    if (!is_numeric($id)) return redirect()->to('/berita_admin')->with('error', 'ID tidak valid');
+    try {
         $this->beritaModel->delete($id);
-
         return redirect()->to('/berita_admin')->with('success', 'Berita berhasil dihapus');
+    } catch (\Throwable $e) {
+        return redirect()->to('/berita_admin')->with('error', 'Gagal menghapus berita.');
     }
+}
 }

@@ -107,9 +107,16 @@
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             Edit
                                         </button>
-                                        <a href="/modul-praktikum/delete/<?= $row['id_modul'] ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus modul ini?')">Hapus</a>
+                                        <form action="<?= base_url('modul-praktikum/delete/' . $row['id_modul']) ?>" 
+                                            method="POST" 
+                                            class="d-inline" 
+                                            onsubmit="return confirm('Hapus modul ini? File fisik dokumen juga akan ikut terhapus permanen.');">
+                                            
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

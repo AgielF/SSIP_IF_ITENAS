@@ -122,11 +122,15 @@
                                                     data-file="<?= esc($row[4]) ?>">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </button>
-                                            <a href="<?= site_url('galeri_admin/delete/'.$row[0]) ?>"
-                                               class="btn btn-sm btn-outline-danger"
-                                               onclick="return confirm('Apakah Anda yakin ingin menghapus media ini secara permanen?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </a>
+                                            <form action="<?= site_url('galeri_admin/delete/'.$row[0]) ?>" 
+                                                method="post" 
+                                                class="d-inline" 
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus media ini secara permanen?');">
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

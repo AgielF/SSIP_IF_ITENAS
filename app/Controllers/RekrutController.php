@@ -17,74 +17,146 @@ class RekrutController extends BaseController
         $this->jadwalModel = new JadwalModel();
     }
 
-    // Halaman publik
+    // =========================================================================
+    // 📋 HALAMAN PUBLIK (Aman dari Crash)
+    // =========================================================================
     public function index()
     {
-        return view('rekrutmen_view', [
-            'title'     => 'Informasi Rekrutmen',
-            'rekrutmen' => $this->rekrutModel->getDataPublik()
-        ]);
+        try {
+            return view('rekrutmen_view', [
+                'title'     => 'Informasi Rekrutmen',
+                'rekrutmen' => $this->rekrutModel->getDataPublik()
+            ]);
+        } catch (\Throwable $e) {
+            return redirect()->to('/')->with('error', 'Gagal memuat halaman rekrutmen.');
+        }
     }
 
- // Halaman admin
-public function admin()
-{
-    // 🔎 Ambil query string sort (default: desc)
-    $sort = $this->request->getGet('sort') ?? 'desc';
+    // =========================================================================
+    // 📋 HALAMAN ADMIN (Aman dari Manipulasi URL SQLMap)
+    // =========================================================================
+    public function admin()
+    {
+        try {
+            // 🛡️ Amankan parameter sort agar tidak disusupi skrip SQLi
+            $sortRaw = $this->request->getGet('sort');
+            $sort    = (strtolower($sortRaw) === 'asc') ? 'asc' : 'desc';
 
-    return view('rekrutmen_admin_view', [
-        'title'     => 'Kelola Rekrutmen',
-        'sort'      => $sort, // ✅ untuk view
-        'rekrutmen' => $this->rekrutModel->getDataAdminFormatted($sort)['rekrutmen'],
-        'jadwal'    => $this->jadwalModel
-                            ->select('jadwal.*, events.nama_event')
-                            ->join('events', 'events.id_event = jadwal.id_event', 'left')
-                            ->findAll()
-    ]);
-}
+            return view('rekrutmen_admin_view', [
+                'title'     => 'Kelola Rekrutmen',
+                'sort'      => $sort, 
+                'rekrutmen' => $this->rekrutModel->getDataAdminFormatted($sort)['rekrutmen'],
+                'jadwal'    => $this->jadwalModel
+                                    ->select('jadwal.*, events.nama_event')
+                                    ->join('events', 'events.id_event = jadwal.id_event', 'left')
+                                    ->findAll()
+            ]);
+        } catch (\Throwable $e) {
+            return redirect()->to('/')->with('error', 'Gagal memuat dashboard rekrutmen.');
+        }
+    }
 
+    
+    public function create()
+    {
+        // Jika form create menggunakan modal di halaman admin, kita redirect saja
+        return redirect()->to('/rekrutmen_admin');
+    }
 
+    public function edit($id)
+    {
+        if (!is_numeric($id)) return redirect()->to('/rekrutmen_admin')->with('error', 'ID tidak valid');
+        return redirect()->to('/rekrutmen_admin');
+    }
 
-    // Tambah data
+    // =========================================================================
+    // 🟢 CREATE DATA (Aman dari SQLMap & Crash)
+    // =========================================================================
     public function store()
     {
-        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user   
-        $data = [
-            'id_user'    => $userId, // sementara hardcode admin
-            'id_jadwal'  => $this->request->getPost('id_jadwal'),
-            'deskripsi'  => $this->request->getPost('deskripsi'),
-            'status'     => $this->request->getPost('status'),
-            'syarat'     => $this->request->getPost('syarat'),
-            'created_at' => date('Y-m-d H:i:s')
+        // 🛡️ 1. Validasi Input
+        $rules = [
+            'id_jadwal' => 'required|numeric',
+            'deskripsi' => 'required',
+            'status'    => 'required|max_length[50]',
+            'syarat'    => 'required'
         ];
 
-        $this->rekrutModel->insert($data);
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Format data tidak valid.');
+        }
 
-        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil ditambahkan');
+        // 🛡️ 2. Try-Catch Pembungkus Error
+        try {
+            $userId = $this->getUserIdOrRedirect(); 
+            $data = [
+                'id_user'    => $userId, 
+                'id_jadwal'  => $this->request->getPost('id_jadwal'),
+                'deskripsi'  => $this->request->getPost('deskripsi'),
+                'status'     => $this->request->getPost('status'),
+                'syarat'     => $this->request->getPost('syarat'),
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->rekrutModel->insert($data);
+            return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil ditambahkan');
+            
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat menyimpan data.');
+        }
     }
 
-    // Update data
+    // =========================================================================
+    // 🟡 UPDATE DATA (Aman dari SQLMap & Crash)
+    // =========================================================================
     public function update($id)
     {
-        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
-        $data = [
-            'id_user'    => $userId,
-            'id_jadwal'  => $this->request->getPost('id_jadwal'),
-            'deskripsi'  => $this->request->getPost('deskripsi'),
-            'status'     => $this->request->getPost('status'),
-            'syarat'     => $this->request->getPost('syarat'),
-            'updated_at' => date('Y-m-d H:i:s')
+        // 🛡️ 1. Pastikan ID angka
+        if (!is_numeric($id)) return redirect()->to('/rekrutmen_admin')->with('error', 'ID tidak valid');
+
+        // 🛡️ 2. Validasi Input
+        $rules = [
+            'id_jadwal' => 'required|numeric',
+            'deskripsi' => 'required',
+            'status'    => 'required|max_length[50]',
+            'syarat'    => 'required'
         ];
 
-        $this->rekrutModel->update($id, $data);
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Format data tidak valid.');
+        }
 
-        return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil diperbarui');
+        // 🛡️ 3. Try-Catch Pembungkus Error
+        try {
+            $userId = $this->getUserIdOrRedirect(); 
+            $data = [
+                'id_user'    => $userId,
+                'id_jadwal'  => $this->request->getPost('id_jadwal'),
+                'deskripsi'  => $this->request->getPost('deskripsi'),
+                'status'     => $this->request->getPost('status'),
+                'syarat'     => $this->request->getPost('syarat'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
+
+            $this->rekrutModel->update($id, $data);
+            return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil diperbarui');
+            
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat memperbarui data.');
+        }
     }
 
-    // Hapus data
+    // =========================================================================
+    // 🔴 DELETE DATA (Aman dari Constraint Error)
+    // =========================================================================
     public function delete($id)
-    {
+{
+    if (!is_numeric($id)) return redirect()->to('/rekrutmen_admin')->with('error', 'ID tidak valid');
+    try {
         $this->rekrutModel->delete($id);
         return redirect()->to('/rekrutmen_admin')->with('success', 'Rekrutmen berhasil dihapus');
+    } catch (\Throwable $e) {
+        return redirect()->to('/rekrutmen_admin')->with('error', 'Gagal menghapus data rekrutmen.');
     }
+}
 }

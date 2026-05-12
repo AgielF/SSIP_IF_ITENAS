@@ -144,9 +144,16 @@ $allUsers = $allUsers ?? [];
                                             data-bs-toggle="modal" data-bs-target="#modalEdit">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
-                                        <a href="/proyek-riset/delete/<?= $row['id_proyek'] ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Hapus data ini?')"><i class="fas fa-trash"></i></a>
+                                        <form action="<?= base_url('proyek-riset/delete/' . $row['id_proyek']) ?>" 
+                                            method="POST" 
+                                            class="d-inline" 
+                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus proyek riset ini?');">
+                                            
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

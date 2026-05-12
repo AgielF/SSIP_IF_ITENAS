@@ -155,21 +155,20 @@ class modulPraktikumController extends BaseController
 
     // 🔴 DELETE
     public function delete($id)
-    {
+{
+    if (!is_numeric($id)) return redirect()->to('/modul_praktikum_admin')->with('error', 'ID tidak valid');
+    try {
         $modul = $this->modulPraktikumModel->find($id);
-        
         if ($modul && !empty($modul['file_url'])) {
             $filePath = WRITEPATH . 'uploads/modul/' . $modul['file_url'];
-            if (file_exists($filePath)) {
-                unlink($filePath);
-            }
+            if (file_exists($filePath)) unlink($filePath);
         }
-
         $this->modulPraktikumModel->delete($id);
-
-        return redirect()->to('/modul_praktikum_admin')
-                         ->with('success', 'Modul praktikum berhasil dihapus.');
+        return redirect()->to('/modul_praktikum_admin')->with('success', 'Modul praktikum berhasil dihapus.');
+    } catch (\Throwable $e) {
+        return redirect()->to('/modul_praktikum_admin')->with('error', 'Gagal menghapus modul praktikum.');
     }
+}
 
     
     public function preview($filename)

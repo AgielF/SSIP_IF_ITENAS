@@ -1,0 +1,105 @@
+# =========================================================================
+# 1. RUTE AUTHENTICATION
+# =========================================================================
+http://localhost:8080/api/auth/login|nomor=152022001&password=password123
+http://localhost:8080/profile
+http://localhost:8080/login
+http://localhost:8080/logout
+
+# =========================================================================
+# 2. RUTE PUBLIK (READ / GET)
+# =========================================================================
+http://localhost:8080/
+http://localhost:8080/berita?kategori=seminar
+http://localhost:8080/asisten
+http://localhost:8080/asisten/6
+http://localhost:8080/jadwal
+http://localhost:8080/jadwal-praktikum?view=list
+http://localhost:8080/penelitian-proyek
+http://localhost:8080/publikasi-ilmiah
+http://localhost:8080/galeri
+http://localhost:8080/rekrutmen
+http://localhost:8080/modul_praktikum
+http://localhost:8080/topic_detail/machine-learning
+http://localhost:8080/project-lab
+http://localhost:8080/project-lab/1
+http://localhost:8080/organisasi
+
+# =========================================================================
+# 3. RUTE DASHBOARD ADMIN (GET)
+# =========================================================================
+http://localhost:8080/asisten_admin
+http://localhost:8080/galeri_admin?sort=DESC
+http://localhost:8080/rekrutmen_admin?sort=DESC
+http://localhost:8080/periode_admin
+http://localhost:8080/berita_admin?kategori=semua
+http://localhost:8080/peserta-praktikum_admin
+http://localhost:8080/events_admin
+http://localhost:8080/jadwal_admin
+http://localhost:8080/penelitian-proyek_admin
+http://localhost:8080/publikasi-ilmiah_admin?search=test&kategori=jurnal
+http://localhost:8080/project-lab_admin
+
+# =========================================================================
+# 4. RUTE CRUD (CREATE, UPDATE, DELETE - METHOD POST)
+# =========================================================================
+
+# --- PERIODE ---
+http://localhost:8080/periode_admin/store|nama_periode=2026/2027&tahun=2026
+http://localhost:8080/periode_admin/update/1|nama_periode=2026/2027&tahun=2026
+http://localhost:8080/periode_admin/delete/1|id=1
+
+# --- USERS / ASISTEN (ADMIN) ---
+http://localhost:8080/admin/users/create|nomor=152022999&nama=Tester&no_telp=081&jurusan=IF&role_id=2&password=123
+http://localhost:8080/admin/users/update/6|nomor=152022999&nama=TesterUpdate&no_telp=081&jurusan=IF&role_id=2
+http://localhost:8080/admin/users/delete/6|id=6
+
+# --- REKRUTMEN ---
+http://localhost:8080/rekrutmen/store|id_jadwal=1&deskripsi=Test&status=dibuka&syarat=Test
+http://localhost:8080/rekrutmen/update/1|id_jadwal=1&deskripsi=Update&status=ditutup&syarat=Test
+http://localhost:8080/rekrutmen/delete/1|id=1
+
+# --- GALERI ---
+http://localhost:8080/galeri_admin/store|kategori=video&keterangan=Test&link_video=https://youtube.com/embed/test
+http://localhost:8080/galeri_admin/update/1|kategori=foto&keterangan=Update
+http://localhost:8080/galeri_admin/delete/1|id=1
+
+# --- MODUL PRAKTIKUM ---
+http://localhost:8080/modul-praktikum/create|judul=Modul1&deskripsi=Test&id_jadwal=1
+http://localhost:8080/modul-praktikum/update/1|judul=ModulUpdate&deskripsi=Test&id_jadwal=1
+http://localhost:8080/modul-praktikum/delete/1|id=1
+
+# --- BERITA ---
+http://localhost:8080/berita/store|judul=Berita&konten=Isi&kategori=pengumuman&tanggal=2026-05-12
+http://localhost:8080/berita/update/1|judul=BeritaUpdate&konten=Isi&kategori=pengumuman&tanggal=2026-05-12
+http://localhost:8080/berita/delete/1|id=1
+
+# --- VISI MISI ---
+http://localhost:8080/visi-misi_admin/store|judul=Visi&isi=Test
+http://localhost:8080/visi-misi_admin/update/1|judul=VisiUpdate&isi=Test
+http://localhost:8080/visi-misi_admin/delete/1|id=1
+
+# --- EVENTS ---
+http://localhost:8080/events/store|nama_event=Seminar&deskripsi=AI&jenis=seminar
+http://localhost:8080/events/update/1|nama_event=Update&deskripsi=AI&jenis=seminar
+http://localhost:8080/events/delete/1|id=1
+
+# --- JADWAL ---
+http://localhost:8080/jadwal/store|id_event=1&tanggal=2026-06-01&waktu_mulai=08:00&waktu_selesai=10:00&ruangan=Riset
+http://localhost:8080/jadwal/update/1|id_event=1&tanggal=2026-06-01&waktu_mulai=08:00&waktu_selesai=10:00&ruangan=Cerdas
+http://localhost:8080/jadwal/delete/1|id=1
+
+# --- PROYEK RISET ---
+http://localhost:8080/proyek-riset/store|id_user=1&judul=Riset&topik=machine learning&deskripsi=Test&status=selesai&tahun_mulai=2026
+http://localhost:8080/proyek-riset/update/1|id_user=1&judul=Update&topik=machine learning&deskripsi=Test&status=selesai&tahun_mulai=2026
+http://localhost:8080/proyek-riset/delete/1|id=1
+
+# --- PUBLIKASI ---
+http://localhost:8080/publikasi-ilmiah/store|id_user=1&jenis_publikasi=jurnal&judul=Paper&kategori=Internasional&topik=smart system
+http://localhost:8080/publikasi-ilmiah/update/1|id_user=1&jenis_publikasi=jurnal&judul=Update&kategori=Internasional&topik=smart system
+http://localhost:8080/publikasi-ilmiah/delete/1|id=1
+
+# --- PROJECT LAB ---
+http://localhost:8080/project-lab/create|judul=Sistem&deskripsi=SSIP&topik=machine learning&status=selesai&teknologi=PHP&created_by=1
+http://localhost:8080/project-lab/update/1|judul=Update&deskripsi=SSIP&topik=machine learning&status=selesai&teknologi=PHP&created_by=1
+http://localhost:8080/project-lab/delete/1|id=1

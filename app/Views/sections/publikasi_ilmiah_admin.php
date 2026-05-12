@@ -215,11 +215,10 @@ foreach ($publicationData as $row) {
                                         <td class="action-buttons">
                                             <button class="btn btn-sm btn-outline-secondary btn-edit" data-bs-toggle="modal" data-bs-target="#editModal<?= $row['id_publikasi'] ?>"> <i class="fas fa-pencil-alt"></i></button>
                                             <form action="<?= site_url('publikasi-ilmiah/delete/'.$row['id_publikasi']) ?>" 
-                                                method="get" 
-                                                class="d-inline delete-form"
-                                                onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                method="POST" class="d-inline delete-form"
+                                                onsubmit="return confirm('Apakah Anda yakin ingin menghapus data publikasi ini?');">
                                                 <?= csrf_field() ?>
-                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" title="Hapus">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>

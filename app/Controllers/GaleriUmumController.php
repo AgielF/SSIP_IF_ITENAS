@@ -160,15 +160,17 @@ class GaleriUmumController extends BaseController
 
     // DELETE
     public function delete($id)
-    {
+{
+    if (!is_numeric($id)) return redirect()->to('/galeri_admin')->with('error', 'ID tidak valid');
+    try {
         $galeri = $this->galeriUmumModel->find($id);
-
-        // Hapus file fisik gambar dari folder uploads/galeri
         if ($galeri && !empty($galeri['file_url']) && file_exists(FCPATH . 'uploads/galeri/' . $galeri['file_url'])) {
             unlink(FCPATH . 'uploads/galeri/' . $galeri['file_url']);
         }
-
         $this->galeriUmumModel->delete($id);
         return redirect()->to('/galeri_admin')->with('success', 'Data berhasil dihapus');
+    } catch (\Throwable $e) {
+        return redirect()->to('/galeri_admin')->with('error', 'Gagal menghapus data galeri.');
     }
+}
 }

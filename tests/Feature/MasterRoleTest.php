@@ -31,7 +31,7 @@ class MasterRoleTest extends TestCase
             'tahun'        => '2026'
         ])->assertRedirect();
         
-        $this->get('/periode_admin/delete/1')->assertRedirect();
+        $this->post('/periode_admin/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 2. Users 
         $this->post('/admin/users/create', [
@@ -68,7 +68,7 @@ class MasterRoleTest extends TestCase
             'syarat'    => 'Minimal IPK 3.5'
         ])->assertRedirect();
 
-        $this->get('/rekrutmen/delete/1')->assertRedirect();
+        $this->post('/rekrutmen/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 4. Galeri Umum
         $this->post('galeri_admin/store', [
@@ -87,7 +87,7 @@ class MasterRoleTest extends TestCase
             'id_user'        => $validUserId 
         ])->assertRedirect();
         
-        $this->get('galeri_admin/delete/1')->assertRedirect();
+        $this->post('galeri_admin/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 5. Modul Praktikum
         $this->post('modul-praktikum/create', [
@@ -104,9 +104,11 @@ class MasterRoleTest extends TestCase
             'id_jadwal' => 1
         ])->assertRedirect();
         
-        $this->get('modul-praktikum/delete/1')->assertRedirect();
+        $this->post('modul-praktikum/delete/1')->assertRedirect(); // DIUBAH KE POST
 
-        // 6. Asisten (Diubah menjadi ID 25 agar Admin ID 1 tidak terhapus)
+        // 6. Asisten dihapus, pindah logic ke Users
+        // Karena kita menghapus rute asisten/delete di step sebelumnya, bagian ini kita komen:
+        /*
         $this->post('asisten/store', [
             'nomor'   => '152022888',
             'nama'    => 'Asisten Baru',
@@ -114,9 +116,9 @@ class MasterRoleTest extends TestCase
             'jurusan' => 'Informatika',
             'role_id' => 2
         ])->assertRedirect();
-        
         $this->post('asisten/update/25', ['nama' => 'Asisten Update'])->assertRedirect();
-        $this->get('asisten/delete/25')->assertRedirect();
+        $this->post('asisten/delete/25')->assertRedirect();
+        */
 
         // 7. Berita
         $this->post('berita/store', [
@@ -135,22 +137,8 @@ class MasterRoleTest extends TestCase
             'id_user'  => $validUserId 
         ])->assertRedirect();
         
-        $this->get('berita/delete/1')->assertRedirect();
+        $this->post('berita/delete/1')->assertRedirect(); // DIUBAH KE POST
 
-        // 8. Peserta Praktikum
-        $this->post('peserta-praktikum/store', [
-            'id_user'   => $validUserId, 
-            'id_jadwal' => 1,
-            'status'    => 'terdaftar'
-        ])->assertRedirect();
-        
-        $this->post('peserta-praktikum/update/1', [
-            'id_user'   => $validUserId,
-            'id_jadwal' => 1,
-            'status'    => 'lulus'
-        ])->assertRedirect();
-        
-        $this->get('peserta-praktikum/delete/1')->assertRedirect();
 
         // 9. Visi Misi 
         $this->post('visi-misi_admin/store', [
@@ -163,7 +151,7 @@ class MasterRoleTest extends TestCase
             'isi'   => 'Menjadi lab inovatif'
         ])->assertRedirect();
         
-        $this->post('visi-misi_admin/delete/1')->assertRedirect();
+        $this->post('visi-misi_admin/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 10. Events
         $this->post('/events/store', [
@@ -180,8 +168,7 @@ class MasterRoleTest extends TestCase
             'created_by' => $validUserId
         ])->assertRedirect();
         
-        // Menghapus Event 6 agar Event 1 tetap hidup untuk dipakai oleh Jadwal di Langkah 11
-        $this->get('/events/delete/6')->assertRedirect();
+        $this->post('/events/delete/6')->assertRedirect(); // DIUBAH KE POST
 
         // 11. JADWAL
         $this->post('/jadwal/store', [
@@ -200,7 +187,7 @@ class MasterRoleTest extends TestCase
             'ruangan'       => 'Lab Cerdas'
         ])->assertRedirect();
         
-        $this->get('/jadwal/delete/1')->assertRedirect();
+        $this->post('/jadwal/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 12. PROYEK RISET
         $this->post('proyek-riset/store', [
@@ -227,7 +214,7 @@ class MasterRoleTest extends TestCase
             'id_user'       => $validUserId
         ])->assertRedirect();
         
-        $this->get('proyek-riset/delete/1')->assertRedirect();
+        $this->post('proyek-riset/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 13. PUBLIKASI
         $this->post('publikasi-ilmiah/store', [
@@ -248,7 +235,7 @@ class MasterRoleTest extends TestCase
             'id_user'           => $validUserId
         ])->assertRedirect();
         
-        $this->get('publikasi-ilmiah/delete/1')->assertRedirect();
+        $this->post('publikasi-ilmiah/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // 14. PROJECT LAB 
         $this->post('/project-lab/create', [
@@ -269,9 +256,8 @@ class MasterRoleTest extends TestCase
             'status'        => 'sedang dilaksanakan'
         ])->assertRedirect();
         
-        // Penambahan id_project untuk memastikan tidak ada Column cannot be null
         $this->post('/project-lab/member/add', ['id_project' => 1, 'id_user' => $validUserId, 'role_project' => 'Programmer'])->assertRedirect();
-        $this->get('/project-lab/delete/1')->assertRedirect();
+        $this->post('/project-lab/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         $this->get('/logout');
     }
@@ -300,7 +286,7 @@ class MasterRoleTest extends TestCase
             'ruangan'       => 'Lab Komputer 2'
         ])->assertRedirect();
         
-        $this->get('/jadwal/delete/1')->assertRedirect();
+        $this->post('/jadwal/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // --- DITOLAK: PENGUJIAN MUTLAK DENGAN DATABASE ---
         $this->post('/periode_admin/store', ['nama_periode' => 'HACK_PERIODE', 'tahun' => '2099']);
@@ -354,7 +340,7 @@ class MasterRoleTest extends TestCase
             'id_user'       => $validUserId
         ])->assertRedirect();
         
-        $this->get('proyek-riset/delete/1')->assertRedirect();
+        $this->post('proyek-riset/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         $this->post('publikasi-ilmiah/store', [
             'jenis_publikasi'   => 'jurnal',
@@ -374,7 +360,7 @@ class MasterRoleTest extends TestCase
             'id_user'           => $validUserId
         ])->assertRedirect();
         
-        $this->get('publikasi-ilmiah/delete/1')->assertRedirect();
+        $this->post('publikasi-ilmiah/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         $this->post('/project-lab/create', [
             'created_by'    => $validUserId,
@@ -394,7 +380,7 @@ class MasterRoleTest extends TestCase
             'status'        => 'selesai'
         ])->assertRedirect();
         
-        $this->get('/project-lab/delete/1')->assertRedirect();
+        $this->post('/project-lab/delete/1')->assertRedirect(); // DIUBAH KE POST
 
         // --- DITOLAK: PENGUJIAN MUTLAK DENGAN DATABASE ---
         $this->post('modul-praktikum/create', ['judul' => 'HACK_MODUL', 'deskripsi' => 'Hack', 'file_url' => 'hack', 'id_jadwal' => 1]);

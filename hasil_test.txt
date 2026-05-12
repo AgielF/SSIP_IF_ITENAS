@@ -104,11 +104,11 @@ Assigned assistant 16 to jadwal 11
 Assigned assistant 17 to jadwal 12
 .                                                                                                                                                       3 / 3 (100%)
 
-Time: 04:32.503, Memory: 18.00 MB
+Time: 04:17.245, Memory: 18.00 MB
 
 There was 1 PHPUnit test runner warning:
 
 1) No code coverage driver available
 
 OK, but there were issues!
-Tests: 3, Assertions: 63, PHPUnit Warnings: 1.
+Tests: 3, Assertions: 57, PHPUnit Warnings: 1.

@@ -97,4 +97,33 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal (Ubun
    ```bash
    vendor/bin/phpunit tests/Feature/MasterRoleTest.php > hasil_text.txt
 
+2. **Menjalankan Tes sqlinject**
+   Merubah CI_ENVIRONMENT = development pada .env 
+   ```bash
+   # Menjalankan server pada mode testing
+   php spark serve --env testing
+
+   # Memberikan izin eksekusi jika file skrip baru dibuat
+   chmod +x test_sqli.sh
    
+   # Menjalankan skrip pengujian terhadap endpoint target
+   ./test_sqli.sh
+
+
+3. **Menjalankan Tes XSS**
+   Buka folder selain folder project 
+   ```bash
+   # Clone dari repositori resmi
+   git clone https://github.com/s0md3v/XSStrike.git
+
+   # Masuk ke direktori
+   cd XSStrike
+
+   # Instal pustaka yang dibutuhkan
+   pip install -r requirements.txt
+
+   #menyalakan app
+   php spark serve --env testing
+
+   # Melakukan crawling mendalam pada target (contoh: rute login/berita)
+   python3 xsstrike.py -u "http://localhost:8080/" --crawl > hasil_scan.txt

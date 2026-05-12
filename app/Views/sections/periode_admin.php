@@ -60,9 +60,13 @@
                                         <button class="btn btn-light btn-sm" title="Edit" data-bs-toggle="modal" data-bs-target="#modalEdit<?= $p['id_periode'] ?>">
                                             <i class="fas fa-pencil-alt text-warning"></i>
                                         </button>
-                                        <a href="<?= base_url('periode_admin/delete/' . $p['id_periode']) ?>" class="btn btn-light btn-sm" title="Hapus" onclick="return confirm('Apakah Anda yakin ingin menghapus periode ini? Data asisten yang terhubung ke periode ini juga akan kehilangan relasinya.')">
-                                            <i class="fas fa-trash-alt text-danger"></i>
-                                        </a>
+
+                                        <form action="<?= base_url('periode_admin/delete/' . $p['id_periode']) ?>" method="POST" style="display: inline-block; margin: 0;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus periode ini? Data asisten yang terhubung ke periode ini juga akan kehilangan relasinya.')">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-light btn-sm" title="Hapus" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                                                <i class="fas fa-trash-alt text-danger"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

@@ -156,11 +156,18 @@
         <i class="fas fa-edit"></i>
     </button>
 
-    <a href="<?= base_url('/project-lab/delete/'.$p['id_project']) ?>"
-    class="btn btn-sm btn-outline-danger"
-    onclick="return confirm('Hapus project ini?')">
-        <i class="fas fa-trash"></i>
-    </a>
+            <form action="<?= base_url('/project-lab/delete/'.$p['id_project']) ?>" 
+            method="POST" 
+            class="d-inline" 
+            onsubmit="return confirm('Apakah Anda yakin ingin menghapus project ini beserta seluruh anggotanya?');">
+            
+            <?= csrf_field() ?>
+            <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+
+
     </td>
 
     </tr>

@@ -57,10 +57,13 @@ class PeriodeController extends BaseController
      * Menghapus periode
      */
     public function delete($id)
-    {
-        // Penghapusan ini akan otomatis memicu CASCADE DELETE 
-        // pada tabel asisten_periode di level database.
+{
+    if (!is_numeric($id)) return redirect()->to('/periode_admin')->with('error', 'ID tidak valid');
+    try {
         $this->periodeModel->delete($id);
         return redirect()->to('/periode_admin')->with('success', 'Data Periode berhasil dihapus.');
+    } catch (\Throwable $e) {
+        return redirect()->to('/periode_admin')->with('error', 'Gagal menghapus periode. Data mungkin masih digunakan.');
     }
+}
 }
