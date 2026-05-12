@@ -98,7 +98,7 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal (Ubun
    vendor/bin/phpunit tests/Feature/MasterRoleTest.php > hasil_text.txt
 
 2. **Menjalankan Tes sqlinject**
-   Merubah CI_ENVIRONMENT = development pada .env 
+   Merubah CI_ENVIRONMENT = production pada .env 
    ```bash
    # Menjalankan server pada mode testing
    php spark serve --env testing
