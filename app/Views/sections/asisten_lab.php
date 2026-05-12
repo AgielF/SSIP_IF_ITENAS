@@ -33,7 +33,7 @@
                             <?php endif; ?>
                         </select>
                     </div>
-                    </div>
+                </div>
             </div> 
         </div>
 
@@ -217,8 +217,8 @@ class AdvancedFilter {
     }
     
     renderItems(itemsToRender) {
-        // Kosongkan container
-        this.itemsContainer.innerHTML = '';
+        // ✅ PERBAIKAN XSS: Kosongkan container dengan metode aman
+        this.itemsContainer.replaceChildren();
 
         // Tampilkan item yang sudah difilter dan diurutkan
         if (itemsToRender.length > 0) {
@@ -226,7 +226,11 @@ class AdvancedFilter {
                 this.itemsContainer.appendChild(item);
             });
         } else {
-            this.itemsContainer.innerHTML = '<p class="text-center text-muted">Tidak ada anggota yang cocok dengan filter.</p>';
+            // ✅ PERBAIKAN XSS: Render pesan error menggunakan textContent
+            const p = document.createElement('p');
+            p.className = 'text-center text-muted';
+            p.textContent = 'Tidak ada anggota yang cocok dengan filter.';
+            this.itemsContainer.appendChild(p);
         }
     }
 }

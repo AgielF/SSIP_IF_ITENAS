@@ -49,7 +49,7 @@
         /* Trik membatasi teks maksimal 2 baris */
         display: -webkit-box;
         -webkit-line-clamp: 2;
-        line-clamp: 2; /* <--- Tambahkan baris standar ini */
+        line-clamp: 2; 
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -318,8 +318,8 @@
             // Tapi cek dulu apakah mode "all"
             if (rowsPerPageSelect.value === 'all') {
                 asistenItems.forEach(item => item.style.display = 'flex');
-                pageInfo.innerText = `Menampilkan semua ${totalItems} Asisten`;
-                paginationControls.innerHTML = ''; // Hapus tombol navigasi
+                pageInfo.textContent = `Menampilkan semua ${totalItems} Asisten`;
+                paginationControls.replaceChildren(); // AMAN: Hapus tombol navigasi
                 return;
             }
 
@@ -329,21 +329,24 @@
             }
 
             // Update Info Text
-            pageInfo.innerText = `Menampilkan ${start + 1} - ${Math.min(end, totalItems)} dari ${totalItems} Asisten`;
+            pageInfo.textContent = `Menampilkan ${start + 1} - ${Math.min(end, totalItems)} dari ${totalItems} Asisten`;
 
             // Render Tombol (Prev, Angka, Next)
             renderPaginationButtons(totalPages);
         }
 
         function renderPaginationButtons(totalPages) {
-            paginationControls.innerHTML = '';
+            paginationControls.replaceChildren(); // AMAN: Bersihkan kontainer
 
             if (totalPages <= 1) return;
 
             // Prev Button
             const prevBtn = document.createElement('button');
             prevBtn.className = 'page-btn';
-            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            const prevIcon = document.createElement('i');
+            prevIcon.className = 'fas fa-chevron-left';
+            prevBtn.appendChild(prevIcon); // AMAN: Memasukkan ikon tanpa innerHTML
+            
             prevBtn.disabled = currentPage === 1;
             prevBtn.addEventListener('click', () => {
                 if (currentPage > 1) {
@@ -357,7 +360,7 @@
             for (let i = 1; i <= totalPages; i++) {
                 const btn = document.createElement('button');
                 btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
-                btn.innerText = i;
+                btn.textContent = i; // AMAN: Hanya teks angka
                 btn.addEventListener('click', () => {
                     currentPage = i;
                     renderPagination();
@@ -368,7 +371,10 @@
             // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
-            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            const nextIcon = document.createElement('i');
+            nextIcon.className = 'fas fa-chevron-right';
+            nextBtn.appendChild(nextIcon); // AMAN: Memasukkan ikon tanpa innerHTML
+            
             nextBtn.disabled = currentPage === totalPages;
             nextBtn.addEventListener('click', () => {
                 if (currentPage < totalPages) {

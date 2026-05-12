@@ -71,7 +71,7 @@
                         <th>Dosen</th>
                         <th>Ruang</th>
                         <th>Jenis</th>
-                        <th>Aksi</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -83,23 +83,15 @@
                                 $sortableDate = $timestamp ? date('Ymd', $timestamp) : '0';
                             ?>
                             <tr data-order="<?= $sortableDate ?>">
-                                <td></td> <!-- Nomor diisi oleh JS -->
-                                <td><?= esc($schedule['title']) ?></td>
+                                <td></td> <td><?= esc($schedule['title']) ?></td>
                                 <td>AA</td>
                                 <td><?= esc(strtoupper(explode(',', $schedule['date'])[0])) ?></td>
                                 <td><?= esc($schedule['time']) ?></td>
                                 <td><?= esc($schedule['instructor']) ?></td>
                                 <td><?= esc($schedule['lab']) ?></td>
                                 <td>KULIAH</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-light btn-sm" title="Lihat Detail"><i class="fas fa-search"></i></button>
-                                        <button type="button" class="btn btn-light btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#">Edit</a></li>
-                                            <li><a class="dropdown-item" href="#">Hapus</a></li>
-                                        </ul>
-                                    </div>
+                                
+                                
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -120,8 +112,7 @@
             </div>
             <nav>
                 <ul class="pagination pagination-sm mb-0" id="pagination-controls">
-                    <!-- Tombol paginasi akan dirender oleh JavaScript -->
-                </ul>
+                    </ul>
             </nav>
         </div>
     </div>
@@ -168,10 +159,16 @@ document.addEventListener('DOMContentLoaded', function () {
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        // Render Body & Penomoran
-        tableBody.innerHTML = ''; // Kosongkan tabel
+        // ✅ PERBAIKAN XSS: Render Body & Penomoran yang Aman
+        tableBody.replaceChildren(); // Mengosongkan tabel dengan aman
+
         if (paginatedRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            // Membuat baris 'Data tidak ditemukan' secara dinamis tanpa innerHTML
+            const emptyRow = tableBody.insertRow();
+            const emptyCell = emptyRow.insertCell(0);
+            emptyCell.colSpan = 9;
+            emptyCell.className = "text-center text-muted";
+            emptyCell.textContent = "Data tidak ditemukan.";
         } else {
             paginatedRows.forEach((row, index) => {
                 row.cells[0].textContent = startIndex + index + 1; // Isi nomor
@@ -190,13 +187,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderPagination(totalItems, limit) {
         const totalPages = Math.ceil(totalItems / limit);
-        paginationControls.innerHTML = '';
+        
+        // ✅ PERBAIKAN XSS: Mengosongkan paginasi dengan aman
+        paginationControls.replaceChildren();
+
         if (totalPages <= 1) return;
 
         const createPageLink = (page, text, isDisabled = false, isActive = false) => {
             const li = document.createElement('li');
             li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
-            li.innerHTML = `<a class="page-link" href="#">${text}</a>`;
+            
+            // ✅ PERBAIKAN XSS: Membuat elemen <a> secara dinamis
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.textContent = text; // Aman, browser memperlakukannya sebagai teks murni
+            li.appendChild(a);
+
             li.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (!isDisabled) {

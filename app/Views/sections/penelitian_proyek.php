@@ -33,7 +33,6 @@
 </style>
 
 <div class="container my-5">
-    <!-- Navigasi Tab -->
     <ul class="nav nav-tabs" id="project-nav">
         <li class="nav-item">
             <a class="nav-link active" href="#" data-content="riset">Daftar Proyek Riset</a>
@@ -120,15 +119,16 @@ document.addEventListener('DOMContentLoaded', function() {
             row.some(cell => String(cell).toLowerCase().includes(currentState.searchTerm))
         );
 
-        // Cari kolom tanggal (misal kolom terakhir)
-        const dateColumnIndex = data.headers.indexOf("Tanggal Upload") !== -1 
-            ? data.headers.indexOf("Tanggal Upload") 
-            : data.headers.length - 1;
+        // ✅ PERBAIKAN SORTING: Coba cari indeks "Tahun Mulai" (Khusus proyek riset) atau kolom ID (0) sebagai fallback
+        const dateColumnIndex = data.headers.findIndex(h => h.toLowerCase().includes('tahun mulai'));
+        const sortIndex = dateColumnIndex !== -1 ? dateColumnIndex : 0;
 
         processedRows.sort((a, b) => {
-            const dateA = new Date(a[dateColumnIndex]);
-            const dateB = new Date(b[dateColumnIndex]);
-            return (currentState.sortOrder === 'newest') ? dateB - dateA : dateA - dateB;
+            // Karena ini string/angka, parser ke bentuk Int agar sort akurat.
+            const valA = parseInt(a[sortIndex]) || 0;
+            const valB = parseInt(b[sortIndex]) || 0;
+            
+            return (currentState.sortOrder === 'newest') ? valB - valA : valA - valB;
         });
 
         const totalRows = processedRows.length;
@@ -137,22 +137,54 @@ document.addEventListener('DOMContentLoaded', function() {
         const endIndex = startIndex + limit;
         const paginatedRows = processedRows.slice(startIndex, endIndex);
 
-        let headerHtml = '<tr><th>No.</th>';
-        data.headers.forEach(header => headerHtml += `<th>${header}</th>`);
-        headerHtml += '</tr>';
-        tableHeader.innerHTML = headerHtml;
+        // ✅ PERBAIKAN XSS: Buat Header dengan DOM Builder
+        tableHeader.replaceChildren();
+        const trHeader = document.createElement('tr');
+        
+        const thNo = document.createElement('th');
+        thNo.textContent = 'No.';
+        trHeader.appendChild(thNo);
 
-        let bodyHtml = '';
+        data.headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            trHeader.appendChild(th);
+        });
+        tableHeader.appendChild(trHeader);
+
+        // ✅ PERBAIKAN XSS: Buat Body dengan DOM Builder
+        tableBody.replaceChildren();
         if (paginatedRows.length === 0) {
-            bodyHtml = `<tr><td colspan="${data.headers.length + 1}" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            const trEmpty = tableBody.insertRow();
+            const tdEmpty = trEmpty.insertCell();
+            tdEmpty.colSpan = data.headers.length + 1;
+            tdEmpty.className = "text-center text-muted";
+            tdEmpty.textContent = "Data tidak ditemukan.";
         } else {
             paginatedRows.forEach((row, index) => {
-                bodyHtml += `<tr><td>${startIndex + index + 1}</td>`;
-                row.forEach(cell => bodyHtml += `<td>${cell}</td>`);
-                bodyHtml += '</tr>';
+                const tr = document.createElement('tr');
+                
+                // Tambahkan No
+                const tdNo = document.createElement('td');
+                tdNo.textContent = startIndex + index + 1;
+                tr.appendChild(tdNo);
+
+                // Tambahkan Data Sel
+                row.forEach(cellText => {
+                    const td = document.createElement('td');
+                    // Jika berisi elemen HTML (seperti label badge) maka pakai innerHTML
+                    // NAMUN: Karena array JSON ini di generate dari backend Anda, ini aman karena string HTMLnya statis
+                    // Jika teks ini murni input user dari DB, GANTI kembalil ke .textContent
+                    if(String(cellText).includes('<span') || String(cellText).includes('<a')) {
+                         td.innerHTML = cellText;
+                    } else {
+                         td.textContent = cellText;
+                    }
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
             });
         }
-        tableBody.innerHTML = bodyHtml;
 
         const startRecord = totalRows > 0 ? startIndex + 1 : 0;
         const endRecord = Math.min(endIndex, totalRows);
@@ -163,13 +195,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderPagination(totalItems, limit) {
         const totalPages = Math.ceil(totalItems / limit);
-        paginationControls.innerHTML = '';
+        paginationControls.replaceChildren(); // Pengganti innerHTML = ''
         if (totalPages <= 1) return;
 
         const createPageLink = (page, text, isDisabled = false, isActive = false) => {
             const li = document.createElement('li');
             li.className = `page-item ${isDisabled ? 'disabled' : ''} ${isActive ? 'active' : ''}`;
-            li.innerHTML = `<a class="page-link" href="#">${text}</a>`;
+            
+            // ✅ PERBAIKAN XSS: Ganti innerHTML paginasi
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = '#';
+            a.textContent = text;
+            li.appendChild(a);
+
             li.addEventListener('click', (e) => {
                 e.preventDefault();
                 if (!isDisabled) {

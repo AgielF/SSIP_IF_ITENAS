@@ -145,18 +145,30 @@ document.addEventListener('DOMContentLoaded', function() {
       return currentSort === 'newest' ? dateB - dateA : dateA - dateB;
     });
 
-    // Kosongkan container dan isi dengan item yang sudah difilter/disortir
-    galleryContainer.innerHTML = '';
+    // ✅ PERBAIKAN XSS: Kosongkan container menggunakan metode DOM yang aman
+    galleryContainer.replaceChildren();
+
     if (filteredItems.length > 0) {
       filteredItems.forEach(item => galleryContainer.appendChild(item));
     } else {
-      galleryContainer.innerHTML = `
-        <div class="col-12">
-            <div class="alert alert-light text-center border py-4 text-muted rounded-4">
-                <i class="fas fa-search fs-2 mb-2 text-secondary"></i><br>
-                Tidak ada media yang cocok dengan filter.
-            </div>
-        </div>`;
+      // ✅ PERBAIKAN XSS: Buat pesan error melalui createElement untuk mencegah injeksi script
+      const colDiv = document.createElement('div');
+      colDiv.className = 'col-12';
+
+      const alertDiv = document.createElement('div');
+      alertDiv.className = 'alert alert-light text-center border py-4 text-muted rounded-4';
+
+      const icon = document.createElement('i');
+      icon.className = 'fas fa-search fs-2 mb-2 text-secondary';
+      alertDiv.appendChild(icon);
+      
+      alertDiv.appendChild(document.createElement('br'));
+      
+      const textNode = document.createTextNode('Tidak ada media yang cocok dengan filter.');
+      alertDiv.appendChild(textNode);
+
+      colDiv.appendChild(alertDiv);
+      galleryContainer.appendChild(colDiv);
     }
   }
 
