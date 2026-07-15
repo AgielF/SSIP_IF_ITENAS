@@ -125,7 +125,7 @@ class Users extends BaseController
                     return redirect()->back()->with('error', 'Nama file tidak valid.');
                 }
 
-                $uploadPath = ROOTPATH . 'public/uploads/photos/' . $userId . '/';
+                $uploadPath = FCPATH . 'uploads/photos/' . $userId . '/';
                 if (!is_dir($uploadPath)) {
                     mkdir($uploadPath, 0755, true);
                 }
@@ -145,9 +145,9 @@ class Users extends BaseController
             
         } catch (\Exception $e) {
             if ($isAjax) {
-                return $this->response->setContentType('application/json')->setJSON(['success' => false, 'message' => 'Terjadi kesalahan sistem.']);
+                return $this->response->setContentType('application/json')->setJSON(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
             }
-            return redirect()->back()->with('error', 'Terjadi kesalahan sistem.')->withInput();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -232,7 +232,7 @@ class Users extends BaseController
                     return redirect()->back()->with('error', 'Nama file tidak valid.');
                 }
 
-                $uploadPath = ROOTPATH . 'public/uploads/photos/' . $id . '/';
+                $uploadPath = FCPATH . 'uploads/photos/' . $id . '/';
                 if (!is_dir($uploadPath)) {
                     mkdir($uploadPath, 0755, true);
                 }
@@ -290,9 +290,9 @@ class Users extends BaseController
             }
         } catch (\Exception $e) {
             if ($isAjax) {
-                return $this->response->setContentType('application/json')->setJSON(['success' => false, 'message' => 'Terjadi kesalahan sistem.']);
+                return $this->response->setContentType('application/json')->setJSON(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()]);
             }
-            return redirect()->back()->with('error', 'Terjadi kesalahan sistem.')->withInput();
+            return redirect()->back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage())->withInput();
         }
     }
 

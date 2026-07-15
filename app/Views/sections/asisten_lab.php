@@ -47,7 +47,7 @@
                                 <?= $a['role'] === 'admin' ? 'Kepala Laboratorium' : ucfirst(esc($a['role'] ?? '')) ?>
                             </div>
                             <?php if (!empty($a['foto'])): ?>
-                                <img src="/<?= esc($a['foto']) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>" onerror="this.src='https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>'">
+                                <img src="<?= base_url(esc($a['foto'])) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>" onerror="this.src='https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>'">
                             <?php else: ?>
                                 <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>">
                             <?php endif; ?>

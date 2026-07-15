@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'kelas' => $schedule['kelas'],
                 'lab' => $schedule['lab'],
                 'instructor' => $schedule['instructor'],
+                'assistants' => $schedule['assistants'],
                 'status' => $schedule['status']
             ]
         ];
@@ -64,7 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Waktu: ' + info.event.start.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) +
                 ' - ' + info.event.end.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + '\n' +
                 'Ruangan: ' + info.event.extendedProps.lab + '\n' +
-                'Asisten: ' + info.event.extendedProps.instructor + '\n' +
+                'Dosen: ' + info.event.extendedProps.instructor + '\n' +
+                'Asisten: ' + info.event.extendedProps.assistants + '\n' +
                 'Status: ' + info.event.extendedProps.status
             );
         },
@@ -83,6 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 'Waktu: ' + info.event.start.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) +
                                 ' - ' + info.event.end.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + '<br>' +
                                 'Ruangan: ' + info.event.extendedProps.lab + '<br>' +
+                                'Asisten: ' + info.event.extendedProps.assistants + '<br>' +
                                 'Status: ' + info.event.extendedProps.status;
             tooltip.style.position = 'absolute';
             tooltip.style.background = 'rgba(0,0,0,0.8)';

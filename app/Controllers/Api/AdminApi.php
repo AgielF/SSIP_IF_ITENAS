@@ -543,14 +543,15 @@ class AdminApi extends ResourceController
         $dateTo = $this->request->getVar('date_to');
 
         // Build query with filters
-        $builder = $this->jadwalModel->select('jadwal.*, events.nama_event')
-            ->join('events', 'events.id_event = jadwal.id_event');
+        $builder = $this->jadwalModel->select('jadwal.*, events.nama_event, ruangan.nama_ruangan as ruangan')
+            ->join('events', 'events.id_event = jadwal.id_event')
+            ->join('ruangan', 'ruangan.id_ruangan = jadwal.id_ruangan', 'left');
 
         // Apply filters if provided
         if ($search) {
             $builder->groupStart()
                 ->like('events.nama_event', $search)
-                ->orLike('jadwal.ruangan', $search)
+                ->orLike('ruangan.nama_ruangan', $search)
                 ->groupEnd();
         }
 

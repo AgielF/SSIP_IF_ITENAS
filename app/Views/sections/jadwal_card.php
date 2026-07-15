@@ -84,15 +84,12 @@
                             ?>
                             <tr data-order="<?= $sortableDate ?>">
                                 <td></td> <td><?= esc($schedule['title']) ?></td>
-                                <td>AA</td>
+                                <td><?= esc($schedule['kelas'] ?: '-') ?></td>
                                 <td><?= esc(strtoupper(explode(',', $schedule['date'])[0])) ?></td>
                                 <td><?= esc($schedule['time']) ?></td>
                                 <td><?= esc($schedule['instructor']) ?></td>
                                 <td><?= esc($schedule['lab']) ?></td>
                                 <td>KULIAH</td>
-                                
-                                
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>

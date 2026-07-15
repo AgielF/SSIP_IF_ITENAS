@@ -33,5 +33,6 @@ class DatabaseSeeder extends Seeder
     $this->call('PesertaPraktikumSeeder');
     $this->call('AsistenPeriodeSeeder');
     $this->call('AsistenJadwalSeeder');
+    $this->call('RuanganSeeder');
 }
 }

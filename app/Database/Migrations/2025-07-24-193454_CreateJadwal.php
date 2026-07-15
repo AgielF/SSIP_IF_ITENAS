@@ -27,9 +27,11 @@ class CreateJadwalTable extends Migration
             'waktu_selesai' => [
                 'type' => 'TIME'
             ],
-            'ruangan' => [
-                'type' => 'VARCHAR',
-                'constraint' => 100
+            'id_ruangan' => [
+                'type' => 'INT',
+                'constraint' => 5,
+                'unsigned' => true,
+                'null' => true
             ],
             'kelas' => [
                 'type' => 'VARCHAR',
@@ -47,6 +49,7 @@ class CreateJadwalTable extends Migration
         ]);
         $this->forge->addKey('id_jadwal', true);
         $this->forge->addForeignKey('id_event', 'events', 'id_event', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('id_ruangan', 'ruangan', 'id_ruangan', 'CASCADE', 'RESTRICT');
         $this->forge->createTable('jadwal');
     }
 

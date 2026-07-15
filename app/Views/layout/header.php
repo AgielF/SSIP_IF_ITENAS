@@ -114,23 +114,24 @@ $isDosen   = ($roleName === 'Dosen');
         }
         .sidebar-nav .nav-link i { width: 20px; margin-right: 15px; text-align: center; }
         
-        /* === STYLE BARU UNTUK DROPDOWN KE SAMPING === */
         .sidebar-nav .nav-item.dropdown {
-            position: relative; /* Diperlukan untuk positioning submenu */
+            position: relative;
         }
         .sidebar-nav .dropdown-menu {
-            position: absolute;
-            top: 0;
-            left: 100%; /* Muncul di sebelah kanan item induk */
-            margin-left: 10px; /* Jarak dari sidebar */
-            margin-top: 0;
-            min-width: 200px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #eee;
-            border-radius: 8px;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            margin-left: 35px; /* Indentasi submenu */
+            margin-right: 15px;
+            margin-top: 5px;
+            box-shadow: none;
+            border: none;
+            background-color: transparent;
+            width: auto;
         }
         .sidebar-nav .dropdown-item { padding: 8px 15px; color: #555; border-radius: 8px; }
-        .sidebar-nav .dropdown-item:hover { background-color: #eef2f7; }
+        .sidebar-nav .dropdown-item:hover { background-color: #eef2f7; color: #0d6efd; }
         /* === AKHIR STYLE BARU === */
 
         /* Overlay */
@@ -246,6 +247,7 @@ $isDosen   = ($roleName === 'Dosen');
                 <?php if ($isAdmin): ?>
                     <li><a class="dropdown-item" href="/asisten_admin">Kelola Users</a></li>
                     <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
+                    <li><a class="dropdown-item" href="/ruangan_admin">Kelola Ruangan</a></li>
                     <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
                     <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
                     <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>

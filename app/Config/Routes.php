@@ -124,6 +124,12 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->post('/events/store', 'EventsController::store');   
     $routes->post('/events/update/(:num)', 'EventsController::update/$1'); 
     $routes->post('/events/delete/(:num)', 'EventsController::delete/$1');  
+
+    // --- CRUD RUANGAN ---
+    $routes->get('/ruangan_admin', 'Admin\Ruangan::index');
+    $routes->post('/admin/ruangan/create', 'Admin\Ruangan::create');
+    $routes->post('/admin/ruangan/update/(:num)', 'Admin\Ruangan::update/$1');
+    $routes->post('/admin/ruangan/delete/(:num)', 'Admin\Ruangan::delete/$1');
 });
 
 

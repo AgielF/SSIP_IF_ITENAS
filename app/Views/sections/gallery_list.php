@@ -1,12 +1,4 @@
-<!doctype html>
-<html lang="id">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><?= esc($title ?? 'Galeri & Media') ?></title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
-  <style>
+<style>
     /* Menjaga rasio gambar dan video tetap 16:9 agar rapi */
     .gallery-card .card-img-top { 
         aspect-ratio: 16/9; 
@@ -32,9 +24,8 @@
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
-  </style>
-</head>
-<body class="bg-light">
+</style>
+
 
 <div class="container my-5">
   <div class="mb-4 text-center text-md-start">
@@ -118,7 +109,7 @@
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const galleryFilterButtons = document.querySelectorAll('.gallery-filter-controls button');
@@ -185,5 +176,3 @@ document.addEventListener('DOMContentLoaded', function() {
   gallerySortSelect.addEventListener('change', updateGalleryView);
 });
 </script>
-</body>
-</html>

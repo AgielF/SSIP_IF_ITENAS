@@ -73,7 +73,7 @@
         <div class="row align-items-center">
             <div class="col-md-3 text-center">
                 <?php if (!empty($user['foto'])): ?>
-                    <img src="/<?= esc($user['foto']) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>" onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
+                    <img src="<?= base_url(esc($user['foto'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>" onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
                 <?php else: ?>
                     <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>">
                 <?php endif; ?>

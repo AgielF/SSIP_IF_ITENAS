@@ -77,15 +77,20 @@
         </div>
     </div>
 
-    <ul class="nav nav-tabs" id="project-nav">
-        <li class="nav-item">
-            <a class="nav-link active" href="#">Daftar Jadwal</a>
+    <ul class="nav nav-tabs" id="project-nav" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="jadwal-tab" data-bs-toggle="tab" data-bs-target="#jadwal-tab-pane" type="button" role="tab" aria-controls="jadwal-tab-pane" aria-selected="true">Daftar Jadwal</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="ruangan-tab" data-bs-toggle="tab" data-bs-target="#ruangan-tab-pane" type="button" role="tab" aria-controls="ruangan-tab-pane" aria-selected="false">Status Ruangan</button>
         </li>
     </ul>
 
     <main class="fm-content card rounded-0 rounded-bottom border-top-0">
         <div class="card-body">
-            <div id="printable-area">
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="jadwal-tab-pane" role="tabpanel" aria-labelledby="jadwal-tab" tabindex="0">
+                    <div id="printable-area">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                     <h4 class="mb-0">Daftar Jadwal</h4>
                     
@@ -194,6 +199,92 @@
             <nav>
                 <ul class="pagination pagination-sm justify-content-end" id="pagination-controls"></ul>
             </nav>
+                </div>
+                <div class="tab-pane fade" id="ruangan-tab-pane" role="tabpanel" aria-labelledby="ruangan-tab" tabindex="0">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Status & Ketersediaan Ruangan</h4>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table fm-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID Ruangan</th>
+                                    <th>Nama Ruangan</th>
+                                    <th>Kapasitas</th>
+                                    <th>Status Penggunaan (Hari Ini)</th>
+                                    <th>Daftar Jadwal Penggunaan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($ruangans)) : ?>
+                                    <?php foreach ($ruangans as $ruangan): ?>
+                                        <?php
+                                        $roomSchedules = [];
+                                        $hasScheduleToday = false;
+                                        $isOccupiedNow = false;
+                                        $todayDate = date('Y-m-d');
+                                        $currentTime = date('H:i:s');
+                                        
+                                        if (!empty($schedules['rows'])) {
+                                            foreach ($schedules['rows'] as $row) {
+                                                if (esc($row[6]) === $ruangan['nama_ruangan']) {
+                                                    $roomSchedules[] = $row;
+                                                    if ($row[10] === $todayDate) {
+                                                        $hasScheduleToday = true;
+                                                        if ($currentTime >= $row[11] && $currentTime <= $row[12]) {
+                                                            $isOccupiedNow = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        
+                                        usort($roomSchedules, function($a, $b) {
+                                            return strtotime($a[10] . ' ' . explode(' - ', $a[4])[0]) - strtotime($b[10] . ' ' . explode(' - ', $b[4])[0]);
+                                        });
+                                        ?>
+                                        <tr>
+                                            <td><?= esc($ruangan['id_ruangan']) ?></td>
+                                            <td><strong><?= esc($ruangan['nama_ruangan']) ?></strong></td>
+                                            <td><?= esc($ruangan['kapasitas']) ?> orang</td>
+                                            <td>
+                                                <?php if ($isOccupiedNow): ?>
+                                                    <span class="badge bg-danger"><i class="fas fa-calendar-times me-1"></i> Sedang Digunakan</span>
+                                                <?php elseif ($hasScheduleToday): ?>
+                                                    <span class="badge bg-warning text-dark"><i class="fas fa-calendar-alt me-1"></i> Terpakai Hari Ini</span>
+                                                <?php elseif (!empty($roomSchedules)): ?>
+                                                    <span class="badge bg-primary"><i class="fas fa-calendar-check me-1"></i> Tersedia (Ada Jadwal Mendatang)</span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i> Kosong / Tersedia</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if (!empty($roomSchedules)): ?>
+                                                    <ul class="list-unstyled mb-0 small">
+                                                        <?php foreach ($roomSchedules as $s): ?>
+                                                            <li class="mb-1 border-bottom pb-1">
+                                                                <i class="far fa-clock text-muted me-1"></i>
+                                                                <strong><?= esc($s[3]) ?></strong> (<?= esc($s[4]) ?>): <br>
+                                                                <span class="text-secondary"><?= esc($s[1]) ?> - Kelas <?= esc($s[2]) ?></span>
+                                                            </li>
+                                                        <?php endforeach; ?>
+                                                    </ul>
+                                                <?php else: ?>
+                                                    <span class="text-muted small">Belum ada jadwal penggunaan</span>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Data ruangan tidak ditemukan.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </div>
@@ -230,7 +321,12 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Ruangan</label>
-                    <input type="text" name="ruangan" class="form-control" required>
+                    <select name="ruangan" class="form-control" required>
+                        <option value="">-- Pilih Ruangan --</option>
+                        <?php foreach ($ruangans as $ruangan): ?>
+                            <option value="<?= esc($ruangan['nama_ruangan']) ?>"><?= esc($ruangan['nama_ruangan']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Kelas</label>
@@ -285,7 +381,12 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Ruangan</label>
-                    <input type="text" name="ruangan" id="edit-ruangan" class="form-control" required>
+                    <select name="ruangan" id="edit-ruangan" class="form-control" required>
+                        <option value="">-- Pilih Ruangan --</option>
+                        <?php foreach ($ruangans as $ruangan): ?>
+                            <option value="<?= esc($ruangan['nama_ruangan']) ?>"><?= esc($ruangan['nama_ruangan']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Kelas</label>
@@ -334,6 +435,102 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const allSchedules = <?= json_encode(array_map(function($row) {
+        return [
+            'id_jadwal' => (int)$row[0],
+            'title' => $row[1],
+            'tanggal' => $row[10],
+            'waktu_mulai' => $row[11],
+            'waktu_selesai' => $row[12],
+            'ruangan' => $row[13]
+        ];
+    }, $schedules['rows'] ?? [])) ?>;
+
+    function validateRooms(modal) {
+        const dateInput = modal.querySelector('[name="tanggal"]');
+        const startInput = modal.querySelector('[name="waktu_mulai"]');
+        const endInput = modal.querySelector('[name="waktu_selesai"]');
+        const roomSelect = modal.querySelector('[name="ruangan"]');
+        const idInput = modal.querySelector('[name="id_jadwal"]') || modal.querySelector('#edit-id');
+        
+        if (!dateInput || !startInput || !endInput || !roomSelect) return;
+        
+        const dateVal = dateInput.value;
+        const startVal = startInput.value;
+        const endVal = endInput.value;
+        const currentId = idInput ? parseInt(idInput.value, 10) : null;
+        
+        const selectedRoom = roomSelect.value;
+        let selectedRoomConflict = false;
+        
+        Array.from(roomSelect.options).forEach(option => {
+            if (option.value === "") return;
+            
+            const originalText = option.getAttribute('data-original-text') || option.textContent.split(' (')[0];
+            if (!option.getAttribute('data-original-text')) {
+                option.setAttribute('data-original-text', originalText);
+            }
+            
+            if (!dateVal || !startVal || !endVal) {
+                option.textContent = originalText;
+                option.disabled = false;
+                return;
+            }
+            
+            const conflict = allSchedules.find(s => {
+                if (s.id_jadwal === currentId) return false;
+                if (s.tanggal !== dateVal) return false;
+                if (s.ruangan !== option.value) return false;
+                
+                const start1 = startVal;
+                const end1 = endVal;
+                const start2 = s.waktu_mulai.substring(0, 5);
+                const end2 = s.waktu_selesai.substring(0, 5);
+                
+                return (start1 < end2 && end1 > start2);
+            });
+            
+            if (conflict) {
+                option.textContent = `${originalText} (TERPAKAI oleh ${conflict.title})`;
+                option.disabled = true;
+                if (option.value === selectedRoom) {
+                    selectedRoomConflict = true;
+                }
+            } else {
+                option.textContent = originalText;
+                option.disabled = false;
+            }
+        });
+        
+        if (selectedRoomConflict) {
+            roomSelect.value = "";
+            let warningDiv = modal.querySelector('.room-warning');
+            if (!warningDiv) {
+                warningDiv = document.createElement('div');
+                warningDiv.className = 'alert alert-danger py-2 mt-2 room-warning small';
+                roomSelect.parentNode.appendChild(warningDiv);
+            }
+            warningDiv.textContent = `Ruangan ${selectedRoom} bentrok pada jam tersebut dan telah dikosongkan.`;
+        } else {
+            const warningDiv = modal.querySelector('.room-warning');
+            if (warningDiv) warningDiv.remove();
+        }
+    }
+
+    // Setup event listeners for forms validation
+    ['addDataModal', 'editDataModal'].forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            ['tanggal', 'waktu_mulai', 'waktu_selesai'].forEach(name => {
+                const input = modal.querySelector(`[name="${name}"]`);
+                if (input) {
+                    input.addEventListener('change', () => validateRooms(modal));
+                    input.addEventListener('input', () => validateRooms(modal));
+                }
+            });
+        }
+    });
+
     // Toast notification handling
     <?php if (session()->getFlashdata('success')): ?>
         const successToast = new bootstrap.Toast(document.getElementById('successToast'));
@@ -446,6 +643,9 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("edit-kelas").value = kelas;
 
             document.getElementById("editForm").action = "<?= site_url('jadwal/update/') ?>" + id;
+            
+            // Trigger room availability check
+            validateRooms(document.getElementById('editDataModal'));
         });
     });
 

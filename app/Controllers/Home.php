@@ -51,12 +51,12 @@ class Home extends BaseController
                 $status = 'Today'; $status_color = 'warning';
             }
             
-            // Get assistants for this schedule from our pre-fetched data
-            $asisten = $asistenBySchedule[$item['id_jadwal']] ?? [];
+            // Get asisten untuk jadwal spesifik
+            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
             $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
             
             $processedSchedules[] = [
-                'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
+                'title' => $item['nama_event'], 'lab' => $item['ruangan'] ?? '', 'status' => $status,
                 'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
                 'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
                 'instructor' => $instructor
@@ -163,7 +163,7 @@ class Home extends BaseController
             $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
             $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
             $processedSchedules[] = [
-                'title' => $item['nama_event'], 'lab' => $item['ruangan'], 'status' => $status,
+                'title' => $item['nama_event'], 'lab' => $item['ruangan'] ?? '', 'status' => $status,
                 'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
                 'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
                 'instructor' => $instructor

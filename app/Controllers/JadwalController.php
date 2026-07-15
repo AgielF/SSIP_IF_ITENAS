@@ -76,19 +76,23 @@ class JadwalController extends BaseController
             ->join('roles', 'roles.id = users.role_id')
             ->where('users.role_id', 2) 
             ->findAll();
+        
+        $db = \Config\Database::connect();
+        $ruangans = $db->table('ruangan')->orderBy('nama_ruangan', 'ASC')->get()->getResultArray();
 
         $data = [
             'title'      => 'Daftar Jadwal Lab',
             'schedules'  => ['rows' => $rows],
             'events'     => $this->eventModel->findAll(),
-            'assistants' => $assistants
+            'assistants' => $assistants,
+            'ruangans'   => $ruangans
         ];
 
         return view('jadwal_admin_view', $data);
     }
 
     /**
-     * 🟢 CREATE JADWAL (Aman dari SQLMap & Crash)
+     *  CREATE JADWAL 
      */
     public function store()
     {
@@ -125,7 +129,8 @@ class JadwalController extends BaseController
             ];
 
             // Cek konflik ruangan (Aman karena data sudah tervalidasi)
-            $conflict = $this->jadwalModel->where('ruangan', $data['ruangan'])
+            $conflict = $this->jadwalModel->join('ruangan', 'ruangan.id_ruangan = jadwal.id_ruangan')
+                ->where('ruangan.nama_ruangan', $data['ruangan'])
                 ->where('tanggal', $data['tanggal'])
                 ->where('waktu_mulai <', $data['waktu_selesai'])
                 ->where('waktu_selesai >', $data['waktu_mulai'])
@@ -185,7 +190,8 @@ class JadwalController extends BaseController
             ];
 
             // Cek konflik ruangan, kecualikan jadwal ini sendiri
-            $conflict = $this->jadwalModel->where('ruangan', $data['ruangan'])
+            $conflict = $this->jadwalModel->join('ruangan', 'ruangan.id_ruangan = jadwal.id_ruangan')
+                ->where('ruangan.nama_ruangan', $data['ruangan'])
                 ->where('tanggal', $data['tanggal'])
                 ->where('waktu_mulai <', $data['waktu_selesai'])
                 ->where('waktu_selesai >', $data['waktu_mulai'])
