@@ -5,9 +5,8 @@
             <!-- Slide 1 -->
             <div class="carousel-item active">
                 <div class="container">
-                    <h1 class="display-4">Info Lab. SSIP</h1>
-                    <p class="lead">Bagi praktikan yang belum membawa pas foto, diharapkan untuk membawa pas foto ketika praktikum modul pertama.</p>
-                    <p>Mohon persiapkan dengan baik.</p>
+                    <h1 class="display-4">Informasi Lab. SSIP</h1>
+                
                 </div>
             </div>
             <!-- Slide 2 -->
