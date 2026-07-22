@@ -9,13 +9,47 @@ class JadwalModel extends Model
 {
     protected $table = 'jadwal';
     protected $primaryKey = 'id_jadwal';
-    protected $allowedFields = ['id_event', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'id_ruangan', 'kelas', 'created_at', 'updated_at'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['id_event', 'tanggal', 'waktu_mulai', 'waktu_selesai', 'id_ruangan', 'kelas'];
 
     public function getJadwalWithDetails()
     {
         return $this->select('events.nama_event')
                     ->join('events', 'events.id_event = jadwal.id_event')
                     ->findAll();
+    }
+
+    /**
+     * [T2.1] Method baru yang menggantikan pola N+1 query.
+     *
+     * Mengambil data jadwal LENGKAP beserta nama-nama asisten yang ditugaskan
+     * dalam SATU query tunggal menggunakan GROUP_CONCAT + JOIN.
+     * Ini menggantikan pola lama: 1 query utama + N query asisten per baris.
+     *
+     * Referensi: Refactoring (Martin Fowler) — Replace Loop with Pipeline.
+     *
+     * @param  int|null $limit Batasi jumlah jadwal yang diambil (null = semua).
+     * @return array Data jadwal yang sudah teragregasi.
+     */
+    public function getJadwalWithAsisten(?int $limit = null): array
+    {
+        $builder = $this->db->table('jadwal')
+            ->select('jadwal.*,
+                      events.nama_event,
+                      ruangan.nama_ruangan AS ruangan,
+                      GROUP_CONCAT(users.nama ORDER BY users.nama SEPARATOR ", ") AS nama_asisten')
+            ->join('events', 'events.id_event = jadwal.id_event', 'left')
+            ->join('ruangan', 'ruangan.id_ruangan = jadwal.id_ruangan', 'left')
+            ->join('asisten_jadwal', 'asisten_jadwal.id_jadwal = jadwal.id_jadwal', 'left')
+            ->join('users', 'users.id = asisten_jadwal.id_user', 'left')
+            ->groupBy('jadwal.id_jadwal')
+            ->orderBy('jadwal.tanggal', 'ASC');
+
+        if ($limit !== null) {
+            $builder->limit($limit);
+        }
+
+        return $builder->get()->getResultArray();
     }
 
     public function find($id = null)
@@ -46,9 +80,7 @@ class JadwalModel extends Model
         // If room doesn't exist, create it
         $builder->insert([
             'nama_ruangan' => $namaRuangan,
-            'kapasitas'    => 30, // default kapasitas
-            'created_at'   => date('Y-m-d H:i:s'),
-            'updated_at'   => date('Y-m-d H:i:s')
+            'kapasitas'    => 30, // default kapasitas   => date('Y-m-d H:i:s')   => date('Y-m-d H:i:s')
         ]);
         return (int)$db->insertID();
     }

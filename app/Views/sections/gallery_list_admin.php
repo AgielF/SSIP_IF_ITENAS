@@ -157,6 +157,7 @@
 <div class="modal fade" id="addDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form class="modal-content" action="<?= site_url('galeri_admin/create') ?>" method="post" enctype="multipart/form-data">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Media Galeri</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -199,6 +200,7 @@
 <div class="modal fade" id="editDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="post" id="editForm" class="modal-content" enctype="multipart/form-data">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Edit Media Galeri</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

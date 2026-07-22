@@ -88,7 +88,6 @@ class ProyekRisetController extends BaseController
                 'tahun_selesai' => $this->request->getPost('tahun_selesai'),
                 'status'        => $this->request->getPost('status'),
                 'id_user'       => $selectedUserId,
-                'created_at'    => date('Y-m-d H:i:s')
             ];
 
             $this->proyekRisetModel->save($data);
@@ -152,7 +151,6 @@ class ProyekRisetController extends BaseController
                 'tahun_selesai' => $this->request->getPost('tahun_selesai'),
                 'status'        => $this->request->getPost('status'),
                 'id_user'       => $selectedUserId,
-                'updated_at'    => date('Y-m-d H:i:s')
             ];
 
             $this->proyekRisetModel->update($id, $data);

@@ -79,7 +79,7 @@
         <p class="text-muted small mb-3 record-info">Menampilkan data...</p>
         
         <div class="table-responsive">
-            <table id="adminTable" class="table table-hover" style="width:100%">
+            <table id="adminTable" class="table table-hover align-middle" style="width:100%">
                 <thead>
                     <tr>
                         <th>No.</th>
@@ -88,7 +88,8 @@
                         <th>Jurusan</th>
                         <th>Role</th>
                         <th>Periode</th> 
-                        <th class="non-printable">Aksi</th>
+                        <th class="non-printable text-center">Status</th>
+                        <th class="non-printable text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -115,9 +116,33 @@
                                 <td>
                                     <span class="badge bg-info text-dark"><?= esc($person['nama_periode'] ?? '-') ?></span>
                                 </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <button class="btn btn-light btn-sm edit-btn" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>">
+                                
+                                <!-- Field Status di Sebelah Kiri Kolom Aksi -->
+                                <td class="text-center">
+                                    <?php if ($person['role_id'] == 2 && !empty($person['id_asisten_periode'])) : ?>
+                                        <?php 
+                                            $statusTugas = $person['status_tugas'] ?? 'belum selesai';
+                                            $isSelesai   = ($statusTugas === 'selesai');
+                                            $btnClass    = $isSelesai ? 'btn-success' : 'btn-secondary';
+                                            $textLabel   = $isSelesai ? 'Selesai' : 'Masih Berjalan';
+                                            $tooltipMsg  = $isSelesai ? 'Status: Selesai (Klik untuk ubah ke Masih Berjalan)' : 'Status: Masih Berjalan (Klik untuk ubah ke Selesai)';
+                                        ?>
+                                        <button type="button" 
+                                                class="btn btn-sm <?= $btnClass ?> text-white text-nowrap px-2 py-1" 
+                                                title="<?= $tooltipMsg ?>" 
+                                                onclick="toggleStatusTugas(<?= $person['id_asisten_periode'] ?>, '<?= $statusTugas ?>')">
+                                            <?= $textLabel ?>
+                                        </button>
+                                    <?php else: ?>
+                                        <span class="text-muted small">-</span>
+                                    <?php endif; ?>
+                                </td>
+
+                                <!-- Kolom Aksi -->
+                                <td class="text-center">
+                                    <div class="btn-group d-flex justify-content-center">
+                                        <!-- Tombol Edit & Delete Bawaan -->
+                                        <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
@@ -169,6 +194,43 @@
 </div>
 
 <script>
+// --- FUNGSI AJAX STATUS TUGAS SERTIFIKAT ---
+function toggleStatusTugas(idAsistenPeriode, statusSaatIni) {
+    let statusBaru = (statusSaatIni === 'selesai') ? 'belum selesai' : 'selesai';
+    
+    if (!confirm(`Ubah status tugas sertifikat menjadi "${statusBaru.toUpperCase()}"?`)) {
+        return;
+    }
+
+    const csrfName = '<?= csrf_token() ?>';
+    const csrfHash = '<?= csrf_hash() ?>';
+
+    fetch(`<?= site_url('sertifikat/status/') ?>${idAsistenPeriode}`, {
+        method: 'POST', 
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ 
+            status_tugas: statusBaru,
+            [csrfName]: csrfHash
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            location.reload(); 
+        } else {
+            alert('Gagal: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan koneksi saat mengubah status.');
+    });
+}
+
+// --- FUNGSI UI BAWAAN ---
 const listPeriode = <?= json_encode($listPeriode ?? []) ?>;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -229,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tableBody.innerHTML = ''; 
         if (paginatedRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
                 row.cells[0].textContent = startIndex + index + 1; 

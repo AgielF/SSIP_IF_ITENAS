@@ -236,11 +236,11 @@ $isDosen   = ($roleName === 'Dosen');
             </a>
         </li>
 
-        <!-- ===== DROPDOWN ADMIN (HANYA JIKA LOGIN) ===== -->
+       <!-- ===== DROPDOWN DINAMIS BERDASARKAN ROLE (HANYA JIKA LOGIN) ===== -->
         <?php if ($user && ($isAdmin || $isDosen || $isAsisten)): ?>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                <i class="fas fa-user-shield"></i> Admin
+                <i class="fas fa-user-shield"></i> Menu <?= esc($roleName) ?>
             </a>
             <ul class="dropdown-menu">
 
@@ -259,6 +259,7 @@ $isDosen   = ($roleName === 'Dosen');
                     <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
                     <li><a class="dropdown-item" href="/visi-misi_admin">Kelola Content Visi Misi</a></li>
                     <li><a class="dropdown-item" href="/periode_admin">Kelola Periode Asisten</a></li>
+                    <li><a class="dropdown-item" href="/sertifikat_admin">Kelola Sertifikat</a></li>
 
                 <?php elseif ($isDosen): ?>
                     <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
@@ -267,12 +268,12 @@ $isDosen   = ($roleName === 'Dosen');
 
                 <?php elseif ($isAsisten): ?>
                     <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
+                    <li><a class="dropdown-item" href="/sertifikat">Klaim Sertifikat</a></li>
                 <?php endif; ?>
 
             </ul>
         </li>
         <?php endif; ?>
-
     </ul>
 </aside>
 

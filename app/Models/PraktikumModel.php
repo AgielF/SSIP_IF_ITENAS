@@ -8,5 +8,6 @@ class PraktikumModel extends Model
 {
     protected $table = 'praktikum';
     protected $primaryKey = 'id_prak';
-    protected $allowedFields = ['id_user', 'id_jadwal', 'galeri_prak', 'desc_aturan', 'created_at', 'updated_at'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['id_user', 'id_jadwal', 'galeri_prak', 'desc_aturan'];
 } 

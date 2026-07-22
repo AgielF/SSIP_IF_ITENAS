@@ -71,8 +71,6 @@ class Ruangan extends BaseController
         $data = [
             'nama_ruangan' => $this->request->getPost('nama_ruangan'),
             'kapasitas'    => (int)$this->request->getPost('kapasitas'),
-            'created_at'   => date('Y-m-d H:i:s'),
-            'updated_at'   => date('Y-m-d H:i:s')
         ];
 
         // Check if name is already taken
@@ -93,7 +91,6 @@ class Ruangan extends BaseController
         $data = [
             'nama_ruangan' => $this->request->getPost('nama_ruangan'),
             'kapasitas'    => (int)$this->request->getPost('kapasitas'),
-            'updated_at'   => date('Y-m-d H:i:s')
         ];
 
         // Check if name is already taken by another room

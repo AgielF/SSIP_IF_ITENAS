@@ -6,6 +6,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
 use Config\Services;
+use App\Libraries\JwtHelper;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -45,16 +46,13 @@ class AdminFilter implements FilterInterface
         }
 
         try {
-            $jwtSecret = getenv('JWT_SECRET');
-            if (empty($jwtSecret) || strlen($jwtSecret) < 32) {
-                log_message('error', 'JWT_SECRET not set or too short! This is a security risk.');
-                if (ENVIRONMENT === 'production') {
-                    throw new \RuntimeException('JWT_SECRET must be configured with minimum 32 characters in production environment');
-                }
-                $jwtSecret = bin2hex(random_bytes(32)); // Generate secure fallback for development
-            }
+            // [T1.2] Gunakan JwtHelper terpusat — tidak ada lagi hardcoded fallback.
+            // Referensi: OWASP A02 Cryptographic Failures.
+            $jwtSecret = JwtHelper::getSecretKey();
             $decoded = JWT::decode($token, new Key($jwtSecret, 'HS256'));
 
+            // 🛑 TAMBAHKAN BARIS INI UNTUK MENGINTIP ISI TOKEN:
+            // dd($decoded);
             // 🔹 cek role admin
             if ($decoded->role_id != 1) {
                 // Check if API or AJAX

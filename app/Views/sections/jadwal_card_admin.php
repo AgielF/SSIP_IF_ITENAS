@@ -412,6 +412,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-white shadow-lg border">
             <form id="assignAsistenForm" method="post">
+                <?= csrf_field() ?>
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Assign Asisten ke Jadwal</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>

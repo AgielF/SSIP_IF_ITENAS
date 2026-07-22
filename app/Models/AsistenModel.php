@@ -8,5 +8,6 @@ class AsistenModel extends Model
 {
     protected $table = 'asisten_jadwal';
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id_jadwal', 'id_user', 'created_at', 'updated_at'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['id_jadwal', 'id_user'];
 }

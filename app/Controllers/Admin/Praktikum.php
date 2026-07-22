@@ -54,8 +54,6 @@ class Praktikum extends BaseController
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->praktikumModel->save($data)) {
@@ -91,7 +89,6 @@ class Praktikum extends BaseController
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->praktikumModel->update($id, $data)) {

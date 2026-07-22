@@ -8,5 +8,6 @@ class BeritaModel extends Model
 {
     protected $table = 'berita';
     protected $primaryKey = 'id_berita';
-    protected $allowedFields = ['judul', 'konten', 'kategori', 'tanggal', 'id_user', 'created_at', 'updated_at'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['judul', 'konten', 'kategori', 'tanggal', 'id_user'];
 } 

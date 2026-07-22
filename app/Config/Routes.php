@@ -19,12 +19,12 @@ $routes->get('/publikasi-ilmiah', 'PublikasiController::index');
 $routes->get('/galeri', 'GaleriUmumController::index');
 $routes->get('/repositori', 'Home::repositori');
 $routes->get('/rekrutmen', 'RekrutController::index');
-$routes->get('/modul_praktikum', 'modulPraktikumController::index');
+$routes->get('/modul_praktikum', 'ModulPraktikumController::index');
 $routes->get('/organisasi', 'OrganizationController::index', ['filter' => 'pagecache']);
 
 // Modul Praktikum - File Handling
-$routes->get('modul-praktikum/preview/(:any)', 'modulPraktikumController::preview/$1');
-$routes->get('modul-praktikum/download/(:any)', 'modulPraktikumController::download/$1');
+$routes->get('modul-praktikum/preview/(:any)', 'ModulPraktikumController::preview/$1');
+$routes->get('modul-praktikum/download/(:any)', 'ModulPraktikumController::download/$1');
 
 // Detail & Profil
 $routes->get('/topic_detail/(:segment)', 'TopicController::detail/$1');
@@ -65,20 +65,20 @@ $routes->get('logout', 'AuthUi::logout');
 // =========================================================================
 // 🛡️ ROLE: ADMIN (ROLE 1) ONLY
 // =========================================================================
-$routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
+$routes->group('', ['filter' => ['admin', 'session_security']], function($routes) {
     
     // --- DASHBOARD VIEWS ---
-
-    // Arahkan dashboard asisten langsung ke Admin\Users
     $routes->get('/asisten_admin', 'Admin\Users::asistenAdmin');
     $routes->get('/galeri_admin', 'GaleriUmumController::admin');
     $routes->get('/repositori_admin','Home::repositori_admin');
     $routes->get('/rekrutmen_admin','RekrutController::admin');
     $routes->get('/berita_admin','BeritaController::admin');
-    $routes->get('/peserta-praktikum_admin','PesertaPraktikumController::admin');
     $routes->get('/events_admin','EventsController::admin');
-    $routes->get('/modul_praktikum_admin','modulPraktikumController::admin');
+    $routes->get('/modul_praktikum_admin','ModulPraktikumController::admin');
     $routes->get('visi-misi_admin','VisiMisiController::index');
+    
+    // [UPDATE] Tampilan Konfigurasi Sertifikat untuk Admin
+    $routes->get('/sertifikat_admin', 'SertifikatController::admin');
 
     // --- CRUD PERIODE ---
     $routes->get('/periode_admin', 'PeriodeController::index');
@@ -90,7 +90,6 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->post('/admin/users/create', 'Admin\Users::create');
     $routes->post('/admin/users/update/(:num)', 'Admin\Users::update/$1');
     $routes->post('/admin/users/delete/(:num)', 'Admin\Users::delete/$1');
-
 
     // --- CRUD REKRUTMEN ---
     $routes->get('rekrutmen/create', 'RekrutController::create');     
@@ -105,9 +104,9 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->post('galeri_admin/delete/(:num)', 'GaleriUmumController::delete/$1');
 
     // --- CRUD MODUL PRAKTIKUM ---
-    $routes->post('modul-praktikum/create', 'modulPraktikumController::create');
-    $routes->post('modul-praktikum/update/(:num)', 'modulPraktikumController::update/$1');
-    $routes->post('modul-praktikum/delete/(:num)', 'modulPraktikumController::delete/$1');
+    $routes->post('modul-praktikum/create', 'ModulPraktikumController::create');
+    $routes->post('modul-praktikum/update/(:num)', 'ModulPraktikumController::update/$1');
+    $routes->post('modul-praktikum/delete/(:num)', 'ModulPraktikumController::delete/$1');
 
     // --- CRUD BERITA ---
     $routes->post('berita/store', 'BeritaController::store');   
@@ -130,26 +129,42 @@ $routes->group('', ['filter' => 'admin', 'middleware' => 'SessionSecurityMiddlew
     $routes->post('/admin/ruangan/create', 'Admin\Ruangan::create');
     $routes->post('/admin/ruangan/update/(:num)', 'Admin\Ruangan::update/$1');
     $routes->post('/admin/ruangan/delete/(:num)', 'Admin\Ruangan::delete/$1');
+    
+    // --- API / ACTIONS MODUL SERTIFIKAT (Admin Only) ---
+    $routes->group('sertifikat', function ($routes) {
+        $routes->get('preview', 'SertifikatController::preview');
+        $routes->post('config', 'SertifikatController::updateConfig');
+        $routes->post('delete-config', 'SertifikatController::deleteConfig'); // <-- Tambahkan baris ini
+        $routes->put('status/(:num)', 'SertifikatController::updateStatusTugas/$1');
+        $routes->post('status/(:num)', 'SertifikatController::updateStatusTugas/$1');
+        
+    });
 });
 
 
 // =========================================================================
 // 🛡️ ROLE: ADMIN (1) & ASISTEN (2)
 // =========================================================================
-$routes->group('', ['filter' => 'role:1,2', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
+$routes->group('', ['filter' => ['role:1,2', 'session_security']], function($routes) {
     // --- CRUD JADWAL ---
     $routes->get('/jadwal_admin', 'JadwalController::admin');
     $routes->post('/jadwal/store', 'JadwalController::store');
     $routes->post('/jadwal/update/(:num)', 'JadwalController::update/$1');
     $routes->post('/jadwal/delete/(:num)', 'JadwalController::delete/$1');
+    
+    // [UPDATE] Tampilan Dashboard Pengunduhan Sertifikat untuk Asisten
+    $routes->get('/sertifikat', 'SertifikatController::index');
+    
+    // API Generate (Download) Sertifikat
+    $routes->get('sertifikat/generate', 'SertifikatController::generate');
+    $routes->get('sertifikat/preview-asisten', 'SertifikatController::previewAsisten');
 });
 
 
 // =========================================================================
 // 🛡️ ROLE: ADMIN (1) & DOSEN (3)
 // =========================================================================
-$routes->group('', ['filter' => 'role:1,3', 'middleware' => 'SessionSecurityMiddleware'], function($routes) {
-
+$routes->group('', ['filter' => ['role:1,3', 'session_security']], function($routes) {
     // --- CRUD PROYEK RISET ---
     $routes->get('/penelitian-proyek_admin', 'ProyekRisetController::getDataAdmin');
     $routes->post('proyek-riset/store', 'ProyekRisetController::create');

@@ -8,14 +8,13 @@ class PublikasiModel extends Model
 {
     protected $table = 'publikasi';
     protected $primaryKey = 'id_publikasi';
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
     protected $allowedFields = [
         'jenis_publikasi',
         'link_publikasi',
         'kategori',
         'tanggal_publikasi',
         'id_user',
-        'created_at',
-        'updated_at',
         'penulis_pendamping',
         'volume',
         'nomor',

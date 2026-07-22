@@ -44,7 +44,6 @@ class VisiMisi extends BaseController
         $data = [
             'judul' => $this->request->getPost('judul'),
             'isi' => $this->request->getPost('isi'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->visiMisiModel->update($id, $data)) {

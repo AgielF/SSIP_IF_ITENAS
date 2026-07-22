@@ -8,9 +8,10 @@ class RekrutModel extends Model
 {
     protected $table = 'rekrut';
     protected $primaryKey = 'id_rekrut';
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
     protected $allowedFields = [
         'id_user', 'id_jadwal', 'deskripsi',
-        'status', 'syarat', 'created_at', 'updated_at','link_gform'
+        'status', 'syarat','link_gform'
     ];
 
     // Untuk publik (gabung user, jadwal, event)
@@ -59,8 +60,7 @@ class RekrutModel extends Model
                            . ' - ' .
                            (!empty($r['waktu_selesai']) ? date('H:i', strtotime($r['waktu_selesai'])) : '-'),
             'pembuat'   => $r['nama_user'] ?? '-',
-            'event'     => $r['nama_event'] ?? '-',
-            'created_at'=> $r['created_at'] ?? null,
+            'event'     => $r['nama_event'] ?? '-', // <-- Ekor yang rusak sudah dihapus
         ];
     }
 

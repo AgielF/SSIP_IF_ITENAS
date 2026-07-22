@@ -6,6 +6,7 @@ use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Filters\FilterInterface;
 use Config\Services;
+use App\Libraries\JwtHelper;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -35,7 +36,10 @@ class RoleFilter implements FilterInterface
         }
 
         try {
-            $decoded = JWT::decode($token, new Key(getenv('JWT_SECRET') ?: 'your-secret-key', 'HS256'));
+            // [T1.2] Gunakan JwtHelper terpusat — menggantikan hardcoded 'your-secret-key'.
+            // Ini juga memperbaiki bug di mana RoleFilter menggunakan secret berbeda dari Auth.php.
+            // Referensi: OWASP A02 Cryptographic Failures.
+            $decoded = JWT::decode($token, new Key(JwtHelper::getSecretKey(), 'HS256'));
 
             // 🔹 Ambil role yang diizinkan dari $arguments
             $allowedRoles = $arguments ?? [];

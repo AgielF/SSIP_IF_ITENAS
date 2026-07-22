@@ -59,7 +59,6 @@ class TopicController extends BaseController
     ];
 }
 
-
     /**
      * Konversi slug URL ke ENUM database
      * contoh: machine-learning → machine learning
@@ -84,9 +83,6 @@ class TopicController extends BaseController
             break;
         }
     }
-
-
-
 
     if (!$field) {
         throw PageNotFoundException::forPageNotFound();

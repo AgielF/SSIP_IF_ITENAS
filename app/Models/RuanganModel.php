@@ -8,5 +8,6 @@ class RuanganModel extends Model
 {
     protected $table = 'ruangan';
     protected $primaryKey = 'id_ruangan';
-    protected $allowedFields = ['nama_ruangan', 'kapasitas', 'created_at', 'updated_at'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['nama_ruangan', 'kapasitas'];
 }

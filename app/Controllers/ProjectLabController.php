@@ -107,7 +107,6 @@ class ProjectLabController extends BaseController
                 'link_deploy'     => $this->request->getPost('link_deploy'),
                 'tanggal_mulai'   => $this->request->getPost('tanggal_mulai'),
                 'tanggal_selesai' => $this->request->getPost('tanggal_selesai'),
-                'created_at'      => date('Y-m-d H:i:s')
             ];
 
             $this->projectLabModel->insert($projectData);
@@ -184,7 +183,6 @@ class ProjectLabController extends BaseController
                 'link_deploy'     => $this->request->getPost('link_deploy'),
                 'tanggal_mulai'   => $this->request->getPost('tanggal_mulai'),
                 'tanggal_selesai' => $this->request->getPost('tanggal_selesai'),
-                'updated_at'      => date('Y-m-d H:i:s')
             ];
 
             $this->projectLabModel->update($id, $projectData);

@@ -229,6 +229,7 @@ foreach ($publicationData as $row) {
                                         <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <form method="post" action="<?= site_url('publikasi-ilmiah/update/'.$row['id_publikasi']) ?>">
+                                                    <?= csrf_field() ?>
                                                     <div class="modal-header">
                                                         <h5 class="modal-title">Edit Publikasi</h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -359,6 +360,7 @@ foreach ($publicationData as $row) {
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form method="post" action="<?= site_url('publikasi-ilmiah/store') ?>">
+                <?= csrf_field() ?>
                 <div class="modal-header">
                     <h5 class="modal-title">Tambah Publikasi</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

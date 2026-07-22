@@ -8,7 +8,8 @@ class ProyekRisetModel extends Model
 {
     protected $table = 'proyek_riset';
     protected $primaryKey = 'id_proyek';
-    protected $allowedFields = ['judul', 'deskripsi', 'mitra', 'sumber_dana', 'tahun_mulai', 'tahun_selesai', 'id_user', 'created_at', 'updated_at','topik','status'];
+    protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
+    protected $allowedFields = ['judul', 'deskripsi', 'mitra', 'sumber_dana', 'tahun_mulai', 'tahun_selesai', 'id_user','topik','status'];
 
     /**
      * Mengambil dan memformat data proyek agar siap ditampilkan di view.

@@ -103,4 +103,9 @@ $paths = new Paths();
 // LOAD THE FRAMEWORK BOOTSTRAP FILE
 require $paths->systemDirectory . '/Boot.php';
 
+// [Bugfix CI4 Testing] Define SUPPORTPATH if CI_ENVIRONMENT is testing
+if (($_SERVER['CI_ENVIRONMENT'] ?? $_ENV['CI_ENVIRONMENT'] ?? '') === 'testing' && !defined('SUPPORTPATH')) {
+    define('SUPPORTPATH', realpath($paths->testsDirectory . '/_support/') . DIRECTORY_SEPARATOR);
+}
+
 exit(Boot::bootSpark($paths));

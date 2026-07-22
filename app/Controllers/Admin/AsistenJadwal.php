@@ -52,8 +52,6 @@ class AsistenJadwal extends BaseController
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'id_user' => $this->request->getPost('id_user'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->asistenJadwalModel->save($data)) {
@@ -87,7 +85,6 @@ class AsistenJadwal extends BaseController
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'id_user' => $this->request->getPost('id_user'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->asistenJadwalModel->update($id, $data)) {

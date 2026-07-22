@@ -49,7 +49,6 @@ class ModulPraktikum extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'file_url' => $this->request->getPost('file_url'),
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->modulPraktikumModel->save($data)) {

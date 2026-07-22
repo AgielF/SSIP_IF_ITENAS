@@ -56,9 +56,6 @@ class BeritaController extends BaseController
         ]);
     }
 
-
-
-
     // 💾 Simpan berita baru
     public function store()
     {
@@ -69,15 +66,12 @@ class BeritaController extends BaseController
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => $userId, // default admin user
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         $this->beritaModel->insert($data);
 
         return redirect()->to('/berita_admin')->with('success', 'Berita berhasil ditambahkan');
     }
-
 
     // 🔄 Update berita
     public function update($id)
@@ -89,7 +83,6 @@ class BeritaController extends BaseController
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => $userId,
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         $this->beritaModel->update($id, $data);

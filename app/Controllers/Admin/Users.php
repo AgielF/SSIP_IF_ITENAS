@@ -97,7 +97,6 @@ class Users extends BaseController
                     'id_user'    => $userId,
                     'id_periode' => $id_periode,
                     'jabatan'    => 'Asisten Praktikum',
-                    'created_at' => date('Y-m-d H:i:s')
                 ]);
             }
 
@@ -258,14 +257,12 @@ class Users extends BaseController
                         if ($existingRelasi) {
                             $this->asistenPeriodeModel->update($existingRelasi['id'], [
                                 'id_periode' => $id_periode,
-                                'updated_at' => date('Y-m-d H:i:s')
                             ]);
                         } else {
                             $this->asistenPeriodeModel->insert([
                                 'id_user'    => $id,
                                 'id_periode' => $id_periode,
                                 'jabatan'    => 'Asisten Praktikum',
-                                'created_at' => date('Y-m-d H:i:s')
                             ]);
                         }
                     } else {
@@ -335,7 +332,14 @@ class Users extends BaseController
     // Buat asisten_lab_admin view
     public function asistenAdmin()
     {
-        $users = $this->userModel->select('users.*, roles.role_name as role, periode.nama_periode')
+        // 🔹 DIUBAH: Menambahkan asisten_periode.id dan asisten_periode.status_tugas
+        $users = $this->userModel->select('
+                users.*, 
+                roles.role_name as role, 
+                periode.nama_periode,
+                asisten_periode.id as id_asisten_periode,
+                asisten_periode.status_tugas
+            ')
             ->join('roles', 'roles.id = users.role_id', 'left')
             ->join('asisten_periode', 'asisten_periode.id_user = users.id', 'left')
             ->join('periode', 'periode.id_periode = asisten_periode.id_periode', 'left')
@@ -344,6 +348,8 @@ class Users extends BaseController
         $processedUsers = [];
         foreach ($users as $user) {
             $user['nama_periode'] = $user['nama_periode'] ?? '-';
+            // Default nilai status jika null agar aman dioper ke View
+            $user['status_tugas'] = $user['status_tugas'] ?? 'belum selesai'; 
             $processedUsers[] = $user;
         }
 

@@ -97,34 +97,34 @@
                         
                         
 
-                   <tbody id="rekrutmen-table-body">
+                        <tbody id="rekrutmen-table-body">
     <?php if (!empty($rekrutmen['rows'])) : ?>
         <?php foreach ($rekrutmen['rows'] as $row) : ?>
-              <tr data-id="<?= $row['id_rekrut'] ?>" data-created="<?= $row['created_at'] ? strtotime($row['created_at']) : 0 ?>">
-                <td><?= esc($row['id_rekrut']) ?></td>
-                <td><?= esc($row['pembuat']) ?></td>
-                <td><?= esc($row['deskripsi']) ?></td>
-                <td><?= esc($row['status']) ?></td>
-                <td><?= esc($row['syarat']) ?></td>
-                <td><?= esc($row['jadwal']) ?></td>
+            <tr data-id="<?= esc($row['id_rekrut'] ?? '') ?>" data-created="<?= !empty($row['created_at']) ? strtotime($row['created_at']) : 0 ?>">
+                <td><?= esc($row['id_rekrut'] ?? '') ?></td>
+                <td><?= esc($row['pembuat'] ?? '-') ?></td>
+                <td><?= esc($row['deskripsi'] ?? '') ?></td>
+                <td><?= esc($row['status'] ?? '') ?></td>
+                <td><?= esc($row['syarat'] ?? '') ?></td>
+                <td><?= esc($row['jadwal'] ?? '-') ?> (<?= esc($row['event'] ?? '-') ?>)</td>
                 <td class="non-printable">
 
                     <!-- form edit -->
                     <button
                         class="btn btn-sm btn-outline-secondary btn-edit"
-                        data-id="<?= $row['id_rekrut'] ?>"
-                        data-deskripsi="<?= esc($row['deskripsi']) ?>"
-                        data-status="<?= esc($row['status']) ?>"
-                        data-syarat="<?= esc($row['syarat']) ?>"
+                        data-id="<?= esc($row['id_rekrut'] ?? '') ?>"
+                        data-deskripsi="<?= esc($row['deskripsi'] ?? '') ?>"
+                        data-status="<?= esc($row['status'] ?? '') ?>"
+                        data-syarat="<?= esc($row['syarat'] ?? '') ?>"
                         data-link_gform="<?= esc($row['link_gform'] ?? '') ?>"
-                        data-jadwal="<?= $row['id_jadwal'] ?>"
+                        data-jadwal="<?= esc($row['id_jadwal'] ?? '') ?>"
                         data-bs-toggle="modal"
                         data-bs-target="#editDataModal">
                         <i class="fas fa-pencil-alt"></i>
                     </button>
 
                     <!-- Tombol Hapus -->
-                    <form action="<?= site_url('rekrutmen/delete/'.$row['id_rekrut']) ?>" 
+                    <form action="<?= site_url('rekrutmen/delete/' . ($row['id_rekrut'] ?? '')) ?>" 
                         method="post" 
                         class="d-inline delete-form"
                         onsubmit="return confirm('Apakah Anda yakin ingin menghapus data rekrutmen ini?');">
@@ -138,7 +138,7 @@
         <?php endforeach; ?>
     <?php else : ?>
         <tr>
-            <td colspan="6" class="text-center text-muted">Data tidak ditemukan.</td>
+            <td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td>
         </tr>
     <?php endif; ?>
 </tbody>
@@ -159,6 +159,7 @@
 <div class="modal fade" id="addDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form action="/rekrutmen/store" method="post" class="modal-content">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Data Rekrutmen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -207,6 +208,7 @@
 <div class="modal fade" id="editDataModal" tabindex="-1">
     <div class="modal-dialog">
         <form id="edit-form" method="post" class="modal-content">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Edit Data Rekrutmen</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

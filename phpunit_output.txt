@@ -1,0 +1,71 @@
+stty: Inappropriate ioctl for device
+stty: Inappropriate ioctl for device
+PHPUnit 10.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.11
+Configuration: /home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/phpunit.xml.dist
+
+E                                                                   1 / 1 (100%)
+[DEBUG-CONFIG] defaultGroup is now: tests (ENVIRONMENT: testing)
+
+
+Time: 00:00.031, Memory: 14.00 MB
+
+There were 2 PHPUnit test runner warnings:
+
+1) No tests found in class "Tests\App\Controllers\BaseSecurityTest".
+
+2) No code coverage driver available
+
+--
+
+There was 1 error:
+
+1) Tests\App\Controllers\AdminSecurityTest::testAdminRoutesRejectSqlInjection
+CodeIgniter\Database\Exceptions\DatabaseException: Table 'periode' already exists
+
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/BaseConnection.php:692
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/Forge.php:570
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/app/Database/Migrations/2026-04-28-193466_CreatePeriodeTables.php:21
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:876
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:182
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:175
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:120
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:60
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/CIUnitTestCase.php:251
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/tests/app/Controllers/BaseSecurityTest.php:24
+
+Caused by
+CodeIgniter\Database\Exceptions\DatabaseException: Table 'periode' already exists
+
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MySQLi/Connection.php:332
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/BaseConnection.php:738
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/BaseConnection.php:652
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/Forge.php:570
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/app/Database/Migrations/2026-04-28-193466_CreatePeriodeTables.php:21
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:876
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:182
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:175
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:120
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:60
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/CIUnitTestCase.php:251
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/tests/app/Controllers/BaseSecurityTest.php:24
+
+Caused by
+mysqli_sql_exception: Table 'periode' already exists
+
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MySQLi/Connection.php:327
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/BaseConnection.php:738
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/BaseConnection.php:652
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/Forge.php:570
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/app/Database/Migrations/2026-04-28-193466_CreatePeriodeTables.php:21
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:876
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Database/MigrationRunner.php:182
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:175
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:120
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/DatabaseTestTrait.php:60
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/vendor/codeigniter4/framework/system/Test/CIUnitTestCase.php:251
+/home/agiel-fernanda/kuliah/KP/PROJECT_SECURITY/SSIP_IF_ITENAS/tests/app/Controllers/BaseSecurityTest.php:24
+
+ERRORS!
+Tests: 1, Assertions: 0, Errors: 1, PHPUnit Warnings: 2.

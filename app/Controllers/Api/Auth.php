@@ -10,6 +10,7 @@ use App\Models\JadwalModel;
 use App\Models\PublikasiModel;
 use App\Models\RoleModel;
 use App\Models\ProyekRisetModel;
+use App\Libraries\JwtHelper;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
@@ -49,8 +50,8 @@ class Auth extends ResourceController
                 return redirect()->back()->withInput()->with('error', 'Nomor dan password harus diisi');
             }
 
-            // Sanitasi NIM saja (Password JANGAN disanitasi agar karakter khusus tidak hilang)
-            $nomor = filter_var($nomor, FILTER_SANITIZE_STRING);
+            // [T2.4] FILTER_SANITIZE_STRING dihapus (deprecated sejak PHP 8.1).
+            // Validasi format NIM sudah cukup dihandle oleh preg_match di bawah.
 
             // Validasi format NIM (9 digit angka)
             if (!preg_match('/^[0-9]{9}$/', $nomor)) {
@@ -76,24 +77,17 @@ class Auth extends ResourceController
             // Reset login gagal counter jika login berhasil
             $this->resetFailedAttempts();
 
-            // Setup Token JWT (Aktif 1 Jam)
-            $key = getenv('JWT_SECRET') ?: 'rahasia-kita-bersama';
-            $payload = [
-                'iat'     => time(),
-                'exp'     => time() + 3600, // 3600 detik = 1 jam
-                'uid'     => $user['id'],
-                'nomor'   => $user['nomor'],
-                'nama'    => $user['nama'],
-                'role_id' => $user['role_id']
-            ];
-
-            $token = JWT::encode($payload, $key, 'HS256');
+            // [T1.2] Gunakan JwtHelper terpusat — tidak ada lagi hardcoded secret.
+            // Referensi: OWASP A02 Cryptographic Failures.
+            $key     = JwtHelper::getSecretKey();
+            $payload = JwtHelper::buildPayload($user, 3600);
+            $token   = JWT::encode($payload, $key, 'HS256');
 
             // Simpan data di Session (Monolitik)
             session()->set([
                 'token'         => $token,
-                'login_time'    => time(), // Waktu login dicatat
-                'last_activity' => time(), // Aktivitas terakhir dicatat
+                'login_time'    => time(),
+                'last_activity' => time(),
                 'user'          => [
                     'id'      => $user['id'],
                     'nomor'   => $user['nomor'],
@@ -106,7 +100,7 @@ class Auth extends ResourceController
             // Redirect berdasarkan Role
             return ($user['role_id'] == 1)
                 ? redirect()->to('/asisten_admin')
-                :edirect()->to('/profile');   
+                : redirect()->to('/profile');
     
         } catch (\Exception $e) {
             log_message('error', $e->getMessage());

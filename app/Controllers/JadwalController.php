@@ -124,8 +124,6 @@ class JadwalController extends BaseController
                 'waktu_selesai' => $this->request->getPost('waktu_selesai'),
                 'ruangan'       => $this->request->getPost('ruangan'),
                 'kelas'         => $this->request->getPost('kelas'),
-                'created_at'    => date('Y-m-d H:i:s'),
-                'updated_at'    => date('Y-m-d H:i:s')
             ];
 
             // Cek konflik ruangan (Aman karena data sudah tervalidasi)
@@ -186,7 +184,6 @@ class JadwalController extends BaseController
                 'waktu_selesai' => $this->request->getPost('waktu_selesai'),
                 'ruangan'       => $this->request->getPost('ruangan'),
                 'kelas'         => $this->request->getPost('kelas'),
-                'updated_at'    => date('Y-m-d H:i:s')
             ];
 
             // Cek konflik ruangan, kecualikan jadwal ini sendiri

@@ -7,6 +7,7 @@ use CodeIgniter\Model;
 class GaleriUmumModel extends Model
 {
     protected $table = 'galeri_umum';
+    protected $useTimestamps = false; // Tabel ini tidak menggunakan created_at/updated_at standar
     protected $primaryKey = 'id_galeri';
     protected $allowedFields = [
         'kategori', 'keterangan', 'file_url',

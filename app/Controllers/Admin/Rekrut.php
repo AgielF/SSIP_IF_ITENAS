@@ -53,7 +53,6 @@ class Rekrut extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->rekrutModel->save($data)) {
@@ -90,7 +89,6 @@ class Rekrut extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->rekrutModel->update($id, $data)) {

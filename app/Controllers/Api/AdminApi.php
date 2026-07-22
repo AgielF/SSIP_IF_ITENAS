@@ -53,20 +53,9 @@ class AdminApi extends ResourceController
         $this->eventsModel = new EventsModel();
     }
 
-    // untuk autentikasi csrf
-    private function checkAuth()
-    {
-        
-        return true;
-    }
-
     // Rekrutmen API methods
     public function getRekrutmen()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $rekrutmen = $this->rekrutModel->select('rekrut.*, users.nama as pembuat, jadwal.tanggal')
             ->join('users', 'users.id = rekrut.id_user')
             ->join('jadwal', 'jadwal.id_jadwal = rekrut.id_jadwal')
@@ -77,10 +66,6 @@ class AdminApi extends ResourceController
 
     public function createRekrutmen()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
@@ -88,7 +73,6 @@ class AdminApi extends ResourceController
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
             'link_gform' => $this->request->getPost('link_gform'),
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->rekrutModel->save($data)) {
@@ -101,10 +85,6 @@ class AdminApi extends ResourceController
 
     public function updateRekrutmen($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
@@ -112,7 +92,6 @@ class AdminApi extends ResourceController
             'status' => $this->request->getPost('status'),
             'syarat' => $this->request->getPost('syarat'),
             'link_gform' => $this->request->getPost('link_gform'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->rekrutModel->update($id, $data)) {
@@ -125,10 +104,6 @@ class AdminApi extends ResourceController
 
     public function deleteRekrutmen($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->rekrutModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -139,10 +114,6 @@ class AdminApi extends ResourceController
     // Proyek Riset API methods
     public function getProyekRiset()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -194,10 +165,6 @@ class AdminApi extends ResourceController
 
     public function createProyekRiset()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'deskripsi' => $this->request->getPost('deskripsi'),
@@ -206,7 +173,6 @@ class AdminApi extends ResourceController
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
             'id_user' => 1, // Default to admin user ID
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->proyekRisetModel->save($data)) {
@@ -219,10 +185,6 @@ class AdminApi extends ResourceController
 
     public function updateProyekRiset($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'deskripsi' => $this->request->getPost('deskripsi'),
@@ -231,7 +193,6 @@ class AdminApi extends ResourceController
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
             'id_user' => 1, // Default to admin user ID
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->proyekRisetModel->update($id, $data)) {
@@ -244,10 +205,6 @@ class AdminApi extends ResourceController
 
     public function deleteProyekRiset($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->proyekRisetModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -258,10 +215,6 @@ class AdminApi extends ResourceController
     // Publikasi API methods
     public function getPublikasi()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
        // Pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -320,18 +273,12 @@ class AdminApi extends ResourceController
 
     public function createPublikasi()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'jenis_publikasi' => $this->request->getPost('jenis_publikasi'),
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
             'id_user' => 1, // Default to admin user ID
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->save($data)) {
@@ -344,17 +291,12 @@ class AdminApi extends ResourceController
 
     public function updatePublikasi($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'jenis_publikasi' => $this->request->getPost('jenis_publikasi'),
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
             'id_user' => 1, // Default to admin user ID
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->update($id, $data)) {
@@ -367,10 +309,6 @@ class AdminApi extends ResourceController
 
     public function deletePublikasi($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->publikasiModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -381,10 +319,6 @@ class AdminApi extends ResourceController
     // Galeri API methods
     public function getGaleri()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -440,10 +374,6 @@ class AdminApi extends ResourceController
 
     public function createGaleri()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'kategori' => $this->request->getPost('kategori'),
             'keterangan' => $this->request->getPost('keterangan'),
@@ -462,10 +392,6 @@ class AdminApi extends ResourceController
 
     public function updateGaleri($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'kategori' => $this->request->getPost('kategori'),
             'keterangan' => $this->request->getPost('keterangan'),
@@ -484,10 +410,6 @@ class AdminApi extends ResourceController
 
     public function deleteGaleri($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->galeriUmumModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -498,10 +420,6 @@ class AdminApi extends ResourceController
     // Visi Misi API methods
     public function getVisiMisi()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $visiMisi = $this->visiMisiModel->findAll();
 
         return $this->respond($visiMisi);
@@ -509,14 +427,9 @@ class AdminApi extends ResourceController
 
     public function updateVisiMisi($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'isi' => $this->request->getPost('isi'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->visiMisiModel->update($id, $data)) {
@@ -530,10 +443,6 @@ class AdminApi extends ResourceController
     // Jadwal API methods
     public function getJadwal()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -590,18 +499,12 @@ class AdminApi extends ResourceController
 
     public function createJadwal()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_event' => $this->request->getPost('id_event'),
             'tanggal' => $this->request->getPost('tanggal'),
             'waktu_mulai' => $this->request->getPost('waktu_mulai'),
             'waktu_selesai' => $this->request->getPost('waktu_selesai'),
             'ruangan' => $this->request->getPost('ruangan'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->jadwalModel->save($data)) {
@@ -614,17 +517,12 @@ class AdminApi extends ResourceController
 
     public function updateJadwal($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_event' => $this->request->getPost('id_event'),
             'tanggal' => $this->request->getPost('tanggal'),
             'waktu_mulai' => $this->request->getPost('waktu_mulai'),
             'waktu_selesai' => $this->request->getPost('waktu_selesai'),
             'ruangan' => $this->request->getPost('ruangan'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->jadwalModel->update($id, $data)) {
@@ -637,10 +535,6 @@ class AdminApi extends ResourceController
 
     public function deleteJadwal($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->jadwalModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -651,10 +545,6 @@ class AdminApi extends ResourceController
     // Asisten Jadwal API methods
     public function getAsistenJadwal()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -698,15 +588,9 @@ class AdminApi extends ResourceController
 
     public function createAsistenJadwal()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'id_user' => $this->request->getPost('id_user'), // Get actual user ID from form
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->asistenJadwalModel->save($data)) {
@@ -719,14 +603,9 @@ class AdminApi extends ResourceController
 
     public function updateAsistenJadwal($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'id_user' => $this->request->getPost('id_user'), // Get actual user ID from form
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->asistenJadwalModel->update($id, $data)) {
@@ -739,10 +618,6 @@ class AdminApi extends ResourceController
 
     public function deleteAsistenJadwal($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->asistenJadwalModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -753,10 +628,6 @@ class AdminApi extends ResourceController
     // Peserta Praktikum API methods
     public function getPesertaPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -805,10 +676,6 @@ class AdminApi extends ResourceController
 
     public function createPesertaPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
@@ -826,10 +693,6 @@ class AdminApi extends ResourceController
 
     public function updatePesertaPraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
@@ -847,10 +710,6 @@ class AdminApi extends ResourceController
 
     public function deletePesertaPraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->pesertaPraktikumModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -861,10 +720,6 @@ class AdminApi extends ResourceController
     // User Management API methods
     public function getUsers()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -915,42 +770,70 @@ class AdminApi extends ResourceController
 
     public function createUser()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
+        // [T1.4] Mitigasi Mass Assignment: Tambah validasi ketat sebelum simpan.
+        // Mencegah penyerang mengirim role_id=1 (Privilege Escalation).
+        // Referensi: OWASP Top 10 — A01: Broken Access Control.
+        $rules = [
+            'nomor'    => 'required|exact_length[9]|numeric|is_unique[users.nomor]',
+            'nama'     => 'required|max_length[100]',
+            'no_telp'  => 'permit_empty|max_length[15]',
+            'jurusan'  => 'permit_empty|max_length[100]',
+            'password' => 'required|min_length[8]',
+            'role_id'  => 'required|numeric|in_list[1,2,3,4]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $data = $this->request->getPost();
+        // Whitelist field secara eksplisit — JANGAN gunakan getPost() tanpa filter.
+        $data = $this->request->getPost(['nomor', 'nama', 'no_telp', 'jurusan', 'password', 'role_id']);
 
         if ($this->userModel->save($data)) {
-            $data['id'] = $this->userModel->getInsertID();
-            return $this->respondCreated($data);
+            $newUser        = $data;
+            $newUser['id']  = $this->userModel->getInsertID();
+            unset($newUser['password']); // Jangan kembalikan password hash ke response
+            return $this->respondCreated($newUser);
         } else {
-            return $this->fail('Failed to create user');
+            return $this->fail($this->userModel->errors() ?: 'Failed to create user');
         }
     }
 
     public function updateUser($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
+        // [T1.4] Mitigasi Mass Assignment: Whitelist eksplisit pada update.
+        // Referensi: OWASP Top 10 — A01: Broken Access Control.
+        $rules = [
+            'nomor'    => 'permit_empty|exact_length[9]|numeric',
+            'nama'     => 'permit_empty|max_length[100]',
+            'no_telp'  => 'permit_empty|max_length[15]',
+            'jurusan'  => 'permit_empty|max_length[100]',
+            'password' => 'permit_empty|min_length[8]',
+            'role_id'  => 'permit_empty|numeric|in_list[1,2,3,4]',
+            'foto'     => 'permit_empty|max_length[255]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->failValidationErrors($this->validator->getErrors());
         }
 
-        $data = $this->request->getPost();
+        // Whitelist field secara eksplisit.
+        $data = $this->request->getPost(['nomor', 'nama', 'no_telp', 'jurusan', 'password', 'role_id', 'foto']);
+        // Hapus field kosong agar tidak menimpa data yang ada
+        $data = array_filter($data, fn($v) => $v !== null && $v !== '');
 
         if ($this->userModel->update($id, $data)) {
-            $data['id'] = $id;
-            return $this->respond($data);
+            $updated       = $data;
+            $updated['id'] = $id;
+            unset($updated['password']); // Jangan kembalikan password hash ke response
+            return $this->respond($updated);
         } else {
-            return $this->fail('Failed to update user');
+            return $this->fail($this->userModel->errors() ?: 'Failed to update user');
         }
     }
 
     public function deleteUser($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->userModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -961,10 +844,6 @@ class AdminApi extends ResourceController
     // Berita API methods
     public function getBerita()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -1020,18 +899,12 @@ class AdminApi extends ResourceController
 
     public function createBerita()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => 1, // Default to admin user ID
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->beritaModel->save($data)) {
@@ -1044,17 +917,12 @@ class AdminApi extends ResourceController
 
     public function updateBerita($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'konten' => $this->request->getPost('konten'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => 1, // Default to admin user ID
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->beritaModel->update($id, $data)) {
@@ -1067,10 +935,6 @@ class AdminApi extends ResourceController
 
     public function deleteBerita($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->beritaModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -1081,10 +945,6 @@ class AdminApi extends ResourceController
     // Praktikum API methods
     public function getPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $praktikum = $this->praktikumModel->select('praktikum.*, users.nama as peserta, jadwal.tanggal as jadwal_tanggal')
             ->join('users', 'users.id = praktikum.id_user')
             ->join('jadwal', 'jadwal.id_jadwal = praktikum.id_jadwal')
@@ -1095,17 +955,11 @@ class AdminApi extends ResourceController
 
     public function createPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->praktikumModel->save($data)) {
@@ -1118,16 +972,11 @@ class AdminApi extends ResourceController
 
     public function updatePraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'id_user' => 1, // Default to admin user ID
             'id_jadwal' => $this->request->getPost('id_jadwal'),
             'galeri_prak' => $this->request->getPost('galeri_prak'),
             'desc_aturan' => $this->request->getPost('desc_aturan'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->praktikumModel->update($id, $data)) {
@@ -1140,10 +989,6 @@ class AdminApi extends ResourceController
 
     public function deletePraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->praktikumModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -1154,10 +999,6 @@ class AdminApi extends ResourceController
     // Modul Praktikum API methods
     public function getModulPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $modulPraktikum = $this->modulPraktikumModel->select('modul_praktikum.*, jadwal.tanggal as jadwal_tanggal')
             ->join('jadwal', 'jadwal.id_jadwal = modul_praktikum.id_jadwal')
             ->findAll();
@@ -1167,16 +1008,11 @@ class AdminApi extends ResourceController
 
     public function createModulPraktikum()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'file_url' => $this->request->getPost('file_url'),
             'id_jadwal' => $this->request->getPost('id_jadwal'),
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->modulPraktikumModel->save($data)) {
@@ -1189,10 +1025,6 @@ class AdminApi extends ResourceController
 
     public function updateModulPraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'judul' => $this->request->getPost('judul'),
             'deskripsi' => $this->request->getPost('deskripsi'),
@@ -1210,10 +1042,6 @@ class AdminApi extends ResourceController
 
     public function deleteModulPraktikum($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->modulPraktikumModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {
@@ -1224,10 +1052,6 @@ class AdminApi extends ResourceController
     // Events API methods
     public function getEvents()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         // Get query parameters for filtering and pagination
         $page = (int)($this->request->getVar('page') ?? 1);
         $limit = (int)($this->request->getVar('limit') ?? 10);
@@ -1273,17 +1097,11 @@ class AdminApi extends ResourceController
 
     public function createEvent()
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'nama_event' => $this->request->getPost('nama_event'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'jenis' => $this->request->getPost('jenis'),
             'created_by' => $this->request->getPost('created_by'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->eventsModel->save($data)) {
@@ -1296,16 +1114,11 @@ class AdminApi extends ResourceController
 
     public function updateEvent($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         $data = [
             'nama_event' => $this->request->getPost('nama_event'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'jenis' => $this->request->getPost('jenis'),
             'created_by' => $this->request->getPost('created_by'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->eventsModel->update($id, $data)) {
@@ -1318,10 +1131,6 @@ class AdminApi extends ResourceController
 
     public function deleteEvent($id = null)
     {
-        if (!$this->checkAuth()) {
-            return $this->failUnauthorized('Unauthorized');
-        }
-
         if ($this->eventsModel->delete($id)) {
             return $this->respondDeleted(['id' => $id]);
         } else {

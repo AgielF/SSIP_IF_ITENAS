@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+/**
+ * [T2.5] Migration: Tambah Indeks pada Kolom Foreign Key & Kolom yang Sering di-Query.
+ *
+ * Tanpa indeks, setiap JOIN dan WHERE pada kolom ini menyebabkan FULL TABLE SCAN.
+ * Setelah indeks ditambahkan, MySQL menggunakan INDEX SCAN yang jauh lebih efisien.
+ *
+ * Referensi: MySQL Performance Best Practices — Index on WHERE, JOIN, ORDER BY columns.
+ */
+class AddIndexesForPerformance extends Migration
+{
+    /**
+     * Daftar indeks yang akan dibuat.
+     * Format: [tabel, kolom, nama_indeks]
+     */
+    private array $indexes = [
+        // Tabel: jadwal
+        ['jadwal',         'id_event',        'idx_jadwal_id_event'],
+        ['jadwal',         'id_ruangan',       'idx_jadwal_id_ruangan'],
+        ['jadwal',         'tanggal',          'idx_jadwal_tanggal'],
+
+        // Tabel: users
+        ['users',          'role_id',          'idx_users_role_id'],
+
+        // Tabel: asisten_jadwal (sering di-JOIN untuk cari asisten per jadwal)
+        ['asisten_jadwal', 'id_jadwal',        'idx_asisten_jadwal_id_jadwal'],
+        ['asisten_jadwal', 'id_user',          'idx_asisten_jadwal_id_user'],
+
+        // Tabel: publikasi (sering di-WHERE untuk filter jenis)
+        ['publikasi',      'jenis_publikasi',  'idx_publikasi_jenis'],
+        ['publikasi',      'id_user',          'idx_publikasi_id_user'],
+        ['publikasi',      'tanggal_publikasi','idx_publikasi_tanggal'],
+
+        // Tabel: proyek_riset
+        ['proyek_riset',   'id_user',          'idx_proyek_riset_id_user'],
+
+        // Tabel: rekrut
+        ['rekrut',         'id_user',          'idx_rekrut_id_user'],
+        ['rekrut',         'id_jadwal',        'idx_rekrut_id_jadwal'],
+
+        // Tabel: galeri_umum
+        ['galeri_umum',    'id_user',          'idx_galeri_umum_id_user'],
+        ['galeri_umum',    'tanggal_upload',   'idx_galeri_umum_tanggal'],
+
+        // Tabel: berita
+        ['berita',         'id_user',          'idx_berita_id_user'],
+        ['berita',         'tanggal',          'idx_berita_tanggal'],
+
+        // Tabel: modul_praktikum
+        ['modul_praktikum','id_jadwal',        'idx_modul_praktikum_id_jadwal'],
+
+        // Tabel: project_lab_members
+        ['project_lab_members', 'id_project',  'idx_proj_members_id_project'],
+        ['project_lab_members', 'id_user',     'idx_proj_members_id_user'],
+
+        // Tabel: asisten_periode
+        ['asisten_periode', 'id_user',         'idx_asisten_periode_id_user'],
+        ['asisten_periode', 'id_periode',      'idx_asisten_periode_id_periode'],
+    ];
+
+    public function up(): void
+    {
+        foreach ($this->indexes as [$table, $column, $indexName]) {
+            // Cek apakah indeks sudah ada agar idempoten (aman dijalankan ulang)
+            if (!$this->indexExists($table, $indexName)) {
+                $this->db->query("CREATE INDEX `{$indexName}` ON `{$table}` (`{$column}`)");
+                log_message('info', "[Migration] Index created: {$indexName} on {$table}({$column})");
+            }
+        }
+    }
+
+    public function down(): void
+    {
+        // Do nothing to avoid dropping indexes needed by foreign keys
+    }
+
+    /**
+     * Cek apakah sebuah indeks sudah ada di tabel tertentu.
+     */
+    private function indexExists(string $table, string $indexName): bool
+    {
+        $result = $this->db->query(
+            "SHOW INDEX FROM `{$table}` WHERE Key_name = ?",
+            [$indexName]
+        );
+        return $result->getNumRows() > 0;
+    }
+}

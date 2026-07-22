@@ -8,6 +8,7 @@ class CreateTableRuangan extends Migration
 {
     public function up()
     {
+        echo "\n[DEBUG] Migrating on database: " . $this->db->database . "\n";
         $this->forge->addField([
             'id_ruangan' => [
                 'type' => 'INT',

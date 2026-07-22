@@ -117,6 +117,7 @@
 <div class="modal fade" id="modalTambah" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form action="/peserta-praktikum/store" method="post" class="modal-content">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Peserta Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -157,6 +158,7 @@
 <div class="modal fade" id="modalEdit" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <form id="formEdit" method="post" class="modal-content">
+            <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Edit Peserta Praktikum</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

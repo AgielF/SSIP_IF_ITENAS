@@ -69,10 +69,9 @@ class PublikasiController extends BaseController
 
     public function store()
     {
-        // Validate that user is admin (role_id = 1)
-        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat menambah publikasi.');
-        }
+        // [T2.2] Pengecekan role session dihapus. AdminFilter sudah menjamin
+        // hanya admin (role_id=1) yang dapat mencapai method ini.
+        // Referensi: SOLID — Single Responsibility Principle.
 
         // 🛡️ 1. VALIDASI INPUT KETAT
         $rules = [
@@ -126,7 +125,6 @@ class PublikasiController extends BaseController
                 'conference'        => $this->request->getPost('conference'),
                 'deskripsi'         => $this->request->getPost('deskripsi'),
                 'id_user'           => $selectedUserId,
-                'created_at'        => date('Y-m-d H:i:s'),
             ];
 
             $this->publikasiModel->insert($data);
@@ -139,10 +137,9 @@ class PublikasiController extends BaseController
 
     public function update($id_publikasi)
     {
-        // Validate that user is admin (role_id = 1)
-        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat mengedit publikasi.');
-        }
+        // [T2.2] Pengecekan role session dihapus. AdminFilter sudah menjamin
+        // hanya admin (role_id=1) yang dapat mencapai method ini.
+        // Referensi: SOLID — Single Responsibility Principle.
 
         // 🛡️ 1. PASTIKAN ID NUMERIC
         if (!is_numeric($id_publikasi)) {
@@ -201,7 +198,6 @@ class PublikasiController extends BaseController
                 'conference'        => $this->request->getPost('conference'),
                 'deskripsi'         => $this->request->getPost('deskripsi'),
                 'id_user'           => $selectedUserId,
-                'updated_at'        => date('Y-m-d H:i:s')
             ];
 
             $this->publikasiModel->update($id_publikasi, $data);

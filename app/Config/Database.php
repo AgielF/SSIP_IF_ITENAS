@@ -46,9 +46,9 @@ class Database extends Config
     public array $tests = [
         'DSN'          => '',
         'hostname'     => '127.0.0.1',
-        'username'     => '',
+        'username'     => 'root',
         'password'     => '',
-        'database'     => '',
+        'database'     => 'ssip_if_itenas_test',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
@@ -81,5 +81,7 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
+        
+        echo "\n[DEBUG-CONFIG] defaultGroup is now: " . $this->defaultGroup . " (ENVIRONMENT: " . ENVIRONMENT . ")\n";
     }
 }

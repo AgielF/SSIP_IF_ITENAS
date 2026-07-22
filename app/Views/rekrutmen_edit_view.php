@@ -2,6 +2,7 @@
     <h3>Edit Rekrutmen</h3>
 
     <form action="/rekrutmen/update/<?= $rekrut['id_rekrut'] ?>" method="post">
+        <?= csrf_field() ?>
         <div class="mb-3">
             <label class="form-label">Deskripsi</label>
             <input type="text" name="deskripsi" class="form-control" 

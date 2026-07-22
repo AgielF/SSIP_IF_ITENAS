@@ -40,43 +40,63 @@ class GaleriUmumController extends BaseController
     // 🟢 CREATE
     public function create()
     {
-        $userId = $this->getUserIdOrRedirect(); 
-        
-        $kategori   = strtolower($this->request->getPost('kategori'));
-        $keterangan = $this->request->getPost('keterangan');
-        $namaFile   = '';
+        $userId   = $this->getUserIdOrRedirect();
+        $kategori = strtolower($this->request->getPost('kategori'));
+        $namaFile = '';
 
         // 1. JIKA KATEGORI ADALAH VIDEO
         if ($kategori === 'video') {
-            // Ambil URL Embed dari input text link_video
             $namaFile = $this->request->getPost('link_video');
-        } 
+
         // 2. JIKA KATEGORI ADALAH FOTO
-        else {
+        } else {
             $file = $this->request->getFile('gambar');
-            
-            // Cek apakah ada file yang diunggah dan valid
+
             if ($file && $file->isValid() && !$file->hasMoved()) {
-                $namaFile = $file->getRandomName();
+
+                // [T3.3] Ganti pengecekan getMimeType() manual dengan CI4 validation rules.
+                // Referensi: OWASP A04 Insecure Design & OWASP File Upload Cheat Sheet.
+                $validationRules = [
+                    'gambar' => [
+                        'label' => 'File Gambar',
+                        'rules' => [
+                            'uploaded[gambar]',
+                            'max_size[gambar,2048]',          // Max 2MB
+                            'is_image[gambar]',               // Harus berupa gambar valid
+                            'mime_in[gambar,image/jpg,image/jpeg,image/png,image/webp]',
+                            'ext_in[gambar,jpg,jpeg,png,webp]', // Double-check ekstensi
+                        ],
+                        'errors' => [
+                            'is_image'  => 'File yang diupload harus berupa gambar (JPG, PNG, WEBP).',
+                            'max_size'  => 'Ukuran gambar maksimal 2MB.',
+                            'mime_in'   => 'Format file tidak didukung. Gunakan JPG, PNG, atau WEBP.',
+                            'ext_in'    => 'Ekstensi file tidak diizinkan.',
+                        ],
+                    ],
+                ];
+
+                if (!$this->validate($validationRules)) {
+                    return redirect()->to('/galeri_admin')
+                                     ->with('error', $this->validator->listErrors());
+                }
+
+                $namaFile   = $file->getRandomName();
                 $pathSimpan = FCPATH . 'uploads/galeri';
-                
-                // Pindahkan file ke public/uploads/galeri
                 $file->move($pathSimpan, $namaFile);
 
                 // Compress & Crop Gambar (Ukuran 800x450 / Rasio 16:9)
                 $imageService = \Config\Services::image();
-                $imagePath = $pathSimpan . '/' . $namaFile;
+                $imagePath    = $pathSimpan . '/' . $namaFile;
                 $imageService->withFile($imagePath)
                              ->fit(800, 450, 'center')
                              ->save($imagePath);
             }
         }
 
-        // Siapkan data untuk disimpan ke Database
         $data = [
             'kategori'       => $kategori,
-            'keterangan'     => $keterangan,
-            'file_url'       => $namaFile, // Berisi nama file fisik ATAU link youtube
+            'keterangan'     => $this->request->getPost('keterangan'),
+            'file_url'       => $namaFile,
             'tanggal_upload' => date('Y-m-d H:i:s'),
             'id_user'        => $userId
         ];

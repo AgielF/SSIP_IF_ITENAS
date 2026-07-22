@@ -52,7 +52,6 @@ class ProyekRiset extends BaseController
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
             'id_user' => $this->request->getPost('id_user'),
-            'created_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->proyekRisetModel->save($data)) {
@@ -91,7 +90,6 @@ class ProyekRiset extends BaseController
             'tahun_mulai' => $this->request->getPost('tahun_mulai'),
             'tahun_selesai' => $this->request->getPost('tahun_selesai'),
             'id_user' => $this->request->getPost('id_user'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->proyekRisetModel->update($id, $data)) {

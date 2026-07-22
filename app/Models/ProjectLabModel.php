@@ -20,8 +20,6 @@ class ProjectLabModel extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'created_by',
-        'created_at',
-        'updated_at',
     ];
 
     protected $useTimestamps = false;

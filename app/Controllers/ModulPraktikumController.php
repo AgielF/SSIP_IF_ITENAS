@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\ModulPraktikumModel;
 use App\Models\JadwalModel;
 
-class modulPraktikumController extends BaseController
+class ModulPraktikumController extends BaseController
 {
     protected $modulPraktikumModel;
     protected $jadwalModel;

@@ -52,7 +52,6 @@ class EventsController extends BaseController
     ]);
 }
 
-
     // Simpan event baru
     public function store()
     {
@@ -89,7 +88,6 @@ class EventsController extends BaseController
 
     return redirect()->back()->with('error', 'Gagal memperbarui event');
 }
-
 
     // Hapus event
     public function delete($id)

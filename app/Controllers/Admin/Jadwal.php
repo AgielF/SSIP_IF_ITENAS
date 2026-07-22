@@ -48,8 +48,6 @@ class Jadwal extends BaseController
             'waktu_mulai' => $this->request->getPost('waktu_mulai'),
             'waktu_selesai' => $this->request->getPost('waktu_selesai'),
             'ruangan' => $this->request->getPost('ruangan'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->jadwalModel->save($data)) {
@@ -85,7 +83,6 @@ class Jadwal extends BaseController
             'waktu_mulai' => $this->request->getPost('waktu_mulai'),
             'waktu_selesai' => $this->request->getPost('waktu_selesai'),
             'ruangan' => $this->request->getPost('ruangan'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->jadwalModel->update($id, $data)) {

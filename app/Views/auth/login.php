@@ -202,6 +202,7 @@
             <?php endif; ?>
 
             <form action="<?= base_url('/api/auth/login') ?>" method="post">
+                <?= csrf_field() ?>
 
                 <div class="input-field">
                     <i class="fas fa-user"></i>

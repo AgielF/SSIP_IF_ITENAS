@@ -2,11 +2,13 @@
 
 namespace App\Middleware;
 
+use CodeIgniter\Filters\FilterInterface; // Mengganti BaseMiddleware dengan FilterInterface bawaan CI4
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
-use CodeIgniter\Middleware\BaseMiddleware;
+use App\Libraries\JwtHelper;
 
-class SessionSecurityMiddleware extends BaseMiddleware
+// Ubah 'extends BaseMiddleware' menjadi 'implements FilterInterface'
+class SessionSecurityMiddleware implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
@@ -48,8 +50,8 @@ class SessionSecurityMiddleware extends BaseMiddleware
         $token = session()->get('token');
         if ($token) {
             try {
-                // Kunci rahasia HARUS SAMA dengan yang ada di Controller Login
-                $key = getenv('JWT_SECRET') ?: 'rahasia-kita-bersama';
+                // [T1.2] Gunakan JwtHelper terpusat — tidak ada lagi hardcoded fallback.
+                $key     = JwtHelper::getSecretKey();
                 $decoded = \Firebase\JWT\JWT::decode($token, new \Firebase\JWT\Key($key, 'HS256'));
 
                 // Cek kadaluarsa Token

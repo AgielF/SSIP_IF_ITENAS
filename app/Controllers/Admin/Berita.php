@@ -50,8 +50,6 @@ class Berita extends BaseController
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => $this->request->getPost('id_user'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->beritaModel->save($data)) {
@@ -87,7 +85,6 @@ class Berita extends BaseController
             'kategori' => $this->request->getPost('kategori'),
             'tanggal' => $this->request->getPost('tanggal'),
             'id_user' => $this->request->getPost('id_user'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->beritaModel->update($id, $data)) {

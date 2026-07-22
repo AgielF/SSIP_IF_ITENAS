@@ -25,18 +25,20 @@ class Filters extends BaseFilters
      * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
-        'csrf'          => CSRF::class,
-        'toolbar'       => DebugToolbar::class,
-        'honeypot'      => Honeypot::class,
-        'invalidchars'  => InvalidChars::class,
-        'secureheaders' => SecureHeaders::class,
-        'cors'          => Cors::class,
-        'forcehttps'    => ForceHTTPS::class,
-        'pagecache'     => PageCache::class,
-        'performance'   => PerformanceMetrics::class,
-         'admin'    => \App\Filters\AdminFilter::class, // <-- tambahkan ini
-          'role'  => \App\Filters\RoleFilter::class, // filter baru
-          'auth'     => \App\Filters\AuthFilter::class,  // 👈 tambahkan
+        'csrf'             => CSRF::class,
+        'toolbar'          => DebugToolbar::class,
+        'honeypot'         => Honeypot::class,
+        'invalidchars'     => InvalidChars::class,
+        'secureheaders'    => SecureHeaders::class,
+        'cors'             => Cors::class,
+        'forcehttps'       => ForceHTTPS::class,
+        'pagecache'        => PageCache::class,
+        'performance'      => PerformanceMetrics::class,
+        'admin'            => \App\Filters\AdminFilter::class,
+        'role'             => \App\Filters\RoleFilter::class,
+        'auth'             => \App\Filters\AuthFilter::class,
+        // [T2.3] SessionSecurityMiddleware diregistrasi sebagai CI4 Filter yang valid
+        'session_security' => \App\Middleware\SessionSecurityMiddleware::class,
     ];
 
     /**
@@ -73,7 +75,8 @@ class Filters extends BaseFilters
     public array $globals = [
         'before' => [
             // 'honeypot',
-            // 'csrf',
+            // [T1.1] CSRF diaktifkan secara global. Pengecualian untuk api/* dikonfigurasi di $filters.
+            'csrf',
             // 'invalidchars',
         ],
         'after' => [
@@ -106,5 +109,14 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        // [T1.1] Kecualikan endpoint API dari CSRF karena menggunakan JWT di Authorization header.
+        // Endpoint API diproteksi oleh AdminFilter/RoleFilter yang memvalidasi JWT.
+        'csrf' => [
+            'except' => [
+                'api/*',
+                'api/auth/*',
+            ],
+        ],
+    ];
 }

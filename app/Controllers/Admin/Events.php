@@ -71,7 +71,6 @@ class Events extends BaseController
             'nama_event' => $this->request->getPost('nama_event'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'jenis' => $this->request->getPost('jenis'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->eventsModel->update($id, $data)) {

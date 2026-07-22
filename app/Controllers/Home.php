@@ -21,28 +21,25 @@ class Home extends BaseController
     /**
      * Mengambil dan memproses data jadwal.
      */
-    private function getProcessedJadwalData($limit = null): array
+    /**
+     * [T2.1] Refactored: Mengambil dan memproses data jadwal.
+     *
+     * SEBELUM: Menjalankan 1 + N query (satu per jadwal untuk data asisten).
+     * SESUDAH : Menggunakan JadwalModel::getJadwalWithAsisten() — SATU query tunggal.
+     * Referensi: Refactoring (Martin Fowler).
+     */
+    private function getProcessedJadwalData(?int $limit = null): array
     {
-        // Initialize models
-        $jadwalModel = new JadwalModel();
-        $asistenJadwalModel = new AsistenJadwalModel();
-        $databaseData = $jadwalModel->getJadwalWithDetails();
-        
-        // Sort by date ascending to get upcoming schedules first
-        usort($databaseData, function($a, $b) {
-            return strtotime($a['tanggal']) - strtotime($b['tanggal']);
-        });
-        
-        // Apply limit if specified
-        if ($limit !== null) {
-            $databaseData = array_slice($databaseData, 0, $limit);
-        }
-        
+        $jadwalModel   = new JadwalModel();
+        // [T2.1] Satu query: data jadwal + asisten via GROUP_CONCAT + JOIN
+        $databaseData  = $jadwalModel->getJadwalWithAsisten($limit);
+
         $processedSchedules = [];
         $today = new \DateTime('today');
 
         foreach ($databaseData as $item) {
             $scheduleDate = new \DateTime($item['tanggal']);
+
             if ($scheduleDate > $today) {
                 $status = 'Upcoming'; $status_color = 'success';
             } elseif ($scheduleDate < $today) {
@@ -50,18 +47,24 @@ class Home extends BaseController
             } else {
                 $status = 'Today'; $status_color = 'warning';
             }
-            
-            // Get asisten untuk jadwal spesifik
-            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
-            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
-            
+
+            // nama_asisten sudah tersedia dari GROUP_CONCAT — TIDAK ada query tambahan.
+            $namaAsisten = !empty($item['nama_asisten']) ? $item['nama_asisten'] : 'Belum Ditentukan';
+
             $processedSchedules[] = [
-                'title' => $item['nama_event'], 'lab' => $item['ruangan'] ?? '', 'status' => $status,
-                'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
-                'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
-                'instructor' => $instructor
+                'id_jadwal'    => $item['id_jadwal'],
+                'title'        => $item['nama_event'],
+                'kelas'        => $item['kelas'] ?? '',
+                'lab'          => $item['ruangan'] ?? '',
+                'status'       => $status,
+                'status_color' => $status_color,
+                'date'         => $scheduleDate->format('l, d F Y'),
+                'raw_date'     => $item['tanggal'],
+                'time'         => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor'   => $namaAsisten,
             ];
         }
+
         return $processedSchedules;
     }
     private function getTopicData():array{
@@ -133,46 +136,12 @@ class Home extends BaseController
         ];
         return view('home_view', $data);
     }
-        public function agenda_paginated()
+    public function agenda_paginated()
     {
-        // Get query parameters for filtering and pagination
-        $page = (int)($this->request->getVar('page') ?? 1);
-        $limit = (int)($this->request->getVar('limit') ?? 15);
-        $search = $this->request->getVar('search');
-        $event = $this->request->getVar('event');
-        $dateFrom = $this->request->getVar('date_from');
-        $dateTo = $this->request->getVar('date_to');
-
-        // Initialize models
-        $jadwalModel = new JadwalModel();
-        $eventsModel = new EventsModel();
-        $asistenJadwalModel = new AsistenJadwalModel();
-        $databaseData = $jadwalModel->getJadwalWithDetails();
-        $processedSchedules = [];
-        $today = new \DateTime('today');
-
-        foreach ($databaseData as $item) {
-            $scheduleDate = new \DateTime($item['tanggal']);
-            if ($scheduleDate > $today) {
-                $status = 'Upcoming'; $status_color = 'success';
-            } elseif ($scheduleDate < $today) {
-                $status = 'Completed'; $status_color = 'primary';
-            } else {
-                $status = 'Today'; $status_color = 'warning';
-            }
-            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
-            $instructor = !empty($asisten) ? $asisten[0]['nama'] : 'Belum Ditentukan';
-            $processedSchedules[] = [
-                'title' => $item['nama_event'], 'lab' => $item['ruangan'] ?? '', 'status' => $status,
-                'status_color' => $status_color, 'date' => $scheduleDate->format('l, d F Y'),
-                'time' => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
-                'instructor' => $instructor
-            ];
-        }
-        return $processedSchedules;
+        // [T2.1] Refactored: menggunakan getProcessedJadwalData() yang sudah efisien.
+        // Duplikasi logika N+1 query yang ada sebelumnya telah dihapus.
+        return $this->getProcessedJadwalData();
     }
-
-
 
     //penelitian-proyek
     //publikasi 

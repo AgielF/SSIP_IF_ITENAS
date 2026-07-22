@@ -104,8 +104,6 @@ class Publikasi extends BaseController
             'conference' => $this->request->getPost('conference'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'id_user' => $this->request->getPost('id_user') ?: 1, // Default to admin user
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->save($data)) {
@@ -156,7 +154,6 @@ class Publikasi extends BaseController
             'conference' => $this->request->getPost('conference'),
             'deskripsi' => $this->request->getPost('deskripsi'),
             'id_user' => $this->request->getPost('id_user') ?: 1,
-            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if ($this->publikasiModel->update($id, $data)) {
