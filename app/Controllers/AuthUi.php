@@ -23,30 +23,37 @@ class AuthUi extends BaseController
             3 => 'Dosen',
         ];
 
-        $user['role_id'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
+        $user['role_id_label'] = $roles[$user['role_id']] ?? 'Tidak diketahui';
 
-        // Ambil ID dengan aman
-        $userId = $user['id'] ?? $user['id_user'] ?? null;
+        // Ambil ID dan Nama dengan aman
+        $userId   = $user['id'] ?? $user['id_user'] ?? null;
+        $userName = $user['nama'] ?? '';
 
         $publikasiModel = new \App\Models\PublikasiModel();
         $proyekModel    = new \App\Models\ProyekRisetModel();
 
         if ($userId) {
+            // 🔍 QUERY PUBLIKASI: Ambil jika user adalah Penulis Utama (id_user) ATAU Penulis Pendamping (nama)
             $publicationData = $publikasiModel->getDataWithUser()
-                                              ->where('publikasi.id_user', $userId)
+                                              ->groupStart()
+                                                  ->where('publikasi.id_user', $userId)
+                                                  ->orLike('publikasi.penulis_pendamping', $userName)
+                                              ->groupEnd()
                                               ->findAll();
                                               
-            $proyekData = $proyekModel->where('id_user', $userId)->findAll();
+            // 🔍 QUERY PROYEK: Ambil jika user adalah Ketua (id_user) ATAU Mitra/Anggota (nama)
+            $proyekData = $proyekModel->groupStart()
+                                      ->where('id_user', $userId)
+                                      ->orLike('mitra', $userName)
+                                      ->groupEnd()
+                                      ->findAll();
         } else {
             $publicationData = [];
             $proyekData = [];
         }
 
-        // KITA TES DEBUG DI SINI
-        
-
         $data = [
-            'title'           => 'Profil Saya | ' . $user['nama'],
+            'title'           => 'Profil Saya | ' . $userName,
             'user'            => $user,
             'publicationData' => $publicationData,
             'proyekData'      => $proyekData
@@ -54,7 +61,8 @@ class AuthUi extends BaseController
 
         return view('auth/profile', $data);
     }
-       public function logout()
+    
+    public function logout()
     {
         // Hapus semua session (token + user)
         session()->destroy();

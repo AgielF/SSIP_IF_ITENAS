@@ -39,6 +39,7 @@ class Filters extends BaseFilters
         'auth'             => \App\Filters\AuthFilter::class,
         // [T2.3] SessionSecurityMiddleware diregistrasi sebagai CI4 Filter yang valid
         'session_security' => \App\Middleware\SessionSecurityMiddleware::class,
+        'throttle'         => \App\Filters\ThrottleFilter::class,
     ];
 
     /**

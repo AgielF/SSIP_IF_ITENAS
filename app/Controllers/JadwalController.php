@@ -96,10 +96,8 @@ class JadwalController extends BaseController
      */
     public function store()
     {
-        $user = session()->get('user');
-        if (!$user || !in_array($user['role_id'], [1, 2])) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin atau asisten yang dapat mengelola jadwal.');
-        }
+        // Role authorization sudah ditangani oleh Route Filter (role:1,2) di Routes.php
+
 
         // 1. ATURAN VALIDASI PINTU DEPAN
         $rules = [
@@ -151,10 +149,8 @@ class JadwalController extends BaseController
      */
     public function update($id)
     {
-        $user = session()->get('user');
-        if (!$user || !in_array($user['role_id'], [1, 2])) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin atau asisten yang dapat mengelola jadwal.');
-        }
+        // Role authorization sudah ditangani oleh Route Filter (role:1,2) di Routes.php
+
 
         // Pastikan ID berupa angka untuk mencegah error
         if (!is_numeric($id)) {

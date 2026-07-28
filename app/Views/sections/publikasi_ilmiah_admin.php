@@ -64,47 +64,6 @@ foreach ($publicationData as $row) {
 </style>
 
 <div class="container my-5">
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-check-circle me-2"></i>
-                    <span id="successMessage"></span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-
-        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
-            <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <span id="errorMessage"></span>
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-
-    <?php if (session()->getFlashdata('success')) : ?>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('successMessage').textContent = "<?= session()->getFlashdata('success') ?>";
-                const successToast = new bootstrap.Toast(document.getElementById('successToast'));
-                successToast.show();
-            });
-        </script>
-    <?php endif; ?>
-
-    <?php if (session()->getFlashdata('error')) : ?>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('errorMessage').textContent = "<?= session()->getFlashdata('error') ?>";
-                const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-                errorToast.show();
-            });
-        </script>
-    <?php endif; ?>
     <ul class="nav nav-tabs" id="publication-nav">
         <li class="nav-item">
             <a class="nav-link <?= $kategori === 'jurnal' || $kategori==='' ? 'active' : '' ?>" href="?kategori=jurnal">Jurnal</a>
@@ -183,7 +142,7 @@ foreach ($publicationData as $row) {
                         <tbody>
                             <?php if (empty($groupedData[$kategori ?: 'jurnal'])): ?>
                                 <tr>
-                                    <td colspan="8" class="text-center text-muted">Tidak ada data</td>
+                                    <td colspan="15" class="text-center text-muted">Tidak ada data</td>
                                 </tr>
                             <?php else: ?>
                                 <?php $i=1 + ($limit * (max(1, (int)($_GET['page'] ?? 1)) -1)); ?>
@@ -195,7 +154,8 @@ foreach ($publicationData as $row) {
                                         <td><?=esc($row['topik'])?></td>
                                         <td><?= esc($row['kategori']) ?></td>
                                         <td><?= esc($row['tanggal_publikasi']) ?></td>
-                                         <td><?= esc($row['penulis_utama'] ?? '-') ?></td> <td><?= esc($row['penulis_pendamping']) ?></td>
+                                         <td><?= esc($row['penulis_utama'] ?? '-') ?></td> 
+                                         <td><?= esc($row['penulis_pendamping']) ?></td>
                                         <td><?= esc($row['volume']) ?></td>
                                         <td><?= esc($row['tahun']) ?></td>
                                         <td><?= esc($row['nomor']) ?></td>
@@ -331,7 +291,8 @@ foreach ($publicationData as $row) {
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div> <div class="modal-footer">
+                                                    </div>
+                                                    <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                                     </div>
@@ -473,54 +434,17 @@ foreach ($publicationData as $row) {
 </div>
 
 <script>
-// Simple functionality for publikasi admin
 document.addEventListener('DOMContentLoaded', function() {
-
-        // Hide results when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!searchInput.contains(e.target)) {
-                const results = searchInput.parentNode.querySelector('.search-results');
-                if (results) {
-                    results.remove();
-                }
-            }
-        });
-
-        // Allow manual entry for penulis pendamping
-        if (hiddenInput) {
-            searchInput.addEventListener('blur', function() {
-                // If user typed something not in dropdown, keep it
-                setTimeout(() => {
-                    hiddenInput.value = this.value;
-                }, 100);
-            });
-        }
-    });
-    initializeSearchableDropdown('search-penulis-utama-add', 'penulis-utama-add');
-    initializeSearchableDropdown('search-penulis-pendamping-add', 'penulis-pendamping-add', 'penulis-pendamping-hidden-add');
-
-    // Initialize searchable dropdowns for edit modals when they open
-    document.addEventListener('shown.bs.modal', function(event) {
-        const modal = event.target;
-        if (modal.classList.contains('modal') && modal.id.startsWith('editModal')) {
-            const publikasiId = modal.id.replace('editModal', '');
-
-            // Initialize dropdowns for this specific modal
-            setTimeout(() => {
-                initializeSearchableDropdown('search-penulis-utama-' + publikasiId, 'penulis-utama-' + publikasiId);
-                initializeSearchableDropdown('search-penulis-pendamping-' + publikasiId, 'penulis-pendamping-' + publikasiId, 'penulis-pendamping-hidden-' + publikasiId);
-            }, 100);
-        }
-    });
-
     // Export PDF functionality
-    document.getElementById('export-pdf-btn').addEventListener('click', function() {
-        window.print();
-    });
+    const exportBtn = document.getElementById('export-pdf-btn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+            window.print();
+        });
+    }
 
-    // Toast notifications
+    // Toast notifications dinamis (hanya muncul saat ada session flashdata)
     <?php if (session()->getFlashdata('success')): ?>
-        // Success toast
         const successToast = document.createElement('div');
         successToast.className = 'toast align-items-center text-white bg-success border-0 position-fixed';
         successToast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
@@ -528,19 +452,18 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas fa-check-circle me-2"></i>
-                    <?= session()->getFlashdata('success') ?>
+                    <?= esc(session()->getFlashdata('success')) ?>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         `;
         document.body.appendChild(successToast);
-        const bsToast = new bootstrap.Toast(successToast);
-        bsToast.show();
-        setTimeout(() => successToast.remove(), 5000);
+        const bsSuccess = new bootstrap.Toast(successToast);
+        bsSuccess.show();
+        setTimeout(() => successToast.remove(), 6000);
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
-        // Error toast
         const errorToast = document.createElement('div');
         errorToast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed';
         errorToast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
@@ -548,19 +471,15 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?= session()->getFlashdata('error') ?>
+                    <?= esc(session()->getFlashdata('error')) ?>
                 </div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         `;
         document.body.appendChild(errorToast);
-        const bsToast = new bootstrap.Toast(errorToast);
-        bsToast.show();
-        setTimeout(() => errorToast.remove(), 5000);
+        const bsError = new bootstrap.Toast(errorToast);
+        bsError.show();
+        setTimeout(() => errorToast.remove(), 8000);
     <?php endif; ?>
-
-// Export PDF functionality
-document.getElementById('export-pdf-btn').addEventListener('click', function() {
-    window.print();
 });
 </script>

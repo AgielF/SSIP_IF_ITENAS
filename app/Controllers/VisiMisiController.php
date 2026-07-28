@@ -42,19 +42,30 @@ class VisiMisiController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Simpan data
-        $this->visiMisiModel->insert([
-            'judul' => $this->request->getPost('judul'),
-            'isi'   => $this->request->getPost('isi')
-        ]);
+        // 🛡️ TRY-CATCH ERROR HANDLING
+        try {
+            // Simpan data
+            $this->visiMisiModel->insert([
+                'judul' => $this->request->getPost('judul'),
+                'isi'   => $this->request->getPost('isi')
+            ]);
 
-        return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil ditambahkan.');
+            return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil ditambahkan.');
+            
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat menyimpan Visi Misi.');
+        }
     }
 
     // 3. UPDATE: Memproses perubahan data ke database
     // Rute: POST visi-misi_admin/update/(:num)
     public function update($id = null)
     {
+        // 🛡️ PASTIKAN ID NUMERIC
+        if (!is_numeric($id)) {
+            return redirect()->to('/visi-misi_admin')->with('error', 'ID Visi Misi tidak valid.');
+        }
+
         // Aturan validasi
         $rules = [
             'judul' => 'required',
@@ -65,27 +76,44 @@ class VisiMisiController extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Update data
-        $this->visiMisiModel->update($id, [
-            'judul' => $this->request->getPost('judul'),
-            'isi'   => $this->request->getPost('isi')
-        ]);
+        // 🛡️ TRY-CATCH ERROR HANDLING
+        try {
+            // Update data
+            $this->visiMisiModel->update($id, [
+                'judul' => $this->request->getPost('judul'),
+                'isi'   => $this->request->getPost('isi')
+            ]);
 
-        return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil diperbarui.');
+            return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil diperbarui.');
+
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat memperbarui Visi Misi.');
+        }
     }
 
     // 4. DELETE: Menghapus data dari database
     // Rute: POST visi-misi_admin/delete/(:num)
     public function delete($id = null)
     {
-        // Cek apakah data ada
-        $data = $this->visiMisiModel->find($id);
-        
-        if ($data) {
-            $this->visiMisiModel->delete($id);
-            return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil dihapus.');
+        // 🛡️ PASTIKAN ID NUMERIC
+        if (!is_numeric($id)) {
+            return redirect()->to('/visi-misi_admin')->with('error', 'ID Visi Misi tidak valid.');
         }
 
-        return redirect()->to('/visi-misi_admin')->with('error', 'Data tidak ditemukan.');
+        // 🛡️ TRY-CATCH ERROR HANDLING
+        try {
+            // Cek apakah data ada
+            $data = $this->visiMisiModel->find($id);
+            
+            if ($data) {
+                $this->visiMisiModel->delete($id);
+                return redirect()->to('/visi-misi_admin')->with('success', 'Data Visi Misi berhasil dihapus.');
+            }
+
+            return redirect()->to('/visi-misi_admin')->with('error', 'Data tidak ditemukan.');
+            
+        } catch (\Throwable $e) {
+            return redirect()->to('/visi-misi_admin')->with('error', 'Gagal menghapus data. Data mungkin masih digunakan.');
+        }
     }
 }

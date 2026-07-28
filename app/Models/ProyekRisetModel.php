@@ -28,7 +28,7 @@ class ProyekRisetModel extends Model
 
 
         // 2. Siapkan header tabel dan array untuk baris data
-        $headers = ['Judul','Admin penyunting','topik' ,'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai','status'];
+        $headers = ['Judul','Penulis Utama','topik' ,'Deskripsi','Mitra', 'Sumber Dana', 'Tahun Mulai', 'Tahun Selesai','status'];
         $rows = [];
 
         foreach ($semuaProyek as $proyek) {

@@ -55,39 +55,71 @@ class EventsController extends BaseController
     // Simpan event baru
     public function store()
     {
-        $userId = $this->getUserIdOrRedirect(); // ✅ langsung ambil id user 
-        $data = [
-            'nama_event' => $this->request->getPost('nama_event'),
-            'deskripsi'  => $this->request->getPost('deskripsi'),
-            'jenis'      => $this->request->getPost('jenis'),
-            'created_by' => $userId,
+        // 🛡️ 1. VALIDASI INPUT
+        $rules = [
+            'nama_event' => 'required|max_length[50]',
+            'deskripsi'  => 'required',
+            'jenis'      => 'required|max_length[50]',
         ];
 
-        if ($this->eventModel->save($data)) {
-            return redirect()->to('/events_admin')->with('success', 'Event berhasil ditambahkan');
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Format data tidak valid: ' . implode(', ', $this->validator->getErrors()));
         }
 
-        return redirect()->back()->with('error', 'Gagal menambahkan event');
+        // 🛡️ 2. TRY-CATCH ERROR HANDLING
+        try {
+            $userId = $this->getUserIdOrRedirect();
+            $data = [
+                'nama_event' => $this->request->getPost('nama_event'),
+                'deskripsi'  => $this->request->getPost('deskripsi'),
+                'jenis'      => $this->request->getPost('jenis'),
+                'created_by' => $userId,
+            ];
+
+            $this->eventModel->save($data);
+            return redirect()->to('/events_admin')->with('success', 'Event berhasil ditambahkan');
+
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat menyimpan event.');
+        }
     }
 
     // Update event
     public function update($id)
-{
-    $userId = $this->getUserIdOrRedirect(); // ambil user login
-    
-    $data = [
-        'nama_event' => $this->request->getPost('nama_event'),
-        'deskripsi'  => $this->request->getPost('deskripsi'),
-        'jenis'      => $this->request->getPost('jenis'),
-        'created_by' => $userId, // ⚡ timpa created_by
-    ];
+    {
+        // 🛡️ PASTIKAN ID NUMERIC
+        if (!is_numeric($id)) {
+            return redirect()->to('/events_admin')->with('error', 'ID Event tidak valid.');
+        }
 
-    if ($this->eventModel->update($id, $data)) {
-        return redirect()->to('/events_admin')->with('success', 'Event berhasil diperbarui');
+        // 🛡️ 1. VALIDASI INPUT
+        $rules = [
+            'nama_event' => 'required|max_length[50]',
+            'deskripsi'  => 'required',
+            'jenis'      => 'required|max_length[50]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('error', 'Format data tidak valid: ' . implode(', ', $this->validator->getErrors()));
+        }
+
+        // 🛡️ 2. TRY-CATCH ERROR HANDLING
+        try {
+            $userId = $this->getUserIdOrRedirect();
+            $data = [
+                'nama_event' => $this->request->getPost('nama_event'),
+                'deskripsi'  => $this->request->getPost('deskripsi'),
+                'jenis'      => $this->request->getPost('jenis'),
+                'created_by' => $userId,
+            ];
+
+            $this->eventModel->update($id, $data);
+            return redirect()->to('/events_admin')->with('success', 'Event berhasil diperbarui');
+
+        } catch (\Throwable $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem saat memperbarui event.');
+        }
     }
-
-    return redirect()->back()->with('error', 'Gagal memperbarui event');
-}
 
     // Hapus event
     public function delete($id)

@@ -23,7 +23,7 @@ class PublikasiController extends BaseController
     {
         $userModel = new \App\Models\UserModel();
 
-        // Get all users for dropdown selection (dosen and asisten only)
+        // Get all users for dropdown selection (dosen, asisten, kepala lab)
         $allUsers = $userModel->whereIn('role_id', [1, 2, 3])->findAll();
         
         $search   = $this->request->getVar('search');
@@ -69,10 +69,6 @@ class PublikasiController extends BaseController
 
     public function store()
     {
-        // [T2.2] Pengecekan role session dihapus. AdminFilter sudah menjamin
-        // hanya admin (role_id=1) yang dapat mencapai method ini.
-        // Referensi: SOLID — Single Responsibility Principle.
-
         // 🛡️ 1. VALIDASI INPUT KETAT
         $rules = [
             'id_user'            => 'required|numeric',
@@ -92,15 +88,18 @@ class PublikasiController extends BaseController
             'deskripsi'          => 'permit_empty'
         ];
 
+        // PERBAIKAN: Tangkap detail pesan error jika form tidak lengkap
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('error', 'Format data tidak valid. Pastikan semua isian benar.');
+            $errors = $this->validator->getErrors();
+            $errorMessage = 'Gagal: ' . implode(', ', $errors);
+            return redirect()->back()->withInput()->with('error', $errorMessage);
         }
 
         $selectedUserId = $this->request->getPost('id_user');
 
-        // Validate selected user exists and is dosen/asisten
+        // PERBAIKAN: Role ID 1, 2, 3 diizinkan
         $userModel = new \App\Models\UserModel();
-        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [2, 3])->first();
+        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [1, 2, 3])->first();
         if (!$selectedUser) {
             return redirect()->back()->withInput()->with('error', 'Penulis yang dipilih tidak valid.');
         }
@@ -137,10 +136,6 @@ class PublikasiController extends BaseController
 
     public function update($id_publikasi)
     {
-        // [T2.2] Pengecekan role session dihapus. AdminFilter sudah menjamin
-        // hanya admin (role_id=1) yang dapat mencapai method ini.
-        // Referensi: SOLID — Single Responsibility Principle.
-
         // 🛡️ 1. PASTIKAN ID NUMERIC
         if (!is_numeric($id_publikasi)) {
             return redirect()->to('/publikasi-ilmiah_admin')->with('error', 'ID Publikasi tidak valid.');
@@ -165,17 +160,20 @@ class PublikasiController extends BaseController
             'deskripsi'          => 'permit_empty'
         ];
 
+        // PERBAIKAN: Tangkap detail pesan error jika form tidak lengkap
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('error', 'Format data tidak valid. Pastikan semua isian benar.');
+            $errors = $this->validator->getErrors();
+            $errorMessage = 'Gagal: ' . implode(', ', $errors);
+            return redirect()->back()->withInput()->with('error', $errorMessage);
         }
 
         $selectedUserId = $this->request->getPost('id_user');
 
-        // Validate selected user exists and is dosen/asisten
+        // Validate selected user exists
         $userModel = new \App\Models\UserModel();
         $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [1, 2, 3])->first();
         if (!$selectedUser) {
-            return redirect()->back()->with('error', 'Penulis yang dipilih tidak valid.');
+            return redirect()->back()->withInput()->with('error', 'Penulis yang dipilih tidak valid.');
         }
 
         $penulisPendamping = $this->request->getPost('penulis_pendamping');

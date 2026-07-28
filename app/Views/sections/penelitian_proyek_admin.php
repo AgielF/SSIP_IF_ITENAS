@@ -104,7 +104,7 @@ $allUsers = $allUsers ?? [];
                         <tr>
                             <th>No.</th>
                             <th>Judul</th>
-                            <th>Admin</th>
+                            <th>Penulis Utama</th>
                             <th>Topik</th>
                             <th>Deskripsi</th>
                             <th>Mitra</th>

@@ -187,7 +187,7 @@
                         <?php if (!empty($jadwal)): ?>
                             <?php foreach ($jadwal as $j): ?>
                                 <option value="<?= $j['id_jadwal'] ?>">
-                                    <?= $j['tanggal'] ?> - <?= $j['waktu_mulai'] ?> (<?= $j['nama_event'] ?>)
+                                    <?= $j['tanggal'] ?> - <?= $j['waktu_mulai'] ?> (<?= esc($j['nama_event']) ?>)
                                 </option>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -236,7 +236,7 @@
                         <?php if (!empty($jadwal)): ?>
                             <?php foreach ($jadwal as $j): ?>
                                 <option value="<?= $j['id_jadwal'] ?>">
-                                    <?= $j['tanggal'] ?> - <?= $j['waktu_mulai'] ?> (<?= $j['nama_event'] ?>)
+                                    <?= $j['tanggal'] ?> - <?= $j['waktu_mulai'] ?> (<?= esc($j['nama_event']) ?>)
                                 </option>
                             <?php endforeach; ?>
                         <?php else: ?>

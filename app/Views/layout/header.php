@@ -298,7 +298,12 @@ $isDosen   = ($roleName === 'Dosen');
             <a class="nav-link" href="/profile"><i class="fas fa-user"></i>Profile</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/logout" onclick="return confirm('Yakin ingin logout?')"><i class="fas fa-right-from-bracket me-1"></i>Logout</a>
+            <form action="/logout" method="POST" id="form-logout" style="display: none;">
+                <?= csrf_field() ?>
+            </form>
+            <a class="nav-link" href="#" onclick="if(confirm('Yakin ingin logout?')) { document.getElementById('form-logout').submit(); } return false;">
+                <i class="fas fa-right-from-bracket me-1"></i>Logout
+            </a>
         </li>
         <?php else: ?>
         <li class="nav-item">

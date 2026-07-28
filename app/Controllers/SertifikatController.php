@@ -270,12 +270,8 @@ class SertifikatController extends BaseController
             ])->setStatusCode(404);
         }
         
-        if ((int)$userData['role_id'] !== 2) {
-             return $this->response->setJSON([
-                 'status' => 'error', 
-                 'message' => 'Akses ditolak. Fitur ini eksklusif untuk Asisten Laboratorium.'
-             ])->setStatusCode(403);
-        }
+        // Role authorization sudah ditangani oleh Route Filter (role:1,2) di Routes.php
+
 
         $namaUser = $userData['nama'];
         $nrpUser  = $userData['nomor'];
@@ -338,10 +334,12 @@ class SertifikatController extends BaseController
 
         $userModel = new UserModel();
         $userData  = $userModel->find($userId);
-        
-        if (!$userData || (int)$userData['role_id'] !== 2) {
+        if (!$userData) {
             return $this->response->setStatusCode(403, 'Forbidden');
         }
+
+        // Role authorization sudah ditangani oleh Route Filter (role:1,2) di Routes.php
+
 
         // Pastikan statusnya sudah selesai
         $rekorAsisten = $this->asistenPeriodeModel

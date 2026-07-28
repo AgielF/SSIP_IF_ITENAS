@@ -303,7 +303,7 @@
                     <select name="id_event" class="form-control" required>
                         <option value="">-- Pilih Event --</option>
                         <?php foreach ($events as $event): ?>
-                            <option value="<?= $event['id_event']; ?>"><?= $event['nama_event']; ?></option>
+                            <option value="<?= $event['id_event']; ?>"><?= esc($event['nama_event']); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -363,7 +363,7 @@
                     <select name="id_event" id="edit-id-event" class="form-control" required>
                         <option value="">-- Pilih Event --</option>
                         <?php foreach ($events as $event): ?>
-                            <option value="<?= $event['id_event']; ?>"><?= $event['nama_event']; ?></option>
+                            <option value="<?= $event['id_event']; ?>"><?= esc($event['nama_event']); ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

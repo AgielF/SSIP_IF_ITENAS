@@ -45,10 +45,8 @@ class ProyekRisetController extends BaseController
     // 🟢 CREATE
     public function create()
     {
-        // Validate that user is admin (role_id = 1)
-        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat menambah proyek.');
-        }
+        // Role authorization (Admin & Dosen) sudah ditangani oleh Route Filter (role:1,3)
+
 
         // 🛡️ 1. VALIDASI INPUT
         $rules = [
@@ -103,10 +101,8 @@ class ProyekRisetController extends BaseController
     // 🟡 UPDATE
     public function update($id)
     {
-        // Validate that user is admin (role_id = 1)
-        if (!session()->get('user') || session()->get('user')['role_id'] != 1) {
-            return redirect()->to('/login')->with('error', 'Akses ditolak. Hanya admin yang dapat mengedit proyek.');
-        }
+        // Role authorization (Admin & Dosen) sudah ditangani oleh Route Filter (role:1,3)
+
 
         // 🛡️ 1. PASTIKAN ID NUMERIC
         if (!is_numeric($id)) {
@@ -134,7 +130,7 @@ class ProyekRisetController extends BaseController
 
         // Validate selected user exists and is dosen/asisten
         $userModel = new \App\Models\UserModel();
-        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [2, 3])->first();
+        $selectedUser = $userModel->where('id', $selectedUserId)->whereIn('role_id', [1, 2, 3])->first();
         if (!$selectedUser) {
             return redirect()->back()->with('error', 'Penulis yang dipilih tidak valid.');
         }

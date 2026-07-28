@@ -51,7 +51,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
 });
 
 $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($routes) {
-    $routes->post('login', 'Auth::login');
+    $routes->post('login', 'Auth::login', ['filter' => 'throttle']);
     $routes->get('profile', 'Auth::profile');
 });
 
@@ -59,7 +59,7 @@ $routes->group('api/auth', ['namespace' => 'App\Controllers\Api'], function($rou
 $routes->get('login', 'AuthUi::login');
 $routes->get('profile', 'AuthUi::profile', ['filter' => 'auth']);
 //di nonaktifkan jika untuk pengujian automation xss testting 
-$routes->get('logout', 'AuthUi::logout');
+$routes->post('logout', 'AuthUi::logout');
 
 
 // =========================================================================
