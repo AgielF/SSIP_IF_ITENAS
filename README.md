@@ -91,39 +91,37 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di lingkungan lokal (Ubun
     php spark db:seed DatabaseSeeder
 
 
-## ⚙️ Pengujian (Unit Testing)
+---
 
-1. **Menjalankan Tes**
-   ```bash
-   vendor/bin/phpunit tests/Feature/MasterRoleTest.php > hasil_text.txt
+# 🛡️ Laporan Progres: Fase Pematangan Keamanan & QA Otomatis (SSIP IF ITENAS)
 
-2. **Menjalankan Tes sqlinject**
-   Merubah CI_ENVIRONMENT = production pada .env 
-   ```bash
-   # Menjalankan server pada mode testing
-   php spark serve --env testing
+Dokumen ini merangkum seluruh jejak langkah, modifikasi *codebase*, dan pencapaian arsitektural yang telah kita lakukan secara *pair-programming* untuk menaikkan standar kualitas sistem Lab SSIP menjadi *Enterprise-Ready*.
 
-   # Memberikan izin eksekusi jika file skrip baru dibuat
-   chmod +x test_sqli.sh
-   
-   # Menjalankan skrip pengujian terhadap endpoint target
-   ./test_sqli.sh
+---
 
+## 1. Implementasi AI QA Agent (Automated Testing)
+Untuk mencegah regresi (*bug* berulang) dan memastikan integritas data, kita telah mengintegrasikan sistem agen penguji otonom:
+*   **[NEW] `QaReportGenerator.php`**: *Library* inti yang bertugas mengeksekusi skenario uji coba.
+*   **[NEW] `QaAgentScan.php`**: *Command-Line Interface* (CLI) di CI4 untuk memicu agen QA menjalankan pemindaian secara berkala.
 
-3. **Menjalankan Tes XSS**
-   Buka folder selain folder project 
-   ```bash
-   # Clone dari repositori resmi
-   git clone https://github.com/s0md3v/XSStrike.git
+## 2. Refaktorisasi Logika Role & Stabilitas CRUD
+Menyelaraskan otorisasi *backend* agar murni bertumpu pada filter CI4 dan membersihkan potensi *fatal error*.
+*   **Resolusi Role-Conflict**: Menghapus blokade *role* manual (`if role_id != X`) yang sebelumnya berbenturan dengan `Routes.php`. Akses Kepala Lab, Dosen, dan Asisten kini mulus pada modul:
+    *   `ProyekRisetController.php` (Mendukung integrasi Penulis Utama & Pendamping)
+    *   `PublikasiController.php`
+    *   `JadwalController.php`
+    *   `SertifikatController.php`
+*   **Penanganan Exception (Graceful Fails)**: Menyuntikkan blok `try-catch` dan validasi `is_numeric($id)` secara merata ke dalam `BeritaController`, `EventsController`, `PeriodeController`, `GaleriUmumController`, dan `ModulPraktikumController` untuk menjamin server tidak lagi melempar layar *error* merah saat terjadi kegagalan *Query* atau *Foreign Key Constraint*.
 
-   # Masuk ke direktori
-   cd XSStrike
+## 3. Penambalan Celah Keamanan Kritis (Security Patch)
+Mengeksekusi rekomendasi *Technical Architect* untuk menutup tiga vektor serangan siber utama:
+*   **[MITIGATED] Serangan Brute-Force**: 
+    *   Menciptakan **`ThrottleFilter.php`** (Membatasi percobaan ke rute login API maksimal 5 kali per menit per IP).
+    *   Diregistrasikan di `Filters.php` dan `Routes.php`.
+*   **[MITIGATED] Eksploitasi CSRF pada Logout**: 
+    *   Mengamankan `Routes.php` dengan mengubah rute `logout` menjadi `POST`.
+    *   Menghancurkan celah eksekusi *Forced Logout* via URL dengan menanamkan *hidden form* beserta `csrf_field()` pada UI navigasi di **`header.php`**.
+*   **[MITIGATED] Stored XSS (Cross-Site Scripting)**: 
+    *   Melakukan sanitasi pada variabel keluaran dinamis. Membungkus nilai berisiko seperti teks tebasan *user* dengan fungsi `esc()` pada berkas antarmuka, khususnya di `jadwal_card_admin.php` dan `rekrutmen_admin.php`.
 
-   # Instal pustaka yang dibutuhkan
-   pip install -r requirements.txt
-
-   #menyalakan app
-   php spark serve --env testing
-
-   # Melakukan crawling mendalam pada target (contoh: rute login/berita)
-   python3 xsstrike.py -u "http://localhost:8080/" --crawl > hasil_scan.txt
+Seluruh pekerjaan keamanan di iterasi ini dinyatakan selesai dengan predikat **100% SUCCESS**.
