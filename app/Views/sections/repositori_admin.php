@@ -96,7 +96,7 @@ function getProjectTypeColor($type) {
 }
 ?>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="<?= base_url('assets/vendor/fontawesome/css/all.min.css') ?>">
 <link rel="stylesheet" href="<?= base_url('assets/datatables/css/dataTables.bootstrap5.min.css') ?>"/>
 
 <div class="container my-5">
@@ -231,7 +231,7 @@ function getProjectTypeColor($type) {
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="<?= base_url('assets/vendor/jquery/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/datatables/js/dataTables.min.js') ?>"></script>
 <script src="<?= base_url('assets/datatables/js/dataTables.bootstrap5.min.js') ?>"></script>
 <script>

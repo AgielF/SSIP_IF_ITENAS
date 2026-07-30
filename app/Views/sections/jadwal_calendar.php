@@ -3,8 +3,8 @@
 </div>
 
 <!-- FullCalendar CSS & JS -->
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.css' rel='stylesheet' />
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+
+<script src='<?= base_url('assets/vendor/fullcalendar/index.global.min.js') ?>'></script>
 
 <?php
 function getStatusColorPHP($status) {

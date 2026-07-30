@@ -1,5 +1,5 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="<?= base_url('assets/vendor/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
+<link href="<?= base_url('assets/vendor/fontawesome/css/all.min.css') ?>" rel="stylesheet">
 <link rel="stylesheet" href="<?= base_url('assets/datatables/css/dataTables.bootstrap5.min.css') ?>">
 
 <div class="container my-5">
@@ -323,17 +323,17 @@
     </div>
 <!-- ================= JS ================= -->
  <!-- ================= DATATABLES JS ================= -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="<?= base_url('assets/vendor/jquery/jquery.min.js') ?>"></script>
 
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="<?= base_url('assets/vendor/datatables/jquery.dataTables.min.js') ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables/dataTables.bootstrap5.min.js') ?>"></script>
 
 <!-- BUTTONS -->
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="<?= base_url('assets/vendor/datatables/dataTables.buttons.min.js') ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables/buttons.bootstrap5.min.js') ?>"></script>
+<script src="<?= base_url('assets/vendor/pdfmake/pdfmake.min.js') ?>"></script>
+<script src="<?= base_url('assets/vendor/pdfmake/vfs_fonts.js') ?>"></script>
+<script src="<?= base_url('assets/vendor/datatables/buttons.html5.min.js') ?>"></script>
 <script>
 let memberIndex = 0;
 

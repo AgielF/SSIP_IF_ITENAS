@@ -10,7 +10,7 @@
 </div>
 
 <!-- FullCalendar CSS & JS (via CDN) -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+<script src='<?= base_url('assets/vendor/fullcalendar/index.global.min.js') ?>'></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
