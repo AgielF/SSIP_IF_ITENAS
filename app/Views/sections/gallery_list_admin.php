@@ -156,7 +156,7 @@
 
 <div class="modal fade" id="addDataModal" tabindex="-1">
     <div class="modal-dialog">
-        <form class="modal-content" action="<?= site_url('galeri_admin/create') ?>" method="post" enctype="multipart/form-data">
+        <form class="modal-content" action="<?= site_url('galeri_admin/store') ?>" method="post" enctype="multipart/form-data">
             <?= csrf_field() ?>
             <div class="modal-header">
                 <h5 class="modal-title">Tambah Media Galeri</h5>
@@ -249,14 +249,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- 1. HANDLING TOAST NOTIFICATION ---
     <?php if (session()->getFlashdata('success')): ?>
         const successToast = new bootstrap.Toast(document.getElementById('successToast'));
-        document.getElementById('successMessage').textContent = '<?= session()->getFlashdata('success') ?>';
+        document.getElementById('successMessage').innerHTML = <?= json_encode(session()->getFlashdata('success')) ?>;
         successToast.show();
         setTimeout(() => successToast.hide(), 4000);
     <?php endif; ?>
 
     <?php if (session()->getFlashdata('error')): ?>
         const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
-        document.getElementById('errorMessage').textContent = '<?= session()->getFlashdata('error') ?>';
+        document.getElementById('errorMessage').innerHTML = <?= json_encode(session()->getFlashdata('error')) ?>;
         errorToast.show();
         setTimeout(() => errorToast.hide(), 4000);
     <?php endif; ?>
@@ -267,13 +267,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (kategori === 'video') {
             areaFoto.style.display = 'none';
             areaVideo.style.display = 'block';
-            inputFoto.removeAttribute('required');  
-            inputVideo.setAttribute('required', 'required'); 
+            inputFoto.removeAttribute('required');
+            inputFoto.setAttribute('disabled', 'disabled');
+            inputVideo.setAttribute('required', 'required');
+            inputVideo.removeAttribute('disabled');
         } else {
             areaFoto.style.display = 'block';
             areaVideo.style.display = 'none';
-            inputVideo.removeAttribute('required'); 
-            // Kita tidak force inputFoto 'required' saat Edit (karena user mungkin gak mau ganti foto)
+            inputVideo.removeAttribute('required');
+            inputVideo.setAttribute('disabled', 'disabled');
+            inputFoto.removeAttribute('disabled');
+            // Kita tidak force inputFoto 'required' saat Edit secara global
             // Khusus modal Tambah baru diatur di bawah.
         }
     }
@@ -295,6 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event untuk Modal Edit (Menyesuaikan saat kategori diubah)
     const editKategori = document.getElementById('editKategori');
+    let originalKategoriEdit = ''; // Simpan status original untuk pengecekan
+
     editKategori.addEventListener('change', function() {
         toggleFormFields(this.value, 
             document.getElementById('editAreaFoto'), 
@@ -302,6 +308,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('editInputFoto'), 
             document.getElementById('editInputVideo')
         );
+        
+        // Paksa admin untuk upload foto JIKA tipe data awalnya adalah video dan diubah ke foto
+        if (originalKategoriEdit === 'video' && this.value === 'foto') {
+            document.getElementById('editInputFoto').setAttribute('required', 'required');
+        }
     });
 
 
@@ -387,6 +398,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const kategori = this.dataset.kategori; // foto atau video
             const keterangan = this.dataset.keterangan;
             const fileData = this.dataset.file; // berisi url youtube ATAU nama file .jpg
+
+            originalKategoriEdit = kategori; // Simpan untuk pengecekan validasi
 
             document.getElementById("edit-id").value = id;
             document.getElementById("editKategori").value = kategori;

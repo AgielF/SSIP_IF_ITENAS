@@ -243,34 +243,45 @@ $isDosen   = ($roleName === 'Dosen');
                 <i class="fas fa-user-shield"></i> Menu <?= esc($roleName) ?>
             </a>
             <ul class="dropdown-menu">
+                <?php 
+                $menuDefinitions = [
+                    'asisten_admin'           => ['url' => '/asisten_admin', 'label' => 'Kelola Users'],
+                    'events_admin'            => ['url' => '/events_admin', 'label' => 'Kelola Events'],
+                    'ruangan_admin'           => ['url' => '/ruangan_admin', 'label' => 'Kelola Ruangan'],
+                    'rekrutmen_admin'         => ['url' => '/rekrutmen_admin', 'label' => 'Kelola Rekrutmen'],
+                    'berita_admin'            => ['url' => '/berita_admin', 'label' => 'Kelola Berita'],
+                    'penelitian_proyek_admin' => ['url' => '/penelitian-proyek_admin', 'label' => 'Kelola Penelitian Proyek'],
+                    'publikasi_ilmiah_admin'  => ['url' => '/publikasi-ilmiah_admin', 'label' => 'Kelola Publikasi Ilmiah'],
+                    'galeri_admin'            => ['url' => '/galeri_admin', 'label' => 'Kelola Galeri'],
+                    'modul_praktikum_admin'   => ['url' => '/modul_praktikum_admin', 'label' => 'Kelola Modul'],
+                    'jadwal_admin'            => ['url' => '/jadwal_admin', 'label' => 'Kelola Jadwal'],
+                    'project_lab_admin'       => ['url' => '/project-lab_admin', 'label' => 'Kelola Project Laboratorium'],
+                    'visi_misi_admin'         => ['url' => '/visi-misi_admin', 'label' => 'Kelola Content Visi Misi'],
+                    'periode_admin'           => ['url' => '/periode_admin', 'label' => 'Kelola Periode Asisten'],
+                    'sertifikat_admin'        => ['url' => '/sertifikat_admin', 'label' => 'Kelola Sertifikat'],
+                    'hak_akses_admin'         => ['url' => '/hak_akses_admin', 'label' => 'Kelola Hak Akses'],
+                    'jadwal_saya'             => ['url' => '/jadwal_saya', 'label' => 'Jadwal Saya'],
+                    'sertifikat_klaim'        => ['url' => '/sertifikat', 'label' => 'Klaim Sertifikat'],
+                ];
 
-                <?php if ($isAdmin): ?>
-                    <li><a class="dropdown-item" href="/asisten_admin">Kelola Users</a></li>
-                    <li><a class="dropdown-item" href="/events_admin">Kelola Events</a></li>
-                    <li><a class="dropdown-item" href="/ruangan_admin">Kelola Ruangan</a></li>
-                    <li><a class="dropdown-item" href="/rekrutmen_admin">Kelola Rekrutmen</a></li>
-                    <li><a class="dropdown-item" href="/berita_admin">Kelola Berita</a></li>
-                    <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
-                    <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
-                    <li><a class="dropdown-item" href="/galeri_admin">Kelola Galeri</a></li>
-                    <li><a class="dropdown-item" href="/peserta-praktikum_admin">Kelola Nilai</a></li>
-                    <li><a class="dropdown-item" href="/modul_praktikum_admin">Kelola Modul</a></li>
-                    <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
-                    <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
-                    <li><a class="dropdown-item" href="/visi-misi_admin">Kelola Content Visi Misi</a></li>
-                    <li><a class="dropdown-item" href="/periode_admin">Kelola Periode Asisten</a></li>
-                    <li><a class="dropdown-item" href="/sertifikat_admin">Kelola Sertifikat</a></li>
+                $rolePermModel = new \App\Models\RolePermissionModel();
+                $userRole = (int)($user['role_id'] ?? 0);
+                $allowedKeys = [];
 
-                <?php elseif ($isDosen): ?>
-                    <li><a class="dropdown-item" href="/penelitian-proyek_admin">Kelola Penelitian Proyek</a></li>
-                    <li><a class="dropdown-item" href="/publikasi-ilmiah_admin">Kelola Publikasi Ilmiah</a></li>
-                    <li><a class="dropdown-item" href="/project-lab_admin">Kelola Project Laboratorium</a></li>
-
-                <?php elseif ($isAsisten): ?>
-                    <li><a class="dropdown-item" href="/jadwal_admin">Kelola Jadwal</a></li>
-                    <li><a class="dropdown-item" href="/sertifikat">Klaim Sertifikat</a></li>
-                <?php endif; ?>
-
+                if ($userRole === 1) {
+                    $allowedKeys = array_keys($menuDefinitions);
+                    // Admin doesn't need personal assistant menus
+                    $allowedKeys = array_diff($allowedKeys, ['jadwal_saya', 'sertifikat_klaim']);
+                } else {
+                    $allowedKeys = $rolePermModel->getRoleMenus($userRole);
+                }
+                
+                foreach($allowedKeys as $key) {
+                    if(isset($menuDefinitions[$key])) {
+                        echo '<li><a class="dropdown-item" href="' . $menuDefinitions[$key]['url'] . '">' . $menuDefinitions[$key]['label'] . '</a></li>';
+                    }
+                }
+                ?>
             </ul>
         </li>
         <?php endif; ?>

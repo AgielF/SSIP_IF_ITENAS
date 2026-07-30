@@ -2,24 +2,43 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<?= base_url('assets/datatables/css/dataTables.bootstrap5.min.css') ?>">
 
-<div class="container-fluid my-4">
+<div class="container my-5">
 
-<style>
-.repo-wrapper {
-    max-width: 1400px;   /* atur sesuai selera */
-    margin: 0 auto;      /* center */
-}
-</style>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <!-- Success Toast -->
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="successMessage">
+                    <?php if (session()->getFlashdata('success')): ?>
+                        <?= session()->getFlashdata('success') ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 
-
-<?php if (session()->getFlashdata('success')): ?>
-<div class="alert alert-success shadow-sm">
-    <i class="fas fa-check-circle me-1"></i>
-    <?= session()->getFlashdata('success') ?>
+    <!-- Error Toast -->
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="errorMessage">
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <?= session()->getFlashdata('error') ?>
+                    <?php elseif (session()->getFlashdata('errors')): ?>
+                        <?= implode('<br>', session()->getFlashdata('errors')) ?>
+                    <?php endif; ?>
+                </span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 </div>
-<?php endif; ?>
 
-<div class="repo-wrapperee">
+
         
     <div class="card shadow-sm border-0 rounded-4">
 
@@ -175,7 +194,6 @@
     </tbody>
 
     </table>
-    </div>
     </div>
     </div>
     </div>
@@ -455,5 +473,20 @@ $(document).ready(function () {
             }
         ]
     });
+});
+
+// Show toast if flashdata exists
+document.addEventListener("DOMContentLoaded", function() {
+    <?php if (session()->getFlashdata('success')): ?>
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        successToast.show();
+        setTimeout(() => successToast.hide(), 3000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error') || session()->getFlashdata('errors')): ?>
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        errorToast.show();
+        setTimeout(() => errorToast.hide(), 3000);
+    <?php endif; ?>
 });
 </script>

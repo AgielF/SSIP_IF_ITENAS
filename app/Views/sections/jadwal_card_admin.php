@@ -411,7 +411,7 @@
 <div class="modal fade" id="assignAsistenModal" tabindex="-1" style="z-index: 1055;" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-white shadow-lg border">
-            <form id="assignAsistenForm" method="post">
+            <form id="assignAsistenForm" method="post" action="<?= site_url('jadwal/sync_asisten') ?>">
                 <?= csrf_field() ?>
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Assign Asisten ke Jadwal</h5>
@@ -709,60 +709,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle assign asisten form submission
-    document.getElementById('assignAsistenForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const jadwalId = formData.get('id_jadwal');
-
-        // Clear existing assignments first
-        fetch('<?= site_url('api/asisten-jadwal') ?>?jadwal=' + jadwalId, {
-            method: 'GET'
-        })
-        .then(response => response.json())
-        .then(data => {
-            const deletePromises = (data.data || []).map(item => {
-                return fetch('<?= site_url('api/asisten-jadwal/delete/') ?>' + item.id, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                    }
-                });
-            });
-
-            return Promise.all(deletePromises);
-        })
-        .then(() => {
-            // Add new assignments
-            const selectedAsisten = formData.getAll('assigned_asisten[]');
-            const assignPromises = selectedAsisten.map(asistenId => {
-                const assignData = new FormData();
-                assignData.append('id_jadwal', jadwalId);
-                assignData.append('id_user', asistenId);
-
-                return fetch('<?= site_url('api/asisten-jadwal/create') ?>', {
-                    method: 'POST',
-                    body: assignData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-            });
-
-            return Promise.all(assignPromises);
-        })
-        .then(() => {
-            // Close modal and reload page
-            const modal = bootstrap.Modal.getInstance(document.getElementById('assignAsistenModal'));
-            modal.hide();
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error updating assignments:', error);
-            alert('Terjadi kesalahan saat menyimpan assignment');
-        });
-    });
+    // Form akan di-submit secara default ke action="<?= site_url('jadwal/sync_asisten') ?>"
 });
 </script>

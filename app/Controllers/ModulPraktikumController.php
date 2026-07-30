@@ -80,9 +80,15 @@ class ModulPraktikumController extends BaseController
                                      ->with('error', $this->validator->listErrors());
                 }
 
+                // Pastikan direktori tujuan ada
+                $uploadPath = WRITEPATH . 'uploads/modul/';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
                 // Pindahkan file ke folder uploads/modul/
                 $newName = $file->getRandomName();
-                $file->move(WRITEPATH . 'uploads/modul', $newName);
+                $file->move($uploadPath, $newName);
                 $file_url = $newName;
             } else if ($this->request->getPost('file_url') && empty($file_url)) {
                 $file_url = $this->request->getPost('file_url');
@@ -158,9 +164,15 @@ class ModulPraktikumController extends BaseController
                     }
                 }
 
+                // Pastikan direktori tujuan ada
+                $uploadPath = WRITEPATH . 'uploads/modul/';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
                 // Pindahkan file baru
                 $newName = $file->getRandomName();
-                $file->move(WRITEPATH . 'uploads/modul', $newName);
+                $file->move($uploadPath, $newName);
                 $file_url = $newName;
             } else if ($this->request->getPost('file_url') && $this->request->getPost('file_url') !== $modul['file_url']) {
                 $file_url = $this->request->getPost('file_url');

@@ -47,9 +47,9 @@
                                 <?= $a['role'] === 'admin' ? 'Kepala Laboratorium' : ucfirst(esc($a['role'] ?? '')) ?>
                             </div>
                             <?php if (!empty($a['foto'])): ?>
-                                <img src="<?= base_url(esc($a['foto'])) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>" onerror="this.src='https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>'">
+                                <img src="<?= base_url(esc($a['foto'])) ?>" class="card-img-top aspect-ratio-portrait" alt="Foto <?= esc($a['nama']) ?>" onerror="this.src='https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>'">
                             <?php else: ?>
-                                <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-1x1" alt="Foto <?= esc($a['nama']) ?>">
+                                <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-portrait" alt="Foto <?= esc($a['nama']) ?>">
                             <?php endif; ?>
                         </div>
                         <div class="card-body text-center">
@@ -67,17 +67,30 @@
                              <p class="card-text text-muted small mb-3">
                                 <?= esc($a['nama_periode'] ?? '-') ?>
                             </p>
-                            <div class="d-flex justify-content-center gap-2">
-                                <a href="#" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                    <i class="fab fa-facebook-f fa-sm"></i>
-                                </a>
-                                <a href="#" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                    <i class="fab fa-whatsapp fa-sm"></i>
-                                </a>
-                                <a href="#" class="btn btn-danger btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                    <i class="fab fa-google-plus-g fa-sm"></i>
-                                </a>
-                            </div>
+                            <?php if (in_array(strtolower($a['role'] ?? ''), ['admin', 'dosen'])): ?>
+                                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                    <?php if (!empty($a['google_scholar'])): ?>
+                                        <a href="<?= esc($a['google_scholar']) ?>" target="_blank" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Google Scholar">
+                                            <i class="fas fa-graduation-cap fa-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($a['sinta'])): ?>
+                                        <a href="<?= esc($a['sinta']) ?>" target="_blank" class="btn btn-info btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="SINTA">
+                                            <i class="fas fa-book fa-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($a['orcid'])): ?>
+                                        <a href="<?= esc($a['orcid']) ?>" target="_blank" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="ORCID">
+                                            <i class="fab fa-orcid fa-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (!empty($a['scopus'])): ?>
+                                        <a href="<?= esc($a['scopus']) ?>" target="_blank" class="btn btn-warning btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="Scopus">
+                                            <i class="fas fa-university fa-sm"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -108,10 +121,12 @@
     </div> 
 
 <style>
-.aspect-ratio-1x1 {
-    aspect-ratio: 1/1;
+.aspect-ratio-portrait {
+    aspect-ratio: 3/4;
     width: 100%;
     object-fit: cover;
+    object-position: top;
+    background-color: #E2E8F0;
 }
 .role-badge {
     z-index: 2;

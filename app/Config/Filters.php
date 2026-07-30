@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'      => PerformanceMetrics::class,
         'admin'            => \App\Filters\AdminFilter::class,
         'role'             => \App\Filters\RoleFilter::class,
+        'permission'       => \App\Filters\PermissionFilter::class,
         'auth'             => \App\Filters\AuthFilter::class,
         // [T2.3] SessionSecurityMiddleware diregistrasi sebagai CI4 Filter yang valid
         'session_security' => \App\Middleware\SessionSecurityMiddleware::class,

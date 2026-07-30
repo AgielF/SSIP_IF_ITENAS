@@ -84,10 +84,13 @@
                                     
                                     <td>
                                         <?php if (!empty($row['file_url'])): ?>
+                                            <?php $isPdfAdmin = preg_match('/\.pdf$/i', $row['file_url']); ?>
                                             <div class="d-flex flex-column gap-1">
+                                                <?php if ($isPdfAdmin): ?>
                                                 <a href="<?= base_url('modul-praktikum/preview/'.$row['file_url']) ?>" target="_blank" class="btn btn-sm btn-outline-success" style="font-size: 11px;">
                                                     <i class="fas fa-eye me-1"></i> Buka
                                                 </a>
+                                                <?php endif; ?>
                                                 <a href="<?= base_url('modul-praktikum/download/'.$row['file_url']) ?>" class="btn btn-sm btn-outline-primary" style="font-size: 11px;">
                                                     <i class="fas fa-download me-1"></i> Unduh
                                                 </a>
@@ -98,25 +101,27 @@
                                     </td>
                                     <td><?= esc($row['jadwal_tanggal'] ?? '-') ?></td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning btn-edit"
-                                            data-id="<?= $row['id_modul'] ?>"
-                                            data-judul="<?= esc($row['judul']) ?>"
-                                            data-deskripsi="<?= esc($row['deskripsi']) ?>"
-                                            data-file="<?= esc($row['file_url']) ?>"
-                                            data-jadwal="<?= esc($row['id_jadwal']) ?>"
-                                            data-bs-toggle="modal" data-bs-target="#modalEdit">
-                                            Edit
-                                        </button>
-                                        <form action="<?= base_url('modul-praktikum/delete/' . $row['id_modul']) ?>" 
-                                            method="POST" 
-                                            class="d-inline" 
-                                            onsubmit="return confirm('Hapus modul ini? File fisik dokumen juga akan ikut terhapus permanen.');">
-                                            
-                                            <?= csrf_field() ?>
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                Hapus
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <button class="btn btn-sm btn-warning btn-edit text-white" title="Edit"
+                                                data-id="<?= $row['id_modul'] ?>"
+                                                data-judul="<?= esc($row['judul']) ?>"
+                                                data-deskripsi="<?= esc($row['deskripsi']) ?>"
+                                                data-file="<?= esc($row['file_url']) ?>"
+                                                data-jadwal="<?= esc($row['id_jadwal']) ?>"
+                                                data-bs-toggle="modal" data-bs-target="#modalEdit">
+                                                <i class="fas fa-edit"></i>
                                             </button>
-                                        </form>
+                                            <form action="<?= base_url('modul-praktikum/delete/' . $row['id_modul']) ?>" 
+                                                method="POST" 
+                                                class="d-inline" 
+                                                onsubmit="return confirm('Hapus modul ini? File fisik dokumen juga akan ikut terhapus permanen.');">
+                                                
+                                                <?= csrf_field() ?>
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

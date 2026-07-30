@@ -170,6 +170,15 @@ class GaleriUmumController extends BaseController
             else {
                 $file = $this->request->getFile('gambar');
                 
+                // Jika ganti dari Video ke Foto tapi TIDAK upload file, tolak!
+                if (strtolower($galeriLama['kategori']) === 'video' && (!$file || !$file->isValid())) {
+                    if ($file && $file->getError() === UPLOAD_ERR_INI_SIZE) {
+                        return redirect()->to('/galeri_admin')->with('error', 'Ukuran file gambar yang Anda pilih terlalu besar (Maksimal sesuai batas server). Silakan kompres atau pilih gambar lain yang lebih kecil.');
+                    }
+                    $reason = $file ? $file->getErrorString() . ' (Code: ' . $file->getError() . ')' : 'File input kosong atau tidak dikirim oleh browser';
+                    return redirect()->to('/galeri_admin')->with('error', 'Perubahan dibatalkan: Anda mengubah tipe dari Video ke Foto, tetapi sistem tidak menerima gambar valid. Detail: ' . $reason);
+                }
+
                 // Cek jika ada file FOTO BARU yang diupload admin
                 if ($file && $file->isValid() && !$file->hasMoved()) {
 
@@ -183,6 +192,12 @@ class GaleriUmumController extends BaseController
                                 'is_image[gambar]',
                                 'mime_in[gambar,image/jpg,image/jpeg,image/png,image/webp]',
                                 'ext_in[gambar,jpg,jpeg,png,webp]',
+                            ],
+                            'errors' => [
+                                'is_image'  => 'File yang Anda unggah rusak atau bukan gambar sungguhan (mungkin ekstensi diubah paksa).',
+                                'max_size'  => 'Ukuran gambar maksimal 2MB.',
+                                'mime_in'   => 'Format file tidak didukung. Gunakan JPG, PNG, atau WEBP.',
+                                'ext_in'    => 'Ekstensi file tidak diizinkan.',
                             ],
                         ],
                     ];

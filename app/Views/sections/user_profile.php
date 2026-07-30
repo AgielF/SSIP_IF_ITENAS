@@ -81,28 +81,35 @@
             <div class="col-md-9">
                 <h2 class="h3 mb-1"><?= esc($user['nama']) ?></h2>
                 
-                <?php // Logika Kondisional: Tampilkan hanya jika role adalah 'dosen' ?>
-                <?php if (isset($user['role']) && $user['role'] === 'dosen'): ?>
-                    <p class="text-muted">Kepala Laboratorium SSIP</p>
-                    <p class="text-muted small"><?= esc($user['nomor']) ?></p>
-                    <h5 class="h6 mt-4">Keahlian Dosen:</h5>
-                    <div class="mb-3">
-                        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">Machine Learning</span>
-                        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">Data Mining</span>
-                        <span class="badge bg-primary-subtle text-primary-emphasis rounded-pill">Artificial Intelligence</span>
-                    </div>
-                <?php else: // Tampilkan jurusan jika bukan dosen ?>
-                    <p class="text-muted"><?= esc($user['jurusan'] ?? 'Anggota Laboratorium') ?></p>
-                     <p class="text-muted small"><?= esc($user['nomor']) ?></p>
-                <?php endif; ?>
+                <?php 
+                    $roleLabel = '';
+                    if (isset($user['role'])) {
+                        if ($user['role'] === 'admin') $roleLabel = 'Kepala Laboratorium SSIP';
+                        elseif ($user['role'] === 'dosen') $roleLabel = 'Dosen Informatika';
+                    }
+                ?>
+                <p class="text-muted"><?= $roleLabel ?: esc($user['jurusan'] ?? 'Anggota Laboratorium') ?></p>
+                <p class="text-muted small"><?= esc($user['nomor']) ?></p>
 
-                <h5 class="h6 mt-4">Platform Penelitian:</h5>
-                <div class="d-flex gap-3 platform-links">
-                    <a href="#" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-                    <a href="#" title="SINTA"><i class="fas fa-book"></i></a>
-                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-                    <a href="#" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                </div>
+                <?php if (in_array(strtolower($user['role'] ?? ''), ['admin', 'dosen'])): ?>
+                    <?php if (!empty($user['google_scholar']) || !empty($user['sinta']) || !empty($user['orcid']) || !empty($user['scopus'])): ?>
+                        <h5 class="h6 mt-4">Platform Penelitian:</h5>
+                        <div class="d-flex gap-3 platform-links">
+                            <?php if (!empty($user['google_scholar'])): ?>
+                                <a href="<?= esc($user['google_scholar']) ?>" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['sinta'])): ?>
+                                <a href="<?= esc($user['sinta']) ?>" target="_blank" title="SINTA"><i class="fas fa-book"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['orcid'])): ?>
+                                <a href="<?= esc($user['orcid']) ?>" target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['scopus'])): ?>
+                                <a href="<?= esc($user['scopus']) ?>" target="_blank" title="Scopus"><i class="fas fa-university"></i></a>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

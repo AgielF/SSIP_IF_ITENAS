@@ -147,4 +147,51 @@ class JadwalModel extends Model
 
         return $processedSchedules;
     }
+    public function getJadwalSayaWithDetails($id_user)
+    {
+        return $this->select('events.nama_event')
+                    ->join('events', 'events.id_event = jadwal.id_event')
+                    ->join('asisten_jadwal', 'asisten_jadwal.id_jadwal = jadwal.id_jadwal')
+                    ->where('asisten_jadwal.id_user', $id_user)
+                    ->findAll();
+    }
+
+    public function getProcessedJadwalSaya($id_user)
+    {
+        $asistenJadwalModel = model(AsistenJadwalModel::class);
+        $databaseData = $this->getJadwalSayaWithDetails($id_user);
+        $processedSchedules = [];
+        $today = new \DateTime('today');
+
+        foreach ($databaseData as $item) {
+            $scheduleDate = new \DateTime($item['tanggal']);
+            if ($scheduleDate > $today) {
+                $status = 'Upcoming'; $status_color = 'success';
+            } elseif ($scheduleDate < $today) {
+                $status = 'Completed'; $status_color = 'primary';
+            } else {
+                $status = 'Today'; $status_color = 'warning';
+            }
+
+            $asisten = $asistenJadwalModel->getAsistenByJadwal($item['id_jadwal']);
+            $instructor = 'Dosen Pengampu'; // Default instructor name
+            $assistants = !empty($asisten) ? implode(', ', array_column($asisten, 'nama')) : 'Belum Ditentukan';
+
+            $processedSchedules[] = [
+                'id_jadwal'  => $item['id_jadwal'],
+                'title'       => $item['nama_event'],
+                'kelas'       => $item['kelas'],
+                'lab'         => $item['ruangan'] ?? '',
+                'status'      => $status,
+                'status_color'=> $status_color,
+                'date'        => $scheduleDate->format('l, d F Y'),
+                'raw_date'    => $item['tanggal'],
+                'time'        => date('H:i', strtotime($item['waktu_mulai'])) . ' - ' . date('H:i', strtotime($item['waktu_selesai'])),
+                'instructor'  => $instructor,
+                'assistants'  => $assistants
+            ];
+        }
+
+        return $processedSchedules;
+    }
 }

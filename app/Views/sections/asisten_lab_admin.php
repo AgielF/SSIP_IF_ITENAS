@@ -57,21 +57,34 @@
         <div id="controls-wrapper">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <h4 class="mb-0">Kelola Anggota Laboratorium</h4>
-                <div class="d-flex align-items-center gap-2 flex-wrap non-printable">
-                    <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: auto;">
-                    <div class="d-flex align-items-center">
-                        <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
-                        <select class="form-select form-select-sm" id="sort-filter">
-                            <option value="newest">Terbaru</option>
-                            <option value="oldest">Terlama</option>
-                        </select>
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 non-printable">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: 150px;">
+                        <div class="d-flex align-items-center">
+                            <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
+                            <select class="form-select form-select-sm" id="sort-filter">
+                                <option value="newest">Terbaru</option>
+                                <option value="oldest">Terlama</option>
+                            </select>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <label for="role-filter" class="form-label me-2 mb-0 small text-nowrap">Role:</label>
+                            <select class="form-select form-select-sm" id="role-filter">
+                                <option value="all">Semua</option>
+                                <option value="1">Kepala Laboratorium</option>
+                                <option value="3">Dosen</option>
+                                <option value="2">Asisten</option>
+                            </select>
+                        </div>
                     </div>
-                    <button id="export-pdf-btn" class="btn btn-sm btn-danger">
-                        <i class="fas fa-file-pdf me-1"></i> Export PDF
-                    </button>
-                    <button id="add-data-btn" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#dataModal">
-                        <i class="fas fa-plus me-1"></i> Tambah Anggota
-                    </button>
+                    <div class="d-flex align-items-center gap-2">
+                        <button id="export-pdf-btn" class="btn btn-sm btn-danger text-nowrap">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                        <button id="add-data-btn" class="btn btn-sm btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#dataModal">
+                            <i class="fas fa-plus me-1"></i> Tambah Anggota
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,6 +101,7 @@
                         <th>Jurusan</th>
                         <th>Role</th>
                         <th>Periode</th> 
+                        <th class="non-printable text-center">Tautan</th>
                         <th class="non-printable text-center">Status</th>
                         <th class="non-printable text-center">Aksi</th>
                     </tr>
@@ -117,22 +131,40 @@
                                     <span class="badge bg-info text-dark"><?= esc($person['nama_periode'] ?? '-') ?></span>
                                 </td>
                                 
+                                <!-- Tautan Penelitian -->
+                                <td class="text-center">
+                                    <?php if (in_array((int)$person['role_id'], [1, 3])): ?>
+                                        <div class="d-flex justify-content-center gap-1">
+                                            <?php if (!empty($person['google_scholar'])): ?>
+                                                <a href="<?= esc($person['google_scholar']) ?>" target="_blank" class="text-primary" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($person['sinta'])): ?>
+                                                <a href="<?= esc($person['sinta']) ?>" target="_blank" class="text-info" title="SINTA"><i class="fas fa-book"></i></a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($person['orcid'])): ?>
+                                                <a href="<?= esc($person['orcid']) ?>" target="_blank" class="text-success" title="ORCID"><i class="fab fa-orcid"></i></a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($person['scopus'])): ?>
+                                                <a href="<?= esc($person['scopus']) ?>" target="_blank" class="text-warning" title="Scopus"><i class="fas fa-university"></i></a>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="text-muted small">-</span>
+                                    <?php endif; ?>
+                                </td>
+                                
                                 <!-- Field Status di Sebelah Kiri Kolom Aksi -->
                                 <td class="text-center">
                                     <?php if ($person['role_id'] == 2 && !empty($person['id_asisten_periode'])) : ?>
                                         <?php 
                                             $statusTugas = $person['status_tugas'] ?? 'belum selesai';
                                             $isSelesai   = ($statusTugas === 'selesai');
-                                            $btnClass    = $isSelesai ? 'btn-success' : 'btn-secondary';
+                                            $badgeClass  = $isSelesai ? 'bg-success' : 'bg-secondary';
                                             $textLabel   = $isSelesai ? 'Selesai' : 'Masih Berjalan';
-                                            $tooltipMsg  = $isSelesai ? 'Status: Selesai (Klik untuk ubah ke Masih Berjalan)' : 'Status: Masih Berjalan (Klik untuk ubah ke Selesai)';
                                         ?>
-                                        <button type="button" 
-                                                class="btn btn-sm <?= $btnClass ?> text-white text-nowrap px-2 py-1" 
-                                                title="<?= $tooltipMsg ?>" 
-                                                onclick="toggleStatusTugas(<?= $person['id_asisten_periode'] ?>, '<?= $statusTugas ?>')">
+                                        <span class="badge <?= $badgeClass ?> text-white text-nowrap px-2 py-1">
                                             <?= $textLabel ?>
-                                        </button>
+                                        </span>
                                     <?php else: ?>
                                         <span class="text-muted small">-</span>
                                     <?php endif; ?>
@@ -142,7 +174,7 @@
                                 <td class="text-center">
                                     <div class="btn-group d-flex justify-content-center">
                                         <!-- Tombol Edit & Delete Bawaan -->
-                                        <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>">
+                                        <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>" data-gs="<?= esc($person['google_scholar'] ?? '') ?>" data-sinta="<?= esc($person['sinta'] ?? '') ?>" data-orcid="<?= esc($person['orcid'] ?? '') ?>" data-scopus="<?= esc($person['scopus'] ?? '') ?>" data-status="<?= esc($person['status_tugas'] ?? 'belum selesai') ?>">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
@@ -247,6 +279,25 @@ document.addEventListener('DOMContentLoaded', function () {
         errorToast.show();
         setTimeout(() => errorToast.hide(), 3000);
     <?php endif; ?>
+
+    // Handle AJAX success/error messages via sessionStorage after reload
+    const flashMessage = sessionStorage.getItem('flashMessage');
+    const flashType = sessionStorage.getItem('flashType');
+    if (flashMessage) {
+        if (flashType === 'success') {
+            const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+            document.getElementById('successMessage').textContent = flashMessage;
+            successToast.show();
+            setTimeout(() => successToast.hide(), 3000);
+        } else {
+            const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+            document.getElementById('errorMessage').textContent = flashMessage;
+            errorToast.show();
+            setTimeout(() => errorToast.hide(), 3000);
+        }
+        sessionStorage.removeItem('flashMessage');
+        sessionStorage.removeItem('flashType');
+    }
     
     const tableBody = document.querySelector('#adminTable tbody');
     const allRows = Array.from(tableBody.querySelectorAll('tr'));
@@ -264,18 +315,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfTokenName = '<?= csrf_token() ?>';
     const csrfTokenValue = '<?= csrf_hash() ?>';
 
+    const roleFilter = document.getElementById('role-filter');
+
     let currentState = {
         sortOrder: 'newest',
         itemsPerPage: 5,
         currentPage: 1,
         searchTerm: '',
+        roleFilter: 'all',
         editingIndex: null 
     };
 
     function updateView() {
-        let processedRows = allRows.filter(row =>
-            row.textContent.toLowerCase().includes(currentState.searchTerm)
-        );
+        let processedRows = allRows.filter(row => {
+            const matchesSearch = row.textContent.toLowerCase().includes(currentState.searchTerm);
+            const matchesRole = currentState.roleFilter === 'all' || row.dataset.roleId === currentState.roleFilter;
+            return matchesSearch && matchesRole;
+        });
 
         processedRows.sort((a, b) => {
             const timeA = parseInt(a.dataset.timestamp, 10);
@@ -339,6 +395,11 @@ document.addEventListener('DOMContentLoaded', function () {
         currentState.sortOrder = sortFilter.value;
         updateView();
     });
+    roleFilter.addEventListener('change', () => {
+        currentState.roleFilter = roleFilter.value;
+        currentState.currentPage = 1;
+        updateView();
+    });
     itemsPerPageFilter.addEventListener('change', () => {
         currentState.itemsPerPage = itemsPerPageFilter.value;
         currentState.currentPage = 1;
@@ -371,16 +432,32 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="mb-3" id="dynamic-periode-container" style="display:none;">
                 <label class="form-label">Periode Kepengurusan</label>
-                <select class="form-select" name="id_periode">
+                <select class="form-select mb-2" name="id_periode">
                     ${periodeOptions}
                 </select>
+                <label class="form-label">Status Tugas</label>
+                <select class="form-select" name="status_tugas">
+                    <option value="belum selesai">Masih Berjalan</option>
+                    <option value="selesai">Selesai</option>
+                </select>
+            </div>
+            <div id="dynamic-research-container" style="display:none;">
+                <h6 class="mt-3">Tautan Penelitian (Opsional)</h6>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-graduation-cap"></i> Google Scholar</label><input type="url" class="form-control" name="google_scholar" placeholder="https://scholar.google.com/..."></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-book"></i> SINTA</label><input type="url" class="form-control" name="sinta" placeholder="https://sinta.kemdikbud.go.id/..."></div>
+                <div class="mb-3"><label class="form-label"><i class="fab fa-orcid"></i> ORCID</label><input type="url" class="form-control" name="orcid" placeholder="https://orcid.org/..."></div>
+                <div class="mb-3"><label class="form-label"><i class="fas fa-university"></i> Scopus</label><input type="url" class="form-control" name="scopus" placeholder="https://www.scopus.com/..."></div>
             </div>`;
         
         modalForm.innerHTML = formHtml;
         
         document.getElementById('dynamic-role-select').addEventListener('change', function() {
             document.getElementById('dynamic-periode-container').style.display = this.value === '2' ? 'block' : 'none';
+            document.getElementById('dynamic-research-container').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
         });
+
+        // Trigger change to set initial visibility
+        document.getElementById('dynamic-role-select').dispatchEvent(new Event('change'));
 
         dataModal.show();
     });
@@ -459,6 +536,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             if (result && result.success) {
+                sessionStorage.setItem('flashMessage', result.message || 'Data berhasil disimpan!');
+                sessionStorage.setItem('flashType', 'success');
                 location.reload();
             } else {
                 alert((result && result.message) || 'Terjadi kesalahan');
@@ -481,6 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = 'Edit Anggota';
 
             const currentPeriodeName = target.dataset.periodeName || '';
+            const currentStatus = target.dataset.status || 'belum selesai';
             
             let periodeOptions = '<option value="">-- Pilih Periode --</option>';
             listPeriode.forEach(p => {
@@ -507,18 +587,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <div class="mb-3" id="dynamic-periode-container-edit" style="display:${displayPeriode};">
                     <label class="form-label">Periode Kepengurusan</label>
-                    <select class="form-select" name="id_periode">
+                    <select class="form-select mb-2" name="id_periode">
                         ${periodeOptions}
                     </select>
+                    <label class="form-label">Status Tugas</label>
+                    <select class="form-select" name="status_tugas">
+                        <option value="belum selesai" ${currentStatus === 'belum selesai' ? 'selected' : ''}>Masih Berjalan</option>
+                        <option value="selesai" ${currentStatus === 'selesai' ? 'selected' : ''}>Selesai</option>
+                    </select>
+                </div>
+                <div id="dynamic-research-container-edit" style="display:${(rowData.dataset.roleId === '1' || rowData.dataset.roleId === '3') ? 'block' : 'none'};">
+                    <h6 class="mt-3">Tautan Penelitian (Opsional)</h6>
+                    <div class="mb-3"><label class="form-label"><i class="fas fa-graduation-cap"></i> Google Scholar</label><input type="url" class="form-control" name="google_scholar" value="${target.dataset.gs || ''}"></div>
+                    <div class="mb-3"><label class="form-label"><i class="fas fa-book"></i> SINTA</label><input type="url" class="form-control" name="sinta" value="${target.dataset.sinta || ''}"></div>
+                    <div class="mb-3"><label class="form-label"><i class="fab fa-orcid"></i> ORCID</label><input type="url" class="form-control" name="orcid" value="${target.dataset.orcid || ''}"></div>
+                    <div class="mb-3"><label class="form-label"><i class="fas fa-university"></i> Scopus</label><input type="url" class="form-control" name="scopus" value="${target.dataset.scopus || ''}"></div>
                 </div>`;
-            
+
             modalForm.innerHTML = formHtml;
 
             document.getElementById('dynamic-role-select-edit').addEventListener('change', function() {
                 document.getElementById('dynamic-periode-container-edit').style.display = this.value === '2' ? 'block' : 'none';
+                document.getElementById('dynamic-research-container-edit').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
             });
 
             dataModal.show();
+
         }
 
         if (target.classList.contains('delete-btn')) {
@@ -564,6 +658,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
 
                     if (result && result.success) {
+                        sessionStorage.setItem('flashMessage', result.message || 'Anggota berhasil dihapus!');
+                        sessionStorage.setItem('flashType', 'success');
                         location.reload();
                     } else {
                         alert((result && result.message) || 'Gagal menghapus data');

@@ -63,6 +63,12 @@ class Users extends BaseController
             $role_id    = $this->request->getPost('role_id');
             $id_periode = $this->request->getPost('id_periode');
 
+            // Fetch research links
+            $google_scholar = $this->request->getPost('google_scholar');
+            $sinta          = $this->request->getPost('sinta');
+            $orcid          = $this->request->getPost('orcid');
+            $scopus         = $this->request->getPost('scopus');
+
             // Check for duplicate nomor
             $existingUser = $this->userModel->where('nomor', $nomor)->first();
             if ($existingUser) {
@@ -81,6 +87,13 @@ class Users extends BaseController
                 'jurusan'  => $jurusan,
                 'role_id'  => $role_id
             ];
+
+            if ($role_id == 1 || $role_id == 3) {
+                $data['google_scholar'] = $google_scholar;
+                $data['sinta']          = $sinta;
+                $data['orcid']          = $orcid;
+                $data['scopus']         = $scopus;
+            }
 
             $userId = $this->userModel->insert($data);
             
@@ -184,6 +197,7 @@ class Users extends BaseController
             $jurusan    = $this->request->getPost('jurusan');
             $role_id    = $this->request->getPost('role_id');
             $id_periode = $this->request->getPost('id_periode');
+            $status_tugas = $this->request->getPost('status_tugas');
 
             $data = [];
 
@@ -203,6 +217,24 @@ class Users extends BaseController
             
             if ($role_id !== null && $role_id !== '') {
                 $data['role_id'] = (int)$role_id;
+            }
+
+            $google_scholar = $this->request->getPost('google_scholar');
+            $sinta          = $this->request->getPost('sinta');
+            $orcid          = $this->request->getPost('orcid');
+            $scopus         = $this->request->getPost('scopus');
+
+            $currentRoleId = isset($data['role_id']) ? $data['role_id'] : $user['role_id'];
+            if ($currentRoleId == 1 || $currentRoleId == 3) {
+                if ($google_scholar !== null) $data['google_scholar'] = $google_scholar;
+                if ($sinta !== null) $data['sinta'] = $sinta;
+                if ($orcid !== null) $data['orcid'] = $orcid;
+                if ($scopus !== null) $data['scopus'] = $scopus;
+            } else {
+                $data['google_scholar'] = null;
+                $data['sinta']          = null;
+                $data['orcid']          = null;
+                $data['scopus']         = null;
             }
 
             $password = $this->request->getPost('password');
@@ -242,27 +274,23 @@ class Users extends BaseController
 
             $this->userModel->db->transStart();
 
-            if (empty($data)) {
-                $this->userModel->db->transComplete();
-                if ($isAjax) {
-                    return $this->response->setContentType('application/json')->setJSON(['success' => true, 'message' => 'No changes made']);
-                }
-                return redirect()->back()->with('info', 'No changes made');
-            }
+            $updateSuccess = empty($data) ? true : $this->userModel->update($id, $data);
 
-            if ($this->userModel->update($id, $data)) {
+            if ($updateSuccess) {
                 if ($role_id == 2) {
                     if (!empty($id_periode)) {
                         $existingRelasi = $this->asistenPeriodeModel->where('id_user', $id)->first();
                         if ($existingRelasi) {
                             $this->asistenPeriodeModel->update($existingRelasi['id'], [
                                 'id_periode' => $id_periode,
+                                'status_tugas' => $status_tugas ?? 'belum selesai',
                             ]);
                         } else {
                             $this->asistenPeriodeModel->insert([
                                 'id_user'    => $id,
                                 'id_periode' => $id_periode,
                                 'jabatan'    => 'Asisten Praktikum',
+                                'status_tugas' => $status_tugas ?? 'belum selesai',
                             ]);
                         }
                     } else {

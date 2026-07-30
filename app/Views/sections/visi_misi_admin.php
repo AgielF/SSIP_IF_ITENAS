@@ -8,19 +8,39 @@
         </div>
         <div class="card-body">
             
-            <?php if (session()->getFlashdata('success')) : ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?= session()->getFlashdata('success') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+                <!-- Success Toast -->
+                <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span id="successMessage">
+                                <?php if (session()->getFlashdata('success')): ?>
+                                    <?= session()->getFlashdata('success') ?>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
                 </div>
-            <?php endif; ?>
 
-            <?php if (session()->getFlashdata('error')) : ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?= session()->getFlashdata('error') ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <!-- Error Toast -->
+                <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span id="errorMessage">
+                                <?php if (session()->getFlashdata('error')): ?>
+                                    <?= session()->getFlashdata('error') ?>
+                                <?php elseif (session()->getFlashdata('errors')): ?>
+                                    <?= implode('<br>', session()->getFlashdata('errors')) ?>
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
                 </div>
-            <?php endif; ?>
+            </div>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover">
@@ -122,3 +142,19 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    <?php if (session()->getFlashdata('success')): ?>
+        const successToast = new bootstrap.Toast(document.getElementById('successToast'));
+        successToast.show();
+        setTimeout(() => successToast.hide(), 3000);
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error') || session()->getFlashdata('errors')): ?>
+        const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+        errorToast.show();
+        setTimeout(() => errorToast.hide(), 3000);
+    <?php endif; ?>
+});
+</script>

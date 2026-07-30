@@ -98,7 +98,7 @@
                                              <i class="fas fa-pencil-alt"></i>
                                         </button>
                                           <form action="<?= site_url('berita/delete/'.$row['id_berita']) ?>" 
-                                                method="get" 
+                                                method="post" 
                                                 class="d-inline delete-form"
                                                 onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                 <?= csrf_field() ?>

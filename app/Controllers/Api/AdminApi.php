@@ -586,6 +586,33 @@ class AdminApi extends ResourceController
         return $this->respond($response);
     }
 
+    public function syncAsistenJadwal()
+    {
+        $id_jadwal = $this->request->getPost('id_jadwal');
+        $asisten_ids = $this->request->getPost('assigned_asisten'); // Array of user IDs
+
+        if (!$id_jadwal) {
+            return $this->failValidationErrors('ID Jadwal diperlukan.');
+        }
+
+        // Hapus semua asisten yang ada di jadwal ini
+        $this->asistenJadwalModel->where('id_jadwal', $id_jadwal)->delete();
+
+        // Tambahkan asisten baru jika ada
+        if (!empty($asisten_ids) && is_array($asisten_ids)) {
+            $insertData = [];
+            foreach ($asisten_ids as $id_user) {
+                $insertData[] = [
+                    'id_jadwal' => $id_jadwal,
+                    'id_user'   => $id_user
+                ];
+            }
+            $this->asistenJadwalModel->insertBatch($insertData);
+        }
+
+        return $this->respondUpdated(['message' => 'Asisten berhasil di-assign ke jadwal.']);
+    }
+
     public function createAsistenJadwal()
     {
         $data = [

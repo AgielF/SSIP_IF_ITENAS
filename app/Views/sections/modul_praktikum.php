@@ -126,9 +126,11 @@
                                 <a href="<?= base_url('modul-praktikum/download/'.$fileUrl) ?>" class="btn btn-outline-primary btn-etalase">
                                     <i class="fas fa-download me-1"></i> Unduh
                                 </a>
-                                <a href="<?= base_url('modul-praktikum/preview/'.$fileUrl) ?>" target="_blank" class="btn btn-primary btn-etalase">
-                                    <i class="fas fa-eye me-1"></i> Buka
-                                </a>
+                                <?php if ($isPdf): ?>
+                                    <a href="<?= base_url('modul-praktikum/preview/'.$fileUrl) ?>" target="_blank" class="btn btn-primary btn-etalase">
+                                        <i class="fas fa-eye me-1"></i> Buka
+                                    </a>
+                                <?php endif; ?>
                             <?php else: ?>
                                 <span class="w-100 text-muted" style="font-size: 12px; font-style: italic;">File belum tersedia</span>
                             <?php endif; ?>

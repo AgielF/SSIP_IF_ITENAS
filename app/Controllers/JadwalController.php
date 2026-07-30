@@ -91,6 +91,25 @@ class JadwalController extends BaseController
         return view('jadwal_admin_view', $data);
     }
 
+    public function asistenJadwalSaya()
+    {
+        $sessionUser = session()->get('user');
+        $id_user = $sessionUser['id'] ?? $sessionUser['id_user'] ?? null;
+
+        if (!$id_user) {
+            return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu.');
+        }
+
+        $jadwals = $this->jadwalModel->getProcessedJadwalSaya($id_user);
+
+        $data = [
+            'title'     => 'Jadwal Asistensi Saya',
+            'schedules' => $jadwals
+        ];
+
+        return view('jadwal_saya_view', $data);
+    }
+
     /**
      *  CREATE JADWAL 
      */
@@ -196,11 +215,41 @@ class JadwalController extends BaseController
             }
 
             $this->jadwalModel->update($id, $data);
-            return redirect()->to('/jadwal_admin')->with('success', 'Jadwal berhasil diperbarui');
+            return redirect()->to('/jadwal_admin')->with('success', 'Data jadwal berhasil diperbarui.');
 
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: Data tidak valid.');
         }
+    }
+
+    /**
+     * SYNC ASISTEN JADWAL
+     */
+    public function syncAsisten()
+    {
+        $id_jadwal = $this->request->getPost('id_jadwal');
+        $asisten_ids = $this->request->getPost('assigned_asisten'); // Array of user IDs
+
+        if (!$id_jadwal) {
+            return redirect()->back()->with('error', 'ID Jadwal tidak valid.');
+        }
+
+        // Hapus asisten lama
+        $this->asistenJadwalModel->where('id_jadwal', $id_jadwal)->delete();
+
+        // Tambahkan asisten baru
+        if (!empty($asisten_ids) && is_array($asisten_ids)) {
+            $insertData = [];
+            foreach ($asisten_ids as $id_user) {
+                $insertData[] = [
+                    'id_jadwal' => $id_jadwal,
+                    'id_user'   => $id_user
+                ];
+            }
+            $this->asistenJadwalModel->insertBatch($insertData);
+        }
+
+        return redirect()->back()->with('success', 'Asisten berhasil ditugaskan ke jadwal.');
     }
 
     /**

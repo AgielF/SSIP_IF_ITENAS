@@ -9,7 +9,7 @@ class UserModel extends Model
     protected $table = 'users';
     protected $primaryKey = 'id';
     protected $useTimestamps = true; // [T3.1] CI4 mengelola timestamps otomatis
-    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'foto'];
+    protected $allowedFields = ['nomor', 'nama', 'no_telp', 'jurusan','password', 'role_id', 'foto', 'google_scholar', 'sinta', 'orcid', 'scopus'];
     
     // 🔹 DIUBAH: Fungsi ini sekarang melakukan JOIN untuk mengambil data periode
     public function getAsistenLab() 

@@ -21,11 +21,12 @@
                     <i class="fas fa-user-circle me-2 text-primary"></i>Profil Saya
                 </h4>
                 
-                <a href="<?= base_url('logout') ?>"
-                   class="btn btn-outline-danger btn-sm"
-                   onclick="return confirm('Yakin ingin logout?')">
-                    <i class="fas fa-right-from-bracket me-1"></i> Logout
-                </a>
+                <form action="<?= base_url('logout') ?>" method="POST" class="d-inline">
+                    <?= csrf_field() ?>
+                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Yakin ingin logout?')">
+                        <i class="fas fa-right-from-bracket me-1"></i> Logout
+                    </button>
+                </form>
             </div>
 
             <div class="row align-items-center">
@@ -45,35 +46,40 @@
                 </div>
 
                 <div class="col-md-9">
-                    <h5 class="mb-1"><?= esc($user['nama']) ?></h5>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h5 class="mb-0"><?= esc($user['nama']) ?></h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                            <i class="fas fa-edit me-1"></i> Edit Profil
+                        </button>
+                    </div>
 
                     <p class="text-muted mb-1">
-                        <i class="fas fa-user-tag me-2 text-primary"></i><?= esc($user['role_id'] ?? 'Anggota') ?>
+                        <i class="fas fa-user-tag me-2 text-primary"></i><?= esc($user['role_id_label'] ?? 'Anggota') ?>
                     </p>
                     <p class="text-muted mb-2">
                         <i class="fas fa-id-badge me-2"></i><?= esc($user['nomor'] ?? '-') ?>
                     </p>
 
-                    <?php if (strtolower($user['role_id'] ?? '') === 'dosen'): ?>
-                        <h6 class="mt-3 mb-2"><i class="fas fa-brain me-2 text-primary"></i>Keahlian Dosen</h6>
-                        <div class="mb-3">
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Machine Learning</span>
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Data Mining</span>
-                            <span class="badge bg-primary-subtle text-primary rounded-pill px-3">Artificial Intelligence</span>
+                    <?php 
+                        $roleIdNum = (int)($user['role_id'] ?? 0);
+                        if ($roleIdNum === 1 || $roleIdNum === 3):
+                    ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
+                        <div class="d-flex gap-3 fs-5">
+                            <?php if (!empty($user['google_scholar'])): ?>
+                                <a href="<?= esc($user['google_scholar']) ?>" class="text-dark" title="Google Scholar" target="_blank"><i class="fas fa-graduation-cap"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['sinta'])): ?>
+                                <a href="<?= esc($user['sinta']) ?>" class="text-dark" title="SINTA" target="_blank"><i class="fas fa-book"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['orcid'])): ?>
+                                <a href="<?= esc($user['orcid']) ?>" class="text-dark" title="ORCID" target="_blank"><i class="fab fa-orcid"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['scopus'])): ?>
+                                <a href="<?= esc($user['scopus']) ?>" class="text-dark" title="Scopus" target="_blank"><i class="fas fa-university"></i></a>
+                            <?php endif; ?>
                         </div>
-                    <?php else: ?>
-                        <p class="text-muted">
-                            <i class="fas fa-graduation-cap me-2"></i><?= esc($user['jurusan'] ?? 'Anggota Laboratorium') ?>
-                        </p>
                     <?php endif; ?>
-
-                    <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
-                    <div class="d-flex gap-3 fs-5">
-                        <a href="#" class="text-dark" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-                        <a href="#" class="text-dark" title="SINTA"><i class="fas fa-book"></i></a>
-                        <a href="#" class="text-dark" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="#" class="text-dark" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -203,6 +209,54 @@
 
     </div>
 
+</div>
+
+<!-- Modal Edit Profil -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('profile/update') ?>" method="post" enctype="multipart/form-data">
+                <?= csrf_field() ?>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="foto" class="form-label"><i class="fas fa-camera me-1"></i> Foto Profil</label>
+                        <input type="file" class="form-control" id="foto" name="foto" accept="image/*">
+                        <small class="text-muted">Format: JPG, PNG, WEBP. Maks: 2MB.</small>
+                    </div>
+                    <?php 
+                    $roleIdNumEdit = (int)($user['role_id'] ?? 0);
+                    if ($roleIdNumEdit === 1 || $roleIdNumEdit === 3): ?>
+                        <hr>
+                        <h6>Tautan Penelitian</h6>
+                        <div class="mb-3">
+                            <label for="google_scholar" class="form-label"><i class="fas fa-graduation-cap me-1"></i> Google Scholar</label>
+                            <input type="url" class="form-control" id="google_scholar" name="google_scholar" value="<?= esc($user['google_scholar'] ?? '') ?>" placeholder="https://scholar.google.com/...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="sinta" class="form-label"><i class="fas fa-book me-1"></i> SINTA</label>
+                            <input type="url" class="form-control" id="sinta" name="sinta" value="<?= esc($user['sinta'] ?? '') ?>" placeholder="https://sinta.kemdikbud.go.id/...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="orcid" class="form-label"><i class="fab fa-orcid me-1"></i> ORCID</label>
+                            <input type="url" class="form-control" id="orcid" name="orcid" value="<?= esc($user['orcid'] ?? '') ?>" placeholder="https://orcid.org/...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="scopus" class="form-label"><i class="fas fa-university me-1"></i> Scopus</label>
+                            <input type="url" class="form-control" id="scopus" name="scopus" value="<?= esc($user['scopus'] ?? '') ?>" placeholder="https://www.scopus.com/...">
+                        </div>
+                    <?php endif; ?>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 </body>

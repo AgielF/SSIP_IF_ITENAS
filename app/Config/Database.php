@@ -81,7 +81,5 @@ class Database extends Config
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }
-        
-        echo "\n[DEBUG-CONFIG] defaultGroup is now: " . $this->defaultGroup . " (ENVIRONMENT: " . ENVIRONMENT . ")\n";
     }
 }
