@@ -130,10 +130,19 @@ foreach ($publicationData as $row) {
                                 <th>Tanggal </th>
                                 <th>Penulis Utama</th>
                                 <th>Penulis Pendamping</th>
-                                <th>Volume</th>
-                                <th>Tahun</th>
+                                <?php if ($kategori === 'prosiding'): ?>
+                                    <th>Conference</th>
+                                    <th>Lokasi Conference</th>
+                                <?php elseif ($kategori === 'jurnal' || empty($kategori)): ?>
+                                    <th>Volume</th>
+                                    <th>Tahun</th>
+                                    <th>Publisher Jurnal</th>
+                                <?php else: ?>
+                                    <!-- For Paten or others -->
+                                    <th>Volume</th>
+                                    <th>Tahun</th>
+                                <?php endif; ?>
                                 <th>Nomor</th>
-                                <th>Conference</th>
                                 <th>Deskripsi</th>
                                 <th>Link Publikasi</th>
                                 <th class="action-buttons">Aksi</th>
@@ -156,10 +165,18 @@ foreach ($publicationData as $row) {
                                         <td><?= esc($row['tanggal_publikasi']) ?></td>
                                          <td><?= esc($row['penulis_utama'] ?? '-') ?></td> 
                                          <td><?= esc($row['penulis_pendamping']) ?></td>
-                                        <td><?= esc($row['volume']) ?></td>
-                                        <td><?= esc($row['tahun']) ?></td>
+                                        <?php if ($kategori === 'prosiding'): ?>
+                                            <td><?= esc($row['conference']) ?></td>
+                                            <td><?= esc($row['lokasi_conference']) ?></td>
+                                        <?php elseif ($kategori === 'jurnal' || empty($kategori)): ?>
+                                            <td><?= esc($row['volume']) ?></td>
+                                            <td><?= esc($row['tahun']) ?></td>
+                                            <td><?= esc($row['publisher_jurnal']) ?></td>
+                                        <?php else: ?>
+                                            <td><?= esc($row['volume']) ?></td>
+                                            <td><?= esc($row['tahun']) ?></td>
+                                        <?php endif; ?>
                                         <td><?= esc($row['nomor']) ?></td>
-                                        <td><?= esc($row['conference']) ?></td>
                                         <td><?= esc($row['deskripsi']) ?></td>
                                         <td>
                                             <?php if (!empty($row['link_publikasi'])): ?>
@@ -199,7 +216,7 @@ foreach ($publicationData as $row) {
                                                             <div class="col-md-6">
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Jenis Publikasi</label>
-                                                                    <select name="jenis_publikasi" class="form-select">
+                                                                    <select name="jenis_publikasi" class="form-select" onchange="togglePublikasiFields(this)">
                                                                         <option value="jurnal" <?= $row['jenis_publikasi']=='jurnal'?'selected':'' ?>>Jurnal</option>
                                                                         <option value="prosiding" <?= $row['jenis_publikasi']=='prosiding'?'selected':'' ?>>Prosiding</option>
                                                                         <option value="paten" <?= $row['jenis_publikasi']=='paten'?'selected':'' ?>>Paten</option>
@@ -254,7 +271,7 @@ foreach ($publicationData as $row) {
                                                             </div>
 
                                                             <div class="col-md-6">
-                                                                <div class="mb-3">
+                                                                <div class="mb-3 field-volume">
                                                                     <label class="form-label">Volume</label>
                                                                     <input type="text" name="volume" class="form-control" value="<?= esc($row['volume']) ?>">
                                                                 </div>
@@ -262,13 +279,21 @@ foreach ($publicationData as $row) {
                                                                     <label class="form-label">Nomor</label>
                                                                     <input type="text" name="nomor" class="form-control" value="<?= esc($row['nomor']) ?>">
                                                                 </div>
-                                                                <div class="mb-3">
+                                                                <div class="mb-3 field-tahun">
                                                                     <label class="form-label">Tahun</label>
                                                                     <input type="text" name="tahun" class="form-control" value="<?= esc($row['tahun']) ?>">
                                                                 </div>
-                                                                <div class="mb-3">
+                                                                <div class="mb-3 field-conference">
                                                                     <label class="form-label">Conference</label>
                                                                     <input type="text" name="conference" class="form-control" value="<?= esc($row['conference']) ?>">
+                                                                </div>
+                                                                <div class="mb-3 field-lokasi-conference">
+                                                                    <label class="form-label">Lokasi Conference</label>
+                                                                    <input type="text" name="lokasi_conference" class="form-control" value="<?= esc($row['lokasi_conference'] ?? '') ?>">
+                                                                </div>
+                                                                <div class="mb-3 field-publisher-jurnal">
+                                                                    <label class="form-label">Publisher Jurnal</label>
+                                                                    <input type="text" name="publisher_jurnal" class="form-control" value="<?= esc($row['publisher_jurnal'] ?? '') ?>">
                                                                 </div>
                                                                 <div class="mb-3">
                                                                     <label class="form-label">Link Publikasi</label>
@@ -331,7 +356,7 @@ foreach ($publicationData as $row) {
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label">Jenis Publikasi</label>
-                                <select name="jenis_publikasi" class="form-select">
+                                <select name="jenis_publikasi" class="form-select" onchange="togglePublikasiFields(this)">
                                     <option value="jurnal">Jurnal</option>
                                     <option value="prosiding">Prosiding</option>
                                     <option value="paten">Paten</option>
@@ -386,21 +411,29 @@ foreach ($publicationData as $row) {
                         </div>
 
                         <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Volume</label>
+                            <div class="mb-3 field-volume">
+                                                                    <label class="form-label">Volume</label>
                                 <input type="text" name="volume" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Nomor</label>
                                 <input type="text" name="nomor" class="form-control">
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tahun</label>
+                            <div class="mb-3 field-tahun">
+                                                                    <label class="form-label">Tahun</label>
                                 <input type="text" name="tahun" class="form-control">
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">Conference</label>
+                            <div class="mb-3 field-conference">
+                                                                    <label class="form-label">Conference</label>
                                 <input type="text" name="conference" class="form-control">
+                            </div>
+                            <div class="mb-3 field-lokasi-conference">
+                                <label class="form-label">Lokasi Conference</label>
+                                <input type="text" name="lokasi_conference" class="form-control">
+                            </div>
+                            <div class="mb-3 field-publisher-jurnal">
+                                <label class="form-label">Publisher Jurnal</label>
+                                <input type="text" name="publisher_jurnal" class="form-control">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Link Publikasi</label>
@@ -434,6 +467,40 @@ foreach ($publicationData as $row) {
 </div>
 
 <script>
+
+function togglePublikasiFields(selectElement) {
+    const form = selectElement.closest('form');
+    const type = selectElement.value;
+    
+    const fieldVolume = form.querySelector('.field-volume');
+    const fieldTahun = form.querySelector('.field-tahun');
+    const fieldConference = form.querySelector('.field-conference');
+    const fieldLokasiConf = form.querySelector('.field-lokasi-conference');
+    const fieldPublisher = form.querySelector('.field-publisher-jurnal');
+    
+    // Default: show all standard fields, hide specific ones
+    if(fieldVolume) fieldVolume.style.display = 'block';
+    if(fieldTahun) fieldTahun.style.display = 'block';
+    if(fieldConference) fieldConference.style.display = 'none';
+    if(fieldLokasiConf) fieldLokasiConf.style.display = 'none';
+    if(fieldPublisher) fieldPublisher.style.display = 'none';
+    
+    if (type === 'prosiding') {
+        if(fieldVolume) fieldVolume.style.display = 'none';
+        if(fieldTahun) fieldTahun.style.display = 'none';
+        if(fieldConference) fieldConference.style.display = 'block';
+        if(fieldLokasiConf) fieldLokasiConf.style.display = 'block';
+    } else if (type === 'jurnal') {
+        if(fieldPublisher) fieldPublisher.style.display = 'block';
+    }
+}
+
+// Initialize all selects on load
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select[name="jenis_publikasi"]');
+    selects.forEach(s => togglePublikasiFields(s));
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Export PDF functionality
     const exportBtn = document.getElementById('export-pdf-btn');

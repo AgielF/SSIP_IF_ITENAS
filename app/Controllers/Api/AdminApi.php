@@ -278,6 +278,17 @@ class AdminApi extends ResourceController
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
+            'penulis_pendamping' => $this->request->getPost('penulis_pendamping'),
+            'volume' => $this->request->getPost('volume'),
+            'topik' => $this->request->getPost('topik'),
+            'nomor' => $this->request->getPost('nomor'),
+            'tahun' => $this->request->getPost('tahun'),
+            'link_doi' => $this->request->getPost('link_doi'),
+            'link_gdrive' => $this->request->getPost('link_gdrive'),
+            'conference' => $this->request->getPost('conference'),
+            'lokasi_conference' => $this->request->getPost('lokasi_conference'),
+            'publisher_jurnal' => $this->request->getPost('publisher_jurnal'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
             'id_user' => 1, // Default to admin user ID
         ];
 
@@ -296,6 +307,17 @@ class AdminApi extends ResourceController
             'link_publikasi' => $this->request->getPost('link_publikasi'),
             'kategori' => $this->request->getPost('kategori'),
             'tanggal_publikasi' => $this->request->getPost('tanggal_publikasi'),
+            'penulis_pendamping' => $this->request->getPost('penulis_pendamping'),
+            'volume' => $this->request->getPost('volume'),
+            'topik' => $this->request->getPost('topik'),
+            'nomor' => $this->request->getPost('nomor'),
+            'tahun' => $this->request->getPost('tahun'),
+            'link_doi' => $this->request->getPost('link_doi'),
+            'link_gdrive' => $this->request->getPost('link_gdrive'),
+            'conference' => $this->request->getPost('conference'),
+            'lokasi_conference' => $this->request->getPost('lokasi_conference'),
+            'publisher_jurnal' => $this->request->getPost('publisher_jurnal'),
+            'deskripsi' => $this->request->getPost('deskripsi'),
             'id_user' => 1, // Default to admin user ID
         ];
 

@@ -47,7 +47,7 @@
                                             <!-- 🔹 Gunakan deskripsi jika judul kosong -->
                                             <td><?= esc($pub['judul'] ?? $pub['deskripsi'] ?? '-') ?></td>
                                             <td><?= esc($pub['jenis_publikasi'] ?? '-') ?></td>
-                                            <td><?= esc($pub['tahun'] ?? '-') ?></td>
+                                            <td><?= esc($pub['tahun'] ?: substr($pub['tanggal_publikasi'] ?? '', 0, 4) ?: '-') ?></td>
                                             <td><span class="badge bg-secondary"><?= $peranPublikasi ?></span></td>
                                             <td>
                                                 <?php if (!empty($pub['link_doi'])): ?>

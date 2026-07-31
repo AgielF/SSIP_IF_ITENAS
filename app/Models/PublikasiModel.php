@@ -24,7 +24,9 @@ class PublikasiModel extends Model
         'conference',
         'deskripsi',
         'topik',
-        'judul'
+        'judul',
+        'lokasi_conference',
+        'publisher_jurnal'
 
     ];
 
@@ -38,58 +40,22 @@ class PublikasiModel extends Model
         $processedData = [
             'jurnal' => [
                 'headers' => [
-                    'judul',
-                    'Kategori',
-                    'topik',
-                    'Tanggal Publikasi',
-                    'Penulis Utama',
-                    'Penulis Pendamping',
-                    'Volume',
-                    'Tahun',
-                    'Nomor',
-                    'Conference',
-                    'Deskripsi',
-                    'Link Publikasi',
-                    'Link DOI',
-                    'Link Gdrive'
+                    'Judul', 'Kategori', 'Topik', 'Tanggal Publikasi', 'Penulis Utama', 'Penulis Pendamping',
+                    'Volume', 'Tahun', 'Publisher Jurnal', 'Nomor', 'Deskripsi', 'Link Publikasi', 'Link DOI', 'Link Gdrive'
                 ],
                 'rows' => []
             ],
             'prosiding' => [
                 'headers' => [
-                    'judul',
-                    'Kategori',
-                    'topik',
-                    'Tanggal Publikasi',
-                     'Penulis Utama',
-                    'Penulis Pendamping',
-                    'Volume',
-                    'Tahun',
-                    'Nomor',
-                    'Conference',
-                    'Deskripsi',
-                    'Link Publikasi',
-                    'Link DOI',
-                    'Link Gdrive'
+                    'Judul', 'Kategori', 'Topik', 'Tanggal Publikasi', 'Penulis Utama', 'Penulis Pendamping',
+                    'Conference', 'Lokasi Conference', 'Nomor', 'Deskripsi', 'Link Publikasi', 'Link DOI', 'Link Gdrive'
                 ],
                 'rows' => []
             ],
             'paten' => [
                 'headers' => [
-                    'judul',
-                    'Kategori',
-                    'topik',
-                    'Tanggal Publikasi',
-                     'Penulis Utama',
-                    'Penulis Pendamping',
-                    'Volume',
-                    'Tahun',
-                    'Nomor',
-                    'Conference',
-                    'Deskripsi',
-                    'Link Publikasi',
-                    'Link DOI',
-                    'Link Gdrive'
+                    'Judul', 'Kategori', 'Topik', 'Tanggal Publikasi', 'Penulis Utama', 'Penulis Pendamping',
+                    'Volume', 'Tahun', 'Nomor', 'Deskripsi', 'Link Publikasi', 'Link DOI', 'Link Gdrive'
                 ],
                 'rows' => []
             ]
@@ -100,30 +66,27 @@ class PublikasiModel extends Model
             $link_doi = !empty($pub['link_doi']) ? '<a href="' . esc($pub['link_doi'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link DOI</a>' : '-';
             $link_gdrive = !empty($pub['link_gdrive']) ? '<a href="' . esc($pub['link_gdrive'], 'attr') . '" class="btn btn-sm btn-info" target="_blank">Link Gdrive</a>' : '-';
 
-            $row = [
-                $pub['judul']??'-',
-                $pub['kategori'] ?? '-',
-                $pub['topik']??'-',
-                $pub['tanggal_publikasi'] ?? '-',
-                $pub['penulis_utama'] ?? '-',
-                $pub['penulis_pendamping'] ?? '-',
-                $pub['volume'] ?? '-',
-                $pub['tahun'] ?? '-',
-                $pub['nomor'] ?? '-',
-                $pub['conference'] ?? '-',
-                $pub['deskripsi'] ?? '-',
-                $link_publikasi,
-                $link_doi,
-                $link_gdrive,
-                // $pub['id_publikasi'] // simpan ID di akhir untuk tombol edit/delete
-            ];
-
             if ($pub['jenis_publikasi'] === 'jurnal') {
-                $processedData['jurnal']['rows'][] = $row;
+                $processedData['jurnal']['rows'][] = [
+                    $pub['judul'] ?? '-', $pub['kategori'] ?? '-', $pub['topik'] ?? '-', $pub['tanggal_publikasi'] ?? '-',
+                    $pub['penulis_utama'] ?? '-', $pub['penulis_pendamping'] ?? '-', $pub['volume'] ?? '-',
+                    $pub['tahun'] ?? '-', $pub['publisher_jurnal'] ?? '-', $pub['nomor'] ?? '-', $pub['deskripsi'] ?? '-',
+                    $link_publikasi, $link_doi, $link_gdrive
+                ];
             } elseif ($pub['jenis_publikasi'] === 'prosiding') {
-                $processedData['prosiding']['rows'][] = $row;
+                $processedData['prosiding']['rows'][] = [
+                    $pub['judul'] ?? '-', $pub['kategori'] ?? '-', $pub['topik'] ?? '-', $pub['tanggal_publikasi'] ?? '-',
+                    $pub['penulis_utama'] ?? '-', $pub['penulis_pendamping'] ?? '-', $pub['conference'] ?? '-',
+                    $pub['lokasi_conference'] ?? '-', $pub['nomor'] ?? '-', $pub['deskripsi'] ?? '-',
+                    $link_publikasi, $link_doi, $link_gdrive
+                ];
             } elseif ($pub['jenis_publikasi'] === 'paten') {
-                $processedData['paten']['rows'][] = $row;
+                $processedData['paten']['rows'][] = [
+                    $pub['judul'] ?? '-', $pub['kategori'] ?? '-', $pub['topik'] ?? '-', $pub['tanggal_publikasi'] ?? '-',
+                    $pub['penulis_utama'] ?? '-', $pub['penulis_pendamping'] ?? '-', $pub['volume'] ?? '-',
+                    $pub['tahun'] ?? '-', $pub['nomor'] ?? '-', $pub['deskripsi'] ?? '-',
+                    $link_publikasi, $link_doi, $link_gdrive
+                ];
             }
         }
 

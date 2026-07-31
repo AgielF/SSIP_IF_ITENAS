@@ -85,6 +85,8 @@ class PublikasiController extends BaseController
             'link_doi'           => 'permit_empty|max_length[500]',
             'link_gdrive'        => 'permit_empty|max_length[500]',
             'conference'         => 'permit_empty|max_length[255]',
+            'lokasi_conference'  => 'permit_empty|max_length[255]',
+            'publisher_jurnal'   => 'permit_empty|max_length[255]',
             'deskripsi'          => 'permit_empty'
         ];
 
@@ -122,6 +124,8 @@ class PublikasiController extends BaseController
                 'link_doi'          => $this->request->getPost('link_doi'),
                 'link_gdrive'       => $this->request->getPost('link_gdrive'),
                 'conference'        => $this->request->getPost('conference'),
+                'lokasi_conference' => $this->request->getPost('lokasi_conference'),
+                'publisher_jurnal'  => $this->request->getPost('publisher_jurnal'),
                 'deskripsi'         => $this->request->getPost('deskripsi'),
                 'id_user'           => $selectedUserId,
             ];
@@ -157,6 +161,8 @@ class PublikasiController extends BaseController
             'link_doi'           => 'permit_empty|max_length[500]',
             'link_gdrive'        => 'permit_empty|max_length[500]',
             'conference'         => 'permit_empty|max_length[255]',
+            'lokasi_conference'  => 'permit_empty|max_length[255]',
+            'publisher_jurnal'   => 'permit_empty|max_length[255]',
             'deskripsi'          => 'permit_empty'
         ];
 
@@ -194,6 +200,8 @@ class PublikasiController extends BaseController
                 'link_doi'          => $this->request->getPost('link_doi'),
                 'link_gdrive'       => $this->request->getPost('link_gdrive'),
                 'conference'        => $this->request->getPost('conference'),
+                'lokasi_conference' => $this->request->getPost('lokasi_conference'),
+                'publisher_jurnal'  => $this->request->getPost('publisher_jurnal'),
                 'deskripsi'         => $this->request->getPost('deskripsi'),
                 'id_user'           => $selectedUserId,
             ];
