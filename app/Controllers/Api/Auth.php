@@ -53,11 +53,7 @@ class Auth extends ResourceController
             // [T2.4] FILTER_SANITIZE_STRING dihapus (deprecated sejak PHP 8.1).
             // Validasi format NIM sudah cukup dihandle oleh preg_match di bawah.
 
-            // Validasi format NIM (9 digit angka)
-            if (!preg_match('/^[0-9]{9}$/', $nomor)) {
-                $this->recordFailedAttempt();
-                return redirect()->back()->withInput()->with('error', 'Format NIM tidak valid (9 digit angka)');
-            }
+            // Validasi format NIM/Username dihapus sesuai permintaan
 
             // Cek password minimal 6 karakter
             if (strlen($password) < 6) {
