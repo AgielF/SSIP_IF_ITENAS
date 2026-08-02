@@ -69,59 +69,92 @@
 </style>
 
 <div class="container my-5">
-    <div class="profile-card mb-4">
-        <div class="row align-items-center">
-            <div class="col-md-3 text-center">
-                <?php if (!empty($user['foto'])): ?>
-                    <img src="<?= base_url(esc($user['foto'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>" onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
-                <?php else: ?>
-                    <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>" class="profile-avatar" alt="Foto <?= esc($user['nama']) ?>">
-                <?php endif; ?>
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-circle me-2 text-primary"></i>Profil Anggota
+                </h4>
             </div>
-            <div class="col-md-9">
-                <h2 class="h3 mb-1"><?= esc($user['nama']) ?></h2>
-                
-                <?php 
-                    $roleLabel = '';
-                    if (isset($user['role'])) {
-                        if ($user['role'] === 'admin') $roleLabel = 'Kepala Laboratorium SSIP';
-                        elseif ($user['role'] === 'dosen') $roleLabel = 'Dosen Informatika';
-                    }
-                ?>
-                <p class="text-muted"><?= $roleLabel ?: esc($user['jurusan'] ?? 'Anggota Laboratorium') ?></p>
-                <p class="text-muted small"><?= esc($user['nomor']) ?></p>
 
-                <?php if (in_array(strtolower($user['role'] ?? ''), ['admin', 'dosen'])): ?>
-                    <h5 class="h6 mt-4">Platform Penelitian:</h5>
-                    <div class="d-flex gap-3 platform-links fs-4">
-                        <?php if (!empty($user['scholar_url'])): ?>
-                            <a href="<?= esc($user['scholar_url']) ?>" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-                        <?php endif; ?>
-                        <?php if (!empty($user['sinta_url'])): ?>
-                            <a href="<?= esc($user['sinta_url']) ?>" target="_blank" title="SINTA"><i class="fas fa-book"></i></a>
-                        <?php endif; ?>
-                        <?php if (!empty($user['scopus_url'])): ?>
-                            <a href="<?= esc($user['scopus_url']) ?>" target="_blank" title="Scopus"><i class="fas fa-book-open"></i></a>
-                        <?php endif; ?>
-                        <?php if (!empty($user['orcid_url'])): ?>
-                            <a href="<?= esc($user['orcid_url']) ?>" target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>
-                        <?php endif; ?>
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center mb-3 mb-md-0">
+                    <?php if (!empty($user['foto'])): ?>
+                        <img src="<?= base_url(esc($user['foto'])) ?>"
+                             class="rounded-circle shadow-sm border animate-hover"
+                             alt="Foto <?= esc($user['nama']) ?>"
+                             style="width: 150px; height: 150px; object-fit: cover;"
+                             onerror="this.src='https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>'">
+                    <?php else: ?>
+                        <img src="https://placehold.co/150x150/E2E8F0/334155?text=<?= urlencode(esc($user['nama'])) ?>"
+                             class="rounded-circle shadow-sm border animate-hover"
+                             alt="Foto <?= esc($user['nama']) ?>"
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                    <?php endif; ?>
+                </div>
+
+                <div class="col-md-9">
+                    <div class="mb-1">
+                        <h5 class="mb-0 fw-bold fs-4 text-dark"><?= esc($user['nama']) ?></h5>
                     </div>
-                <?php else: ?>
-                    <h5 class="h6 mt-4">Hubungi Kontak:</h5>
-                    <div class="d-flex gap-3 platform-links fs-4">
-                        <?php 
-                        $waNumber = preg_replace('/[^0-9]/', '', $user['no_telp'] ?? '');
-                        if (strpos($waNumber, '0') === 0) {
-                            $waNumber = '62' . substr($waNumber, 1);
+
+                    <?php 
+                        $roleLabel = 'Anggota Laboratorium';
+                        if (isset($user['role'])) {
+                            if ($user['role'] === 'admin') $roleLabel = 'Kepala Laboratorium SSIP';
+                            elseif ($user['role'] === 'dosen') $roleLabel = 'Dosen Informatika';
+                            elseif ($user['role'] === 'asisten') $roleLabel = 'Asisten Laboratorium';
                         }
-                        ?>
-                        <?php if (!empty($waNumber)): ?>
-                            <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="text-success" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                        <?php endif; ?>
-                        <a href="mailto:<?= esc($user['nomor']) ?>@mahasiswa.itenas.ac.id" class="text-secondary" title="Email"><i class="fas fa-envelope"></i></a>
-                    </div>
-                <?php endif; ?>
+                    ?>
+                    <p class="text-muted mb-1">
+                        <i class="fas fa-user-tag me-2 text-primary"></i><?= esc($roleLabel) ?>
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-id-badge me-2"></i><?= esc($user['nomor'] ?? '-') ?>
+                    </p>
+
+                    <?php 
+                    $roleId = (int)($user['role_id'] ?? 0);
+                    $isAcademic = ($roleId === 1 || $roleId === 3 || in_array(strtolower($user['role'] ?? ''), ['admin', 'dosen']));
+                    if ($isAcademic): 
+                    ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
+                        <div class="d-flex gap-3 fs-5">
+                            <?php 
+                            $scholar = !empty($user['google_scholar']) ? $user['google_scholar'] : (!empty($user['scholar_url']) ? $user['scholar_url'] : '');
+                            $sinta   = !empty($user['sinta']) ? $user['sinta'] : (!empty($user['sinta_url']) ? $user['sinta_url'] : '');
+                            $scopus  = !empty($user['scopus']) ? $user['scopus'] : (!empty($user['scopus_url']) ? $user['scopus_url'] : '');
+                            $orcid   = !empty($user['orcid']) ? $user['orcid'] : (!empty($user['orcid_url']) ? $user['orcid_url'] : '');
+                            ?>
+                            <?php if (!empty($scholar)): ?>
+                                <a href="<?= esc($scholar) ?>" target="_blank" class="text-dark" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($sinta)): ?>
+                                <a href="<?= esc($sinta) ?>" target="_blank" class="text-dark" title="SINTA"><i class="fas fa-book"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($scopus)): ?>
+                                <a href="<?= esc($scopus) ?>" target="_blank" class="text-dark" title="Scopus"><i class="fas fa-university"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($orcid)): ?>
+                                <a href="<?= esc($orcid) ?>" target="_blank" class="text-dark" title="ORCID"><i class="fab fa-orcid"></i></a>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Hubungi Kontak</h6>
+                        <div class="d-flex gap-3 fs-5">
+                            <?php 
+                            $waNumber = preg_replace('/[^0-9]/', '', $user['no_telp'] ?? '');
+                            if (strpos($waNumber, '0') === 0) {
+                                $waNumber = '62' . substr($waNumber, 1);
+                            }
+                            ?>
+                            <?php if (!empty($waNumber)): ?>
+                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="text-success" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <?php endif; ?>
+                            <a href="mailto:<?= esc($user['nomor']) ?>@mahasiswa.itenas.ac.id" class="text-secondary" title="Email"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>

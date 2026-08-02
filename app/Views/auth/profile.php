@@ -62,39 +62,28 @@
 
                     <?php 
                         $roleIdNum = (int)($user['role_id'] ?? 0);
-                        if ($roleIdNum === 1 || $roleIdNum === 3):
+                        $isAcademic = ($roleIdNum === 1 || $roleIdNum === 3 || in_array(strtolower($user['role'] ?? ''), ['admin', 'dosen']));
+                        if ($isAcademic):
                     ?>
                         <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
                         <div class="d-flex gap-3 fs-5">
-                            <?php if (!empty($user['google_scholar'])): ?>
-                                <a href="<?= esc($user['google_scholar']) ?>" class="text-dark" title="Google Scholar" target="_blank"><i class="fas fa-graduation-cap"></i></a>
+                            <?php 
+                            $scholar = !empty($user['google_scholar']) ? $user['google_scholar'] : (!empty($user['scholar_url']) ? $user['scholar_url'] : '');
+                            $sinta   = !empty($user['sinta']) ? $user['sinta'] : (!empty($user['sinta_url']) ? $user['sinta_url'] : '');
+                            $scopus  = !empty($user['scopus']) ? $user['scopus'] : (!empty($user['scopus_url']) ? $user['scopus_url'] : '');
+                            $orcid   = !empty($user['orcid']) ? $user['orcid'] : (!empty($user['orcid_url']) ? $user['orcid_url'] : '');
+                            ?>
+                            <?php if (!empty($scholar)): ?>
+                                <a href="<?= esc($scholar) ?>" class="text-dark" title="Google Scholar" target="_blank"><i class="fas fa-graduation-cap"></i></a>
                             <?php endif; ?>
-                            <?php if (!empty($user['sinta'])): ?>
-                                <a href="<?= esc($user['sinta']) ?>" class="text-dark" title="SINTA" target="_blank"><i class="fas fa-book"></i></a>
+                            <?php if (!empty($sinta)): ?>
+                                <a href="<?= esc($sinta) ?>" class="text-dark" title="SINTA" target="_blank"><i class="fas fa-book"></i></a>
                             <?php endif; ?>
-                            <?php if (!empty($user['orcid'])): ?>
-                                <a href="<?= esc($user['orcid']) ?>" class="text-dark" title="ORCID" target="_blank"><i class="fab fa-orcid"></i></a>
+                            <?php if (!empty($orcid)): ?>
+                                <a href="<?= esc($orcid) ?>" class="text-dark" title="ORCID" target="_blank"><i class="fab fa-orcid"></i></a>
                             <?php endif; ?>
-                            <?php if (!empty($user['scopus'])): ?>
-                                <a href="<?= esc($user['scopus']) ?>" class="text-dark" title="Scopus" target="_blank"><i class="fas fa-university"></i></a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (in_array(strtolower($user['role_id'] ?? ''), ['admin', 'dosen', '1', '3'])): ?>
-                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
-                        <div class="d-flex gap-3 fs-5">
-                            <?php if (!empty($user['scholar_url'])): ?>
-                                <a href="<?= esc($user['scholar_url']) ?>" target="_blank" class="text-dark" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['sinta_url'])): ?>
-                                <a href="<?= esc($user['sinta_url']) ?>" target="_blank" class="text-dark" title="SINTA"><i class="fas fa-book"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['scopus_url'])): ?>
-                                <a href="<?= esc($user['scopus_url']) ?>" target="_blank" class="text-dark" title="Scopus"><i class="fas fa-book-open"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['orcid_url'])): ?>
-                                <a href="<?= esc($user['orcid_url']) ?>" target="_blank" class="text-dark" title="ORCID"><i class="fab fa-orcid"></i></a>
+                            <?php if (!empty($scopus)): ?>
+                                <a href="<?= esc($scopus) ?>" class="text-dark" title="Scopus" target="_blank"><i class="fas fa-university"></i></a>
                             <?php endif; ?>
                         </div>
                     <?php else: ?>

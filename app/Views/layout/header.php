@@ -278,9 +278,9 @@ $isDosen   = ($roleName === 'Dosen');
                     $allowedKeys = $rolePermModel->getRoleMenus($userRole);
                 }
                 
-                foreach($allowedKeys as $key) {
-                    if(isset($menuDefinitions[$key])) {
-                        echo '<li><a class="dropdown-item" href="' . $menuDefinitions[$key]['url'] . '">' . $menuDefinitions[$key]['label'] . '</a></li>';
+                foreach($menuDefinitions as $key => $menu) {
+                    if (hasPermission($key, 'view')) {
+                        echo '<li><a class="dropdown-item" href="' . $menu['url'] . '">' . $menu['label'] . '</a></li>';
                     }
                 }
                 ?>
@@ -289,6 +289,99 @@ $isDosen   = ($roleName === 'Dosen');
         <?php endif; ?>
     </ul>
 </aside>
+
+<?php if (isset($user) && $user): ?>
+<script>
+    window.UserPermissions = <?= json_encode($allowedKeys ?? []) ?>;
+    window.UserRoleId = <?= (int)($user['role_id'] ?? 0) ?>;
+
+    (function() {
+        if (window.UserRoleId === 1) return;
+
+        // Mendapatkan menuKey berdasarkan path URL saat ini
+        function getCurrentMenuKey() {
+            const currentPath = window.location.pathname.toLowerCase();
+            const menuPaths = {
+                'asisten_admin': 'asisten_admin',
+                'events_admin': 'events_admin',
+                'ruangan_admin': 'ruangan_admin',
+                'rekrutmen_admin': 'rekrutmen_admin',
+                'berita_admin': 'berita_admin',
+                'penelitian-proyek_admin': 'penelitian_proyek_admin',
+                'publikasi-ilmiah_admin': 'publikasi_ilmiah_admin',
+                'galeri_admin': 'galeri_admin',
+                'modul_praktikum_admin': 'modul_praktikum_admin',
+                'jadwal_admin': 'jadwal_admin',
+                'project-lab_admin': 'project_lab_admin',
+                'visi-misi_admin': 'visi-misi_admin',
+                'periode_admin': 'periode_admin',
+                'sertifikat_admin': 'sertifikat_admin'
+            };
+
+            for (const [pathKey, menuKey] of Object.entries(menuPaths)) {
+                if (currentPath.includes(pathKey)) {
+                    return menuKey;
+                }
+            }
+            return null;
+        }
+
+        // 1. Cegah modal Bootstrap terbuka (Tambah/Edit data) jika tidak berhak
+        document.addEventListener('show.bs.modal', function(e) {
+            const triggerEl = e.relatedTarget || document.activeElement;
+            if (!triggerEl) return;
+
+            const menuKey = getCurrentMenuKey();
+            if (!menuKey) return;
+
+            // Periksa apakah pemicunya tombol Tambah/Create
+            const isAdd = triggerEl.id === 'add-data-btn' || 
+                          triggerEl.classList.contains('btn-add') || 
+                          (triggerEl.tagName === 'A' && triggerEl.href.includes('create')) || 
+                          triggerEl.textContent.toLowerCase().includes('tambah');
+
+            // Periksa apakah pemicunya tombol Edit/Update
+            const isEdit = triggerEl.classList.contains('edit-btn') || 
+                           triggerEl.classList.contains('btn-edit') || 
+                           (triggerEl.tagName === 'A' && triggerEl.href.includes('edit'));
+
+            if (isAdd && !window.UserPermissions.includes(menuKey + '_create')) {
+                alert('Anda tidak memiliki hak akses untuk menambah data.');
+                e.preventDefault(); // Menghentikan inisialisasi modal Bootstrap 5
+            } else if (isEdit && !window.UserPermissions.includes(menuKey + '_update')) {
+                alert('Anda tidak memiliki hak akses untuk mengubah data.');
+                e.preventDefault(); // Menghentikan inisialisasi modal Bootstrap 5
+            }
+        });
+
+        // 2. Cegah aksi klik tombol non-modal (seperti Delete/Hapus)
+        document.addEventListener('click', function(e) {
+            const target = e.target.closest('button, a, input[type="submit"]');
+            if (!target) return;
+
+            const menuKey = getCurrentMenuKey();
+            if (!menuKey) return;
+
+            // Pastikan bukan modal yang terbuka (karena sudah ditangani oleh event show.bs.modal)
+            if (target.hasAttribute('data-bs-toggle') && target.getAttribute('data-bs-toggle') === 'modal') {
+                return;
+            }
+
+            const isDelete = target.classList.contains('delete-btn') || 
+                             target.classList.contains('btn-delete') || 
+                             (target.tagName === 'INPUT' && target.value.toLowerCase().includes('hapus')) || 
+                             (target.tagName === 'BUTTON' && target.type === 'submit' && target.classList.contains('btn-danger')) ||
+                             target.textContent.toLowerCase().includes('hapus');
+
+            if (isDelete && !window.UserPermissions.includes(menuKey + '_delete')) {
+                alert('Anda tidak memiliki hak akses untuk menghapus data.');
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }, true); // capturing phase untuk click non-modal
+    })();
+</script>
+<?php endif; ?>
 
 
 <!-- Overlay for when sidebar is open -->

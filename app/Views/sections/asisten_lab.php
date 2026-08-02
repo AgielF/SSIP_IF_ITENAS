@@ -42,14 +42,14 @@
                 <?php foreach ($asisten as $i => $a): ?>
                 <?php 
                 $links = [
-                    'scholar' => !empty($a['scholar_url']) ? $a['scholar_url'] : '#',
-                    'sinta'   => !empty($a['sinta_url']) ? $a['sinta_url'] : '#',
-                    'scopus'  => !empty($a['scopus_url']) ? $a['scopus_url'] : '#',
-                    'orcid'   => !empty($a['orcid_url']) ? $a['orcid_url'] : '#'
+                    'scholar' => !empty($a['google_scholar']) ? $a['google_scholar'] : (!empty($a['scholar_url']) ? $a['scholar_url'] : '#'),
+                    'sinta'   => !empty($a['sinta']) ? $a['sinta'] : (!empty($a['sinta_url']) ? $a['sinta_url'] : '#'),
+                    'scopus'  => !empty($a['scopus']) ? $a['scopus'] : (!empty($a['scopus_url']) ? $a['scopus_url'] : '#'),
+                    'orcid'   => !empty($a['orcid']) ? $a['orcid'] : (!empty($a['orcid_url']) ? $a['orcid_url'] : '#')
                 ];
                 ?>
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12 filter-item" data-role="<?= esc(strtolower($a['role'] ?? '')) ?>" data-period="<?= esc($a['nama_periode'] ?? 'semua') ?>">
-                    <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm border-0 rounded-4 overflow-hidden" style="transition: transform 0.2s ease, box-shadow 0.2s ease;">
                         <div class="position-relative">
                             <div class="role-badge bg-primary text-white py-1 px-2 rounded position-absolute top-0 end-0 m-2 small">
                                 <?= $a['role'] === 'admin' ? 'Kepala Laboratorium' : ucfirst(esc($a['role'] ?? '')) ?>
@@ -60,46 +60,46 @@
                                 <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-portrait" alt="Foto <?= esc($a['nama']) ?>">
                             <?php endif; ?>
                         </div>
-                        <div class="card-body text-center">
-                            <h5 class="card-title mb-1">
-                                <a href="<?= base_url('asisten/' . $a['id']) ?>" class="text-decoration-none text-dark">
+                        <div class="card-body text-center p-4">
+                            <h5 class="card-title mb-1 fw-bold">
+                                <a href="<?= base_url('asisten/' . $a['id']) ?>" class="text-decoration-none text-dark card-name-link">
                                     <?= esc($a['nama']) ?>
                                 </a>
                             </h5>
-                            <p class="card-text text-muted small mb-2">
-                                <?= esc($a['jurusan'] ?? 'Jurusan tidak tersedia') ?>
+                            <p class="card-text text-muted small mb-2 d-flex align-items-center justify-content-center">
+                                <i class="far fa-id-card me-1.5 text-muted"></i> <?= esc($a['nomor'] ?? 'N/A') ?>
                             </p>
-                            <p class="card-text text-muted small mb-3">
-                                <?= esc($a['nomor'] ?? 'N/A') ?>
-                            </p>
-                             <p class="card-text text-muted small mb-3">
-                                <?= esc($a['nama_periode'] ?? '-') ?>
-                            </p>
+                            <span class="badge bg-light text-secondary border px-3 py-1.5 mb-3 small d-inline-block rounded-pill">
+                                <?= esc($a['jurusan'] ?? 'Informatika') ?>
+                            </span>
+
+                            <hr class="my-3 opacity-25">
+
                             <?php if (in_array(strtolower($a['role'] ?? ''), ['admin', 'dosen'])): ?>
                             <div class="d-flex justify-content-center gap-2">
                                 <!-- Google Scholar -->
-                                <a href="<?= esc($links['scholar']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #4285F4;" title="Google Scholar">
+                                <a href="<?= esc($links['scholar']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #4285F4; border: none; transition: transform 0.2s;" title="Google Scholar" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                     <i class="fas fa-graduation-cap fa-sm"></i>
                                 </a>
                                 
                                 <!-- Sinta -->
-                                <a href="<?= esc($links['sinta']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #005a9c;" title="SINTA">
+                                <a href="<?= esc($links['sinta']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #005a9c; border: none; transition: transform 0.2s;" title="SINTA" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                     <i class="fas fa-book fa-sm"></i>
                                 </a>
                                 
                                 <!-- Scopus -->
-                                <a href="<?= esc($links['scopus']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #f6821f;" title="Scopus">
+                                <a href="<?= esc($links['scopus']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #f6821f; border: none; transition: transform 0.2s;" title="Scopus" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                     <i class="fas fa-book-open fa-sm"></i>
                                 </a>
                                 
                                 <!-- ORCID -->
-                                <a href="<?= esc($links['orcid']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #a6ce39;" title="ORCID">
+                                <a href="<?= esc($links['orcid']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #a6ce39; border: none; transition: transform 0.2s;" title="ORCID" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                     <i class="fab fa-orcid fa-sm"></i>
                                 </a>
                             </div>
                             <?php else: ?>
-                            <!-- Tampilan Asisten/Mahasiswa: WhatsApp & Email Akademik -->
-                            <div class="d-flex justify-content-center gap-2">
+                            <!-- Tampilan Asisten/Mahasiswa: WhatsApp, Email & Periode -->
+                            <div class="d-flex justify-content-center align-items-center gap-2">
                                 <?php 
                                 $waNumber = preg_replace('/[^0-9]/', '', $a['no_telp'] ?? '');
                                 if (strpos($waNumber, '0') === 0) {
@@ -108,15 +108,20 @@
                                 ?>
                                 <!-- WhatsApp -->
                                 <?php if (!empty($waNumber)): ?>
-                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="Hubungi WhatsApp">
-                                    <i class="fab fa-whatsapp fa-sm"></i>
+                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #25D366; border: none; transition: transform 0.2s;" title="WhatsApp" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fab fa-whatsapp"></i>
                                 </a>
                                 <?php endif; ?>
 
                                 <!-- Email Akademik Itenas -->
-                                <a href="mailto:<?= esc($a['nomor']) ?>@mahasiswa.itenas.ac.id" class="btn btn-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #6c757d;" title="Kirim Email">
-                                    <i class="fas fa-envelope fa-sm"></i>
+                                <a href="mailto:<?= esc($a['nomor']) ?>@mahasiswa.itenas.ac.id" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #EA4335; border: none; transition: transform 0.2s;" title="Kirim Email" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-envelope"></i>
                                 </a>
+
+                                <!-- Periode Tag -->
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2 d-inline-flex align-items-center small" style="font-weight: 500; height: 36px;">
+                                    <i class="far fa-calendar-alt me-1.5 text-muted"></i> <?= esc($a['nama_periode'] ?? '-') ?>
+                                </span>
                             </div>
                             <?php endif; ?>
                         </div>
@@ -264,13 +269,46 @@ class AdvancedFilter {
 
         // Tampilkan item yang sudah difilter dan diurutkan
         if (itemsToRender.length > 0) {
-            itemsToRender.forEach(item => {
-                this.itemsContainer.appendChild(item);
-            });
+            if (this.currentRoleFilter === 'semua') {
+                // Kelompokkan berdasarkan role
+                const admins = itemsToRender.filter(item => item.dataset.role === 'admin');
+                const dosens = itemsToRender.filter(item => item.dataset.role === 'dosen');
+                const asistens = itemsToRender.filter(item => item.dataset.role === 'asisten');
+
+                const renderSection = (title, iconClass, items) => {
+                    if (items.length === 0) return;
+                    
+                    // Buat header kategori/pemisah
+                    const headerCol = document.createElement('div');
+                    headerCol.className = 'col-12 mt-5 mb-3 role-section-header';
+                    headerCol.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <h5 class="fw-bold text-dark mb-0"><i class="${iconClass} me-2 text-primary"></i>${title}</h5>
+                            <span class="badge bg-secondary ms-2 rounded-pill small">${items.length}</span>
+                            <div class="flex-grow-1 border-bottom ms-3 opacity-25" style="border-width: 2px !important;"></div>
+                        </div>
+                    `;
+                    this.itemsContainer.appendChild(headerCol);
+
+                    // Tambahkan kartu anggota
+                    items.forEach(item => {
+                        this.itemsContainer.appendChild(item);
+                    });
+                };
+
+                renderSection('Kepala Laboratorium', 'fas fa-crown text-warning', admins);
+                renderSection('Dosen', 'fas fa-chalkboard-teacher text-success', dosens);
+                renderSection('Asisten', 'fas fa-users-cog text-primary', asistens);
+            } else {
+                // Tampilkan langsung tanpa pemisah jika filter kategori aktif
+                itemsToRender.forEach(item => {
+                    this.itemsContainer.appendChild(item);
+                });
+            }
         } else {
             // ✅ PERBAIKAN XSS: Render pesan error menggunakan textContent
             const p = document.createElement('p');
-            p.className = 'text-center text-muted';
+            p.className = 'text-center text-muted col-12 my-5';
             p.textContent = 'Tidak ada anggota yang cocok dengan filter.';
             this.itemsContainer.appendChild(p);
         }

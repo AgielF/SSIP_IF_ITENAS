@@ -16,8 +16,8 @@ class HakAksesController extends BaseController
 
     public function index()
     {
-        // Define all available menus that can be assigned
-        $availableMenus = [
+        // Menu berskala CRUD
+        $crudMenus = [
             'asisten_admin'           => 'Kelola Users',
             'events_admin'            => 'Kelola Events',
             'ruangan_admin'           => 'Kelola Ruangan',
@@ -32,12 +32,15 @@ class HakAksesController extends BaseController
             'visi_misi_admin'         => 'Kelola Content Visi Misi',
             'periode_admin'           => 'Kelola Periode Asisten',
             'sertifikat_admin'        => 'Kelola Sertifikat',
-            // asisten specific
-            'jadwal_saya'             => 'Jadwal Saya',
-            'sertifikat_klaim'        => 'Klaim Sertifikat'
         ];
 
-        // We only manage Role 2 (Asisten) and Role 3 (Dosen)
+        // Menu Aksi Tunggal (Non-CRUD)
+        $singleMenus = [
+            'jadwal_saya'      => 'Jadwal Saya',
+            'sertifikat_klaim' => 'Klaim Sertifikat'
+        ];
+
+        // Hanya kelola Role 2 (Asisten) dan Role 3 (Dosen)
         $rolesToManage = [
             2 => 'Asisten',
             3 => 'Dosen'
@@ -50,7 +53,8 @@ class HakAksesController extends BaseController
 
         $data = [
             'title'              => 'Kelola Hak Akses (RBAC)',
-            'availableMenus'     => $availableMenus,
+            'crudMenus'          => $crudMenus,
+            'singleMenus'        => $singleMenus,
             'rolesToManage'      => $rolesToManage,
             'currentPermissions' => $currentPermissions
         ];
@@ -60,15 +64,34 @@ class HakAksesController extends BaseController
 
     public function update()
     {
-        $roleId = $this->request->getPost('role_id');
         $permissions = $this->request->getPost('permissions') ?? [];
+        $rolesToManage = [2, 3]; // 2: Asisten, 3: Dosen
 
-        if (!$roleId) {
-            return redirect()->back()->with('error', 'Role ID tidak valid.');
+        $this->permissionModel->db->transStart();
+
+        foreach ($rolesToManage as $roleId) {
+            $rolePermissions = $permissions[$roleId] ?? [];
+
+            // Hapus hak akses lama untuk role ini
+            $this->permissionModel->where('role_id', $roleId)->delete();
+
+            // Insert hak akses baru jika ada yang dipilih
+            if (!empty($rolePermissions) && is_array($rolePermissions)) {
+                $data = [];
+                foreach ($rolePermissions as $key) {
+                    $data[] = [
+                        'role_id'  => $roleId,
+                        'menu_key' => $key
+                    ];
+                }
+                $this->permissionModel->insertBatch($data);
+            }
         }
 
-        if ($this->permissionModel->updateRolePermissions($roleId, $permissions)) {
-            return redirect()->back()->with('success', 'Hak akses berhasil diperbarui.');
+        $this->permissionModel->db->transComplete();
+
+        if ($this->permissionModel->db->transStatus()) {
+            return redirect()->back()->with('success', 'Semua hak akses berhasil diperbarui.');
         } else {
             return redirect()->back()->with('error', 'Gagal memperbarui hak akses.');
         }

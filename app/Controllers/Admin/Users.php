@@ -81,15 +81,11 @@ class Users extends BaseController
             $this->userModel->db->transStart();
 
             $data = [
-                'nomor'       => $nomor,
-                'nama'        => $nama,
-                'password'    => $password,
-                'jurusan'     => $jurusan,
-                'role_id'     => $role_id,
-                'sinta_url'   => $this->request->getPost('sinta_url'),
-                'scopus_url'  => $this->request->getPost('scopus_url'),
-                'scholar_url' => $this->request->getPost('scholar_url'),
-                'orcid_url'   => $this->request->getPost('orcid_url'),
+                'nomor'    => $nomor,
+                'nama'     => $nama,
+                'password' => $password,
+                'jurusan'  => $jurusan,
+                'role_id'  => $role_id,
             ];
 
             if ($role_id == 1 || $role_id == 3) {
@@ -246,16 +242,7 @@ class Users extends BaseController
                 $data['password'] = $password;
             }
 
-            // Capture academic links
-            $sinta_url = $this->request->getPost('sinta_url');
-            $scopus_url = $this->request->getPost('scopus_url');
-            $scholar_url = $this->request->getPost('scholar_url');
-            $orcid_url = $this->request->getPost('orcid_url');
 
-            if ($sinta_url !== null) $data['sinta_url'] = $sinta_url;
-            if ($scopus_url !== null) $data['scopus_url'] = $scopus_url;
-            if ($scholar_url !== null) $data['scholar_url'] = $scholar_url;
-            if ($orcid_url !== null) $data['orcid_url'] = $orcid_url;
 
             // Handle file upload
             $foto = $this->request->getFile('foto');

@@ -117,7 +117,14 @@ class SertifikatController extends BaseController
 
     public function updateStatusTugas(int $id_asisten_periode)
     {
-        $input      = $this->request->getJSON(true) ?? $this->request->getPost();
+        try {
+            $input = $this->request->getJSON(true);
+        } catch (\Exception $e) {
+            $input = null;
+        }
+        if (empty($input)) {
+            $input = $this->request->getPost();
+        }
         $statusBaru = $input['status_tugas'] ?? null;
         $allowed    = ['selesai', 'belum selesai'];
 
@@ -261,7 +268,6 @@ class SertifikatController extends BaseController
         }
         
         // Role authorization sudah ditangani oleh Route Filter (role:1,2) di Routes.php
-
 
         $namaUser = $userData['nama'];
         $nrpUser  = $userData['nomor'];

@@ -101,6 +101,8 @@
                         <th>Jurusan</th>
                         <th>Role</th>
                         <th>Periode</th> 
+                        <th class="non-printable text-center">Tautan</th>
+                        <th class="non-printable text-center">Status</th>
                         <th class="non-printable text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -153,36 +155,38 @@
                                 
                                 <!-- Field Status di Sebelah Kiri Kolom Aksi -->
                                 <td class="text-center">
-                                    <?php if ($person['role_id'] == 2 && !empty($person['id_asisten_periode'])) : ?>
-                                        <?php 
-                                            $statusTugas = $person['status_tugas'] ?? 'belum selesai';
-                                            $isSelesai   = ($statusTugas === 'selesai');
-                                            $badgeClass  = $isSelesai ? 'bg-success' : 'bg-secondary';
-                                            $textLabel   = $isSelesai ? 'Selesai' : 'Masih Berjalan';
-                                        ?>
-                                        <span class="badge <?= $badgeClass ?> text-white text-nowrap px-2 py-1">
-                                            <?= $textLabel ?>
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="text-muted small">-</span>
-                                    <?php endif; ?>
-                                </td>
+                                     <?php if ($person['role_id'] == 2 && !empty($person['id_asisten_periode'])) : ?>
+                                         <?php 
+                                             $statusTugas = $person['status_tugas'] ?? 'belum selesai';
+                                             $isSelesai   = ($statusTugas === 'selesai');
+                                             $btnClass    = $isSelesai ? 'btn-success' : 'btn-secondary';
+                                             $textLabel   = $isSelesai ? 'Selesai' : 'Masih Berjalan';
+                                         ?>
+                                         <button type="button" 
+                                                 class="btn btn-sm <?= $btnClass ?> toggle-status-btn text-white text-nowrap px-2 py-1"
+                                                 data-id-asisten-periode="<?= esc($person['id_asisten_periode']) ?>"
+                                                 data-current-status="<?= esc($statusTugas) ?>"
+                                                 title="Klik untuk mengubah status tugas"
+                                                 style="font-size: 0.75rem; border-radius: 6px;">
+                                             <?= $textLabel ?>
+                                         </button>
+                                     <?php else: ?>
+                                         <span class="text-muted small">-</span>
+                                     <?php endif; ?>
+                                 </td>
 
                                 <!-- Kolom Aksi -->
                                 <td class="text-center">
-                                    <div class="btn-group d-flex justify-content-center">
-                                        <!-- Tombol Edit & Delete Bawaan -->
-                                        <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>" data-gs="<?= esc($person['google_scholar'] ?? '') ?>" data-sinta="<?= esc($person['sinta'] ?? '') ?>" data-orcid="<?= esc($person['orcid'] ?? '') ?>" data-scopus="<?= esc($person['scopus'] ?? '') ?>" data-status="<?= esc($person['status_tugas'] ?? 'belum selesai') ?>">
-                                <td>
                                     <div class="btn-group d-flex justify-content-center">
                                         <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" 
                                                 data-index="<?= $i ?>" 
                                                 data-user-id="<?= esc($person['id']) ?>" 
                                                 data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>"
-                                                data-sinta-url="<?= esc($person['sinta_url'] ?? '') ?>"
-                                                data-scopus-url="<?= esc($person['scopus_url'] ?? '') ?>"
-                                                data-scholar-url="<?= esc($person['scholar_url'] ?? '') ?>"
-                                                data-orcid-url="<?= esc($person['orcid_url'] ?? '') ?>">
+                                                data-sinta-url="<?= esc($person['sinta'] ?? '') ?>"
+                                                data-scopus-url="<?= esc($person['scopus'] ?? '') ?>"
+                                                data-scholar-url="<?= esc($person['google_scholar'] ?? '') ?>"
+                                                data-orcid-url="<?= esc($person['orcid'] ?? '') ?>"
+                                                data-status="<?= esc($person['status_tugas'] ?? 'belum selesai') ?>">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
@@ -285,6 +289,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const csrfTokenName = '<?= csrf_token() ?>';
     const csrfTokenValue = '<?= csrf_hash() ?>';
+
+    const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    };
+    const getLatestCsrfToken = () => {
+        return getCookie('csrf_cookie') || csrfTokenValue;
+    };
 
     const roleFilter = document.getElementById('role-filter');
 
@@ -410,10 +424,10 @@ document.addEventListener('DOMContentLoaded', function () {
             <div id="academic-links-container" style="display:none;">
                 <hr>
                 <h6 class="mb-3">Profil Akademik (Khusus Dosen / Kepala Lab)</h6>
-                <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta_url" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
-                <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus_url" placeholder="https://www.scopus.com/pages/authors/..."></div>
-                <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="scholar_url" placeholder="https://scholar.google.com/citations?user=..."></div>
-                <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid_url" placeholder="https://orcid.org/..."></div>
+                <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
+                <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus" placeholder="https://www.scopus.com/pages/authors/..."></div>
+                <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="google_scholar" placeholder="https://scholar.google.com/citations?user=..."></div>
+                <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid" placeholder="https://orcid.org/..."></div>
             </div>`;
         
         modalForm.innerHTML = formHtml;
@@ -473,6 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: method,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': getLatestCsrfToken()
                 },
                 body: formData
             });
@@ -521,6 +536,63 @@ document.addEventListener('DOMContentLoaded', function () {
     tableBody.addEventListener('click', function(e) {
         const target = e.target.closest('button');
         if (!target) return;
+
+        if (target.classList.contains('toggle-status-btn')) {
+            const idAsistenPeriode = target.dataset.idAsistenPeriode;
+            const currentStatus = target.dataset.currentStatus;
+            const newStatus = currentStatus === 'selesai' ? 'belum selesai' : 'selesai';
+            const baseUrl = '<?= site_url() ?>';
+            
+            if (confirm(`Apakah Anda yakin ingin mengubah status tugas asisten menjadi "${newStatus === 'selesai' ? 'Selesai' : 'Masih Berjalan'}"?`)) {
+                const activeToken = getLatestCsrfToken();
+                fetch(baseUrl + `/sertifikat/status/${idAsistenPeriode}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': activeToken
+                    },
+                    body: new URLSearchParams({
+                        [csrfTokenName]: activeToken,
+                        status_tugas: newStatus
+                    })
+                }).then(async response => {
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                        try {
+                            const errorJson = JSON.parse(errorText);
+                            if (errorJson.message) errorMessage = errorJson.message;
+                        } catch (e) {}
+                        throw new Error(errorMessage);
+                    }
+                    
+                    let result;
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        result = await response.json();
+                    } else {
+                        const textResult = await response.text();
+                        try {
+                            result = JSON.parse(textResult);
+                        } catch (e) {
+                            throw new Error('Response is not valid JSON');
+                        }
+                    }
+
+                    if (result && result.status === 'success') {
+                        sessionStorage.setItem('flashMessage', result.message || 'Status tugas berhasil diperbarui!');
+                        sessionStorage.setItem('flashType', 'success');
+                        location.reload();
+                    } else {
+                        alert((result && result.message) || 'Gagal memperbarui status');
+                    }
+                }).catch(error => {
+                    alert('Network error: ' + error.message);
+                });
+            }
+            return;
+        }
 
         const userId = target.dataset.userId;
         const rowIndex = parseInt(target.dataset.index);
@@ -572,10 +644,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div id="academic-links-container-edit" style="display:${displayAcademic};">
                     <hr>
                     <h6 class="mb-3">Profil Akademik (Khusus Dosen / Kepala Lab)</h6>
-                    <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta_url" value="${sintaUrl}" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
-                    <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus_url" value="${scopusUrl}" placeholder="https://www.scopus.com/pages/authors/..."></div>
-                    <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="scholar_url" value="${scholarUrl}" placeholder="https://scholar.google.com/citations?user=..."></div>
-                    <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid_url" value="${orcidUrl}" placeholder="https://orcid.org/..."></div>
+                    <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta" value="${sintaUrl}" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
+                    <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus" value="${scopusUrl}" placeholder="https://www.scopus.com/pages/authors/..."></div>
+                    <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="google_scholar" value="${scholarUrl}" placeholder="https://scholar.google.com/citations?user=..."></div>
+                    <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid" value="${orcidUrl}" placeholder="https://orcid.org/..."></div>
                 </div>`;
 
             modalForm.innerHTML = formHtml;
@@ -592,14 +664,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (target.classList.contains('delete-btn')) {
             if (confirm('Apakah Anda yakin ingin menghapus anggota ini?')) {
                 const baseUrl = '<?= site_url() ?>';
+                const activeToken = getLatestCsrfToken();
                 fetch(baseUrl + `/admin/users/delete/${userId}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': activeToken
                     },
                     body: new URLSearchParams({
-                        [csrfTokenName]: csrfTokenValue
+                        [csrfTokenName]: activeToken
                     })
                 }).then(async response => {
                     if (!response.ok) {

@@ -30,11 +30,36 @@ class PermissionFilter implements FilterInterface
         $requiredMenu = $arguments[0] ?? null;
 
         if ($requiredMenu) {
+            $path = strtolower($request->getUri()->getPath());
+            $suffix = '_view'; // Aksi default adalah view
+
+            if (strpos($path, 'create') !== false || strpos($path, 'store') !== false || strpos($path, 'add') !== false) {
+                $suffix = '_create';
+            } elseif (strpos($path, 'update') !== false || strpos($path, 'edit') !== false || strpos($path, 'config') !== false || strpos($path, 'status') !== false || strpos($path, 'sync') !== false) {
+                $suffix = '_update';
+            } elseif (strpos($path, 'delete') !== false || strpos($path, 'remove') !== false) {
+                $suffix = '_delete';
+            }
+
+            // Kecualikan menu aksi tunggal (non-CRUD) dari penambahan suffix
+            $singleActionMenus = ['jadwal_saya', 'sertifikat_klaim'];
+            $fullPermissionKey = in_array($requiredMenu, $singleActionMenus) ? $requiredMenu : $requiredMenu . $suffix;
+
             $permModel = new RolePermissionModel();
             $allowedMenus = $permModel->getRoleMenus($userRole);
 
-            if (!in_array($requiredMenu, $allowedMenus)) {
-                return redirect()->to('/')->with('error', 'Anda tidak memiliki hak akses ke halaman tersebut.');
+            if (!in_array($fullPermissionKey, $allowedMenus)) {
+                $isAjax = $request->isAJAX() || $request->hasHeader('X-Requested-With');
+                if ($isAjax) {
+                    return Services::response()
+                        ->setJSON([
+                            'status' => 'error',
+                            'message' => 'Anda tidak memiliki akses untuk melakukan tindakan ini.',
+                            'success' => false
+                        ])
+                        ->setStatusCode(403);
+                }
+                return redirect()->to('/')->with('error', 'Anda tidak memiliki hak akses untuk melakukan aksi ini.');
             }
         }
     }
