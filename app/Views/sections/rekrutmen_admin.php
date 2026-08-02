@@ -72,8 +72,11 @@
                             <option value="10" selected>10</option>
                             <option value="all">Semua</option>
                         </select>
-                        <button id="export-pdf-btn" class="btn btn-sm btn-danger">
+                        <button type="button" id="export-pdf-btn" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf me-1"></i> PDF
+                        </button>
+                        <button type="button" id="export-excel-btn" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-excel me-1"></i> Excel
                         </button>
                         <button id="add-data-btn" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDataModal">
                             <i class="fas fa-plus me-1"></i> Tambah Data
@@ -82,7 +85,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table fm-table table-hover">
+                    <table id="rekrutmen-table" class="table fm-table table-hover">
                         <thead>
                             <tr>
                                 <th>ID rekrut</th>
@@ -363,6 +366,10 @@ filtered.sort((a, b) => {
     renderTable();
 });
 document.getElementById('export-pdf-btn').addEventListener('click', function() {
-    window.print();
+    printTableOnly('rekrutmen-table', 'Daftar Rekrutmen');
+});
+
+document.getElementById('export-excel-btn').addEventListener('click', function() {
+    exportTableToExcel('rekrutmen-table', 'Daftar_Rekrutmen');
 });
 </script>

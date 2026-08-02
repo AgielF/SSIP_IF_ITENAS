@@ -115,6 +115,9 @@ foreach ($publicationData as $row) {
                         <button type="button" id="export-pdf-btn" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf me-1"></i> Export PDF
                         </button>
+                        <button type="button" id="export-excel-btn" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-excel me-1"></i> Export Excel
+                        </button>
                     </form>
                 </div>
 
@@ -506,7 +509,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const exportBtn = document.getElementById('export-pdf-btn');
     if (exportBtn) {
         exportBtn.addEventListener('click', function() {
-            window.print();
+            printTableOnly('publikasi-table', 'Daftar Publikasi Ilmiah');
+        });
+    }
+
+    const exportExcelBtn = document.getElementById('export-excel-btn');
+    if (exportExcelBtn) {
+        exportExcelBtn.addEventListener('click', function() {
+            exportTableToExcel('publikasi-table', 'Daftar_Publikasi_Ilmiah');
         });
     }
 

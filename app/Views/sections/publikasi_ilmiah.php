@@ -71,8 +71,11 @@ $publicationData = $publicationData ?? [
                                 <option value="all">Semua</option>
                             </select>
                         </div>
-                        <button id="export-pdf-btn" class="btn btn-sm btn-danger">
+                        <button type="button" id="export-pdf-btn" class="btn btn-sm btn-danger">
                             <i class="fas fa-file-pdf me-1"></i> PDF
+                        </button>
+                        <button type="button" id="export-excel-btn" class="btn btn-sm btn-success">
+                            <i class="fas fa-file-excel me-1"></i> Excel
                         </button>
                     </div>
                 </div>
@@ -80,7 +83,7 @@ $publicationData = $publicationData ?? [
                 <p class="text-muted small mb-3" id="record-info">Menampilkan data...</p>
 
                 <div class="table-responsive">
-                    <table class="table fm-table table-hover">
+                    <table id="publikasi-table" class="table fm-table table-hover">
                         <thead id="table-header"></thead>
                         <tbody id="table-body"></tbody>
                     </table>
@@ -214,7 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
     sortFilter.addEventListener('change', () => { currentState.sortOrder = sortFilter.value; currentState.currentPage = 1; updateView(); });
     itemsPerPageFilter.addEventListener('change', () => { currentState.itemsPerPage = itemsPerPageFilter.value; currentState.currentPage = 1; updateView(); });
     searchInput.addEventListener('keyup', () => { currentState.searchTerm = searchInput.value.toLowerCase(); currentState.currentPage = 1; updateView(); });
-    exportPdfBtn.addEventListener('click', () => window.print());
+    exportPdfBtn.addEventListener('click', () => printTableOnly('publikasi-table', 'Daftar Publikasi'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('publikasi-table', 'Daftar_Publikasi'));
 
     updateView();
 });

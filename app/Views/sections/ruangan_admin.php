@@ -50,11 +50,14 @@
                             <option value="all">Semua</option>
                         </select>
                     </div>
-                    <button id="export-pdf-btn" class="btn btn-sm btn-danger">
+                    <button type="button" id="export-pdf-btn" class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> PDF
                     </button>
+                    <button type="button" id="export-excel-btn" class="btn btn-sm btn-success">
+                        <i class="fas fa-file-excel me-1"></i> Excel
+                    </button>
                     <!-- Tombol tambah data -->
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
                         <i class="fas fa-plus me-1"></i> Tambah Ruangan
                     </button>
                 </div>
@@ -304,7 +307,8 @@ document.addEventListener('DOMContentLoaded', function() {
     searchInput.addEventListener('keyup', () => { currentPage = 1; updateTable(); });
     sortFilter.addEventListener('change', () => { currentPage = 1; updateTable(); });
     itemsPerPageFilter.addEventListener('change', () => { currentPage = 1; updateTable(); });
-    exportPdfBtn.addEventListener('click', () => window.print());
+    exportPdfBtn.addEventListener('click', () => printTableOnly('ruangan-table', 'Daftar Ruangan'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('ruangan-table', 'Daftar_Ruangan'));
 
     updateTable();
 

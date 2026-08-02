@@ -16,6 +16,20 @@
     #adminTable .btn-group .btn {
         border-radius: 6px;
     }
+
+    .admin-control-group {
+        gap: 0.75rem;
+    }
+
+    .admin-control-group .form-control,
+    .admin-control-group .form-select {
+        min-width: 160px;
+    }
+
+    .admin-action-buttons .btn {
+        white-space: nowrap;
+    }
+
     @media print {
         body * { visibility: hidden; }
         .printable-area, .printable-area * { visibility: visible; }
@@ -57,17 +71,17 @@
         <div id="controls-wrapper">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
                 <h4 class="mb-0">Kelola Anggota Laboratorium</h4>
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 non-printable">
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data..." style="width: 150px;">
-                        <div class="d-flex align-items-center">
+                <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center justify-content-end gap-2 non-printable admin-control-group">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <input type="text" id="search-input" class="form-control form-control-sm" placeholder="Cari data...">
+                        <div class="d-flex align-items-center gap-2">
                             <label for="sort-filter" class="form-label me-2 mb-0 small text-nowrap">Urutkan:</label>
                             <select class="form-select form-select-sm" id="sort-filter">
                                 <option value="newest">Terbaru</option>
                                 <option value="oldest">Terlama</option>
                             </select>
                         </div>
-                        <div class="d-flex align-items-center">
+                        <div class="d-flex align-items-center gap-2">
                             <label for="role-filter" class="form-label me-2 mb-0 small text-nowrap">Role:</label>
                             <select class="form-select form-select-sm" id="role-filter">
                                 <option value="all">Semua</option>
@@ -77,9 +91,12 @@
                             </select>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex flex-wrap align-items-center gap-2 admin-action-buttons">
                         <button id="export-pdf-btn" class="btn btn-sm btn-danger text-nowrap">
                             <i class="fas fa-file-pdf me-1"></i> Export PDF
+                        </button>
+                        <button id="export-excel-btn" class="btn btn-sm btn-success text-nowrap">
+                            <i class="fas fa-file-excel me-1"></i> Export Excel
                         </button>
                         <button id="add-data-btn" class="btn btn-sm btn-primary text-nowrap" data-bs-toggle="modal" data-bs-target="#dataModal">
                             <i class="fas fa-plus me-1"></i> Tambah Anggota
@@ -131,9 +148,9 @@
                                     <span class="badge bg-info text-dark"><?= esc($person['nama_periode'] ?? '-') ?></span>
                                 </td>
                                 
-                                <!-- Tautan Penelitian -->
-                                <td class="text-center">
-                                    <?php if (in_array((int)$person['role_id'], [1, 3])): ?>
+                                 <!-- Tautan Penelitian -->
+                                 <td class="text-center non-printable">
+                                     <?php if (in_array((int)$person['role_id'], [1, 3])): ?>
                                         <div class="d-flex justify-content-center gap-1">
                                             <?php if (!empty($person['google_scholar'])): ?>
                                                 <a href="<?= esc($person['google_scholar']) ?>" target="_blank" class="text-primary" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
@@ -154,7 +171,7 @@
                                 </td>
                                 
                                 <!-- Field Status di Sebelah Kiri Kolom Aksi -->
-                                <td class="text-center">
+                                <td class="text-center non-printable">
                                      <?php if ($person['role_id'] == 2 && !empty($person['id_asisten_periode'])) : ?>
                                          <?php 
                                              $statusTugas = $person['status_tugas'] ?? 'belum selesai';
@@ -175,9 +192,9 @@
                                      <?php endif; ?>
                                  </td>
 
-                                <!-- Kolom Aksi -->
-                                <td class="text-center">
-                                    <div class="btn-group d-flex justify-content-center">
+                                 <!-- Kolom Aksi -->
+                                 <td class="text-center non-printable">
+                                     <div class="btn-group d-flex justify-content-center">
                                         <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" 
                                                 data-index="<?= $i ?>" 
                                                 data-user-id="<?= esc($person['id']) ?>" 
@@ -390,7 +407,8 @@ document.addEventListener('DOMContentLoaded', function () {
         currentState.currentPage = 1;
         updateView();
     });
-    exportPdfBtn.addEventListener('click', () => window.print());
+    exportPdfBtn.addEventListener('click', () => printTableOnly('adminTable', 'Daftar Anggota Laboratorium'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('adminTable', 'Daftar_Anggota_Laboratorium'));
 
     document.getElementById('add-data-btn').addEventListener('click', () => {
         currentState.editingIndex = null;
@@ -683,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const errorJson = JSON.parse(errorText);
                             if (errorJson.message) errorMessage = errorJson.message;
                         } catch (e) {}
-                        
+
                         if (response.status === 401 || response.status === 403) {
                             alert('Session expired. Please login again.');
                             window.location.href = '/login';
@@ -718,7 +736,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
-
     updateView();
 });
 </script>

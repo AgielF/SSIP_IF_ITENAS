@@ -236,7 +236,8 @@ document.addEventListener('DOMContentLoaded', function () {
         updateView();
     });
 
-    exportPdfBtn.addEventListener('click', () => window.print());
+    exportPdfBtn.addEventListener('click', () => printTableOnly('jadwalTable', 'Daftar Jadwal Praktikum'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('jadwalTable', 'Daftar_Jadwal_Praktikum'));
 
     // Initial render
     updateView();

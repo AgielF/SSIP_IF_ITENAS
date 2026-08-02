@@ -236,7 +236,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('items-per-page-filter').dispatchEvent(new Event('change'));
 
     // Export PDF
-    document.getElementById('export-pdf-btn').addEventListener('click', () => window.print());
+    document.getElementById('export-pdf-btn').addEventListener('click', () => printTableOnly('rekrutmen-table', 'Daftar Berita'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('rekrutmen-table', 'Daftar_Berita'));
 
     // Isi data ke modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {

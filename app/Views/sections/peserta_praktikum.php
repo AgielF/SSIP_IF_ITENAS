@@ -38,7 +38,7 @@
             </p>
 
             <div class="table-responsive">
-                <table class="table fm-table table-hover" id="rekrutmen-table">
+                <table id="peserta-praktikum-table" class="table fm-table table-hover">
                     <thead>
                         <tr>
                             <th>No.</th>
@@ -76,7 +76,7 @@
 <script>
     // Search
     const searchInput = document.getElementById('search-input');
-    const tableRows = document.querySelectorAll('#rekrutmen-table tbody tr');
+    const tableRows = document.querySelectorAll('#peserta-praktikum-table tbody tr');
     searchInput.addEventListener('keyup', function () {
         const searchText = this.value.toLowerCase();
         tableRows.forEach(row => {
@@ -87,7 +87,7 @@
 
     // Sort
     document.getElementById('sort-filter').addEventListener('change', function () {
-        const tbody = document.querySelector('#rekrutmen-table tbody');
+        const tbody = document.querySelector('#peserta-praktikum-table tbody');
         const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
         rows.sort((a, b) => {
             const aVal = parseInt(a.cells[0].innerText);
@@ -107,5 +107,6 @@
     document.getElementById('items-per-page-filter').dispatchEvent(new Event('change'));
 
     // Export PDF
-    document.getElementById('export-pdf-btn').addEventListener('click', () => window.print());
+    document.getElementById('export-pdf-btn').addEventListener('click', () => printTableOnly('peserta-praktikum-table', 'Daftar Peserta Praktikum'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('peserta-praktikum-table', 'Daftar_Peserta_Praktikum'));
 </script>

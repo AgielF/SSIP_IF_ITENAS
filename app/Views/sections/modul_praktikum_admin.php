@@ -49,10 +49,13 @@
                             <option value="all">Semua</option>
                         </select>
                     </div>
-                    <button id="export-pdf-btn" class="btn btn-sm btn-danger">
+                    <button type="button" id="export-pdf-btn" class="btn btn-sm btn-danger">
                         <i class="fas fa-file-pdf me-1"></i> PDF
                     </button>
-                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                    <button type="button" id="export-excel-btn" class="btn btn-sm btn-success">
+                        <i class="fas fa-file-excel me-1"></i> Excel
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah">
                         <i class="fas fa-plus me-1"></i> Tambah
                     </button>
                 </div>
@@ -63,7 +66,7 @@
             </p>
 
             <div class="table-responsive">
-                <table class="table fm-table table-hover" id="rekrutmen-table">
+                <table id="modul-praktikum-table" class="table fm-table table-hover">
                     <thead>
                         <tr>
                             <th>No.</th>
@@ -242,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Search
     const searchInput = document.getElementById('search-input');
-    const tableRows = document.querySelectorAll('#rekrutmen-table tbody tr');
+    const tableRows = document.querySelectorAll('#modul-praktikum-table tbody tr');
     searchInput.addEventListener('keyup', function () {
         const searchText = this.value.toLowerCase();
         tableRows.forEach(row => {
@@ -253,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sort
     document.getElementById('sort-filter').addEventListener('change', function () {
-        const tbody = document.querySelector('#rekrutmen-table tbody');
+        const tbody = document.querySelector('#modul-praktikum-table tbody');
         const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
         rows.sort((a, b) => {
             const aVal = parseInt(a.cells[0].innerText);
@@ -273,7 +276,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('items-per-page-filter').dispatchEvent(new Event('change'));
 
     // Export PDF
-    document.getElementById('export-pdf-btn').addEventListener('click', () => window.print());
+    document.getElementById('export-pdf-btn').addEventListener('click', () => printTableOnly('modul-praktikum-table', 'Daftar Modul Praktikum'));
+    document.getElementById('export-excel-btn').addEventListener('click', () => exportTableToExcel('modul-praktikum-table', 'Daftar_Modul_Praktikum'));
 
     // Isi data ke modal edit
     document.querySelectorAll('.btn-edit').forEach(btn => {
