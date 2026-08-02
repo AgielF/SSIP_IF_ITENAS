@@ -69,8 +69,8 @@ class AdminFilter implements FilterInterface
                 }
             }
 
-            // simpan user agar bisa dipakai controller
-            $request->user = $decoded;
+            // simpan user agar bisa dipakai controller (dinonaktifkan untuk menghindari deprecation warning di PHP 8.2+)
+            // $request->user = $decoded;
 
         } catch (\Exception $e) {
             // Check if API or AJAX

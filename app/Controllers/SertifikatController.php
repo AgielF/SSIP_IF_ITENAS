@@ -212,17 +212,7 @@ class SertifikatController extends BaseController
         $userId = $this->getCurrentUserId();
 
         
-        if ($userId) {
-            $cekRecord = $this->asistenPeriodeModel->where('id_user', $userId)->first();
-            if ($cekRecord) {
-                echo "Data di asisten_periode DITEMUKAN!<br>";
-                echo "- ID Asisten Periode: " . $cekRecord['id'] . "<br>";
-                echo "- Status Tugas di DB: <b>" . $cekRecord['status_tugas'] . "</b><br>";
-            } else {
-                echo "<b>PERINGATAN:</b> User ID $userId tidak memiliki data di tabel <code>asisten_periode</code>!<br>";
-            }
-        }
-        echo "</div>";
+
         // ---------------------------------------------------------
 
         if ($userId) {

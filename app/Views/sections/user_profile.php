@@ -92,23 +92,35 @@
                 <p class="text-muted small"><?= esc($user['nomor']) ?></p>
 
                 <?php if (in_array(strtolower($user['role'] ?? ''), ['admin', 'dosen'])): ?>
-                    <?php if (!empty($user['google_scholar']) || !empty($user['sinta']) || !empty($user['orcid']) || !empty($user['scopus'])): ?>
-                        <h5 class="h6 mt-4">Platform Penelitian:</h5>
-                        <div class="d-flex gap-3 platform-links">
-                            <?php if (!empty($user['google_scholar'])): ?>
-                                <a href="<?= esc($user['google_scholar']) ?>" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['sinta'])): ?>
-                                <a href="<?= esc($user['sinta']) ?>" target="_blank" title="SINTA"><i class="fas fa-book"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['orcid'])): ?>
-                                <a href="<?= esc($user['orcid']) ?>" target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>
-                            <?php endif; ?>
-                            <?php if (!empty($user['scopus'])): ?>
-                                <a href="<?= esc($user['scopus']) ?>" target="_blank" title="Scopus"><i class="fas fa-university"></i></a>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
+                    <h5 class="h6 mt-4">Platform Penelitian:</h5>
+                    <div class="d-flex gap-3 platform-links fs-4">
+                        <?php if (!empty($user['scholar_url'])): ?>
+                            <a href="<?= esc($user['scholar_url']) ?>" target="_blank" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                        <?php endif; ?>
+                        <?php if (!empty($user['sinta_url'])): ?>
+                            <a href="<?= esc($user['sinta_url']) ?>" target="_blank" title="SINTA"><i class="fas fa-book"></i></a>
+                        <?php endif; ?>
+                        <?php if (!empty($user['scopus_url'])): ?>
+                            <a href="<?= esc($user['scopus_url']) ?>" target="_blank" title="Scopus"><i class="fas fa-book-open"></i></a>
+                        <?php endif; ?>
+                        <?php if (!empty($user['orcid_url'])): ?>
+                            <a href="<?= esc($user['orcid_url']) ?>" target="_blank" title="ORCID"><i class="fab fa-orcid"></i></a>
+                        <?php endif; ?>
+                    </div>
+                <?php else: ?>
+                    <h5 class="h6 mt-4">Hubungi Kontak:</h5>
+                    <div class="d-flex gap-3 platform-links fs-4">
+                        <?php 
+                        $waNumber = preg_replace('/[^0-9]/', '', $user['no_telp'] ?? '');
+                        if (strpos($waNumber, '0') === 0) {
+                            $waNumber = '62' . substr($waNumber, 1);
+                        }
+                        ?>
+                        <?php if (!empty($waNumber)): ?>
+                            <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="text-success" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <?php endif; ?>
+                        <a href="mailto:<?= esc($user['nomor']) ?>@mahasiswa.itenas.ac.id" class="text-secondary" title="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
                 <?php endif; ?>
             </div>
         </div>

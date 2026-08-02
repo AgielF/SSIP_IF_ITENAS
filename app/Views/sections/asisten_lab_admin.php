@@ -101,8 +101,6 @@
                         <th>Jurusan</th>
                         <th>Role</th>
                         <th>Periode</th> 
-                        <th class="non-printable text-center">Tautan</th>
-                        <th class="non-printable text-center">Status</th>
                         <th class="non-printable text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -175,6 +173,16 @@
                                     <div class="btn-group d-flex justify-content-center">
                                         <!-- Tombol Edit & Delete Bawaan -->
                                         <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>" data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>" data-gs="<?= esc($person['google_scholar'] ?? '') ?>" data-sinta="<?= esc($person['sinta'] ?? '') ?>" data-orcid="<?= esc($person['orcid'] ?? '') ?>" data-scopus="<?= esc($person['scopus'] ?? '') ?>" data-status="<?= esc($person['status_tugas'] ?? 'belum selesai') ?>">
+                                <td>
+                                    <div class="btn-group d-flex justify-content-center">
+                                        <button class="btn btn-light btn-sm edit-btn border-end" title="Edit" 
+                                                data-index="<?= $i ?>" 
+                                                data-user-id="<?= esc($person['id']) ?>" 
+                                                data-periode-name="<?= esc($person['nama_periode'] ?? '') ?>"
+                                                data-sinta-url="<?= esc($person['sinta_url'] ?? '') ?>"
+                                                data-scopus-url="<?= esc($person['scopus_url'] ?? '') ?>"
+                                                data-scholar-url="<?= esc($person['scholar_url'] ?? '') ?>"
+                                                data-orcid-url="<?= esc($person['orcid_url'] ?? '') ?>">
                                             <i class="fas fa-pencil-alt"></i>
                                         </button>
                                         <button class="btn btn-light btn-sm text-danger delete-btn" title="Hapus" data-index="<?= $i ?>" data-user-id="<?= esc($person['id']) ?>">
@@ -226,43 +234,6 @@
 </div>
 
 <script>
-// --- FUNGSI AJAX STATUS TUGAS SERTIFIKAT ---
-function toggleStatusTugas(idAsistenPeriode, statusSaatIni) {
-    let statusBaru = (statusSaatIni === 'selesai') ? 'belum selesai' : 'selesai';
-    
-    if (!confirm(`Ubah status tugas sertifikat menjadi "${statusBaru.toUpperCase()}"?`)) {
-        return;
-    }
-
-    const csrfName = '<?= csrf_token() ?>';
-    const csrfHash = '<?= csrf_hash() ?>';
-
-    fetch(`<?= site_url('sertifikat/status/') ?>${idAsistenPeriode}`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({ 
-            status_tugas: statusBaru,
-            [csrfName]: csrfHash
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            location.reload(); 
-        } else {
-            alert('Gagal: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan koneksi saat mengubah status.');
-    });
-}
-
-// --- FUNGSI UI BAWAAN ---
 const listPeriode = <?= json_encode($listPeriode ?? []) ?>;
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -347,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tableBody.innerHTML = ''; 
         if (paginatedRows.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="8" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">Data tidak ditemukan.</td></tr>`;
         } else {
             paginatedRows.forEach((row, index) => {
                 row.cells[0].textContent = startIndex + index + 1; 
@@ -425,9 +396,8 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="mb-3"><label class="form-label">Role <span class="text-danger">*</span></label>
                 <select class="form-select" name="role_id" id="dynamic-role-select" required>
                     <option value="1">Kepala Laboratorium</option>
-                    <option value="2">Asisten</option>
+                    <option value="2" selected>Asisten</option>
                     <option value="3">Dosen</option>
-                    
                 </select>
             </div>
             <div class="mb-3" id="dynamic-periode-container" style="display:none;">
@@ -435,25 +405,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 <select class="form-select mb-2" name="id_periode">
                     ${periodeOptions}
                 </select>
-                <label class="form-label">Status Tugas</label>
-                <select class="form-select" name="status_tugas">
-                    <option value="belum selesai">Masih Berjalan</option>
-                    <option value="selesai">Selesai</option>
-                </select>
             </div>
-            <div id="dynamic-research-container" style="display:none;">
-                <h6 class="mt-3">Tautan Penelitian (Opsional)</h6>
-                <div class="mb-3"><label class="form-label"><i class="fas fa-graduation-cap"></i> Google Scholar</label><input type="url" class="form-control" name="google_scholar" placeholder="https://scholar.google.com/..."></div>
-                <div class="mb-3"><label class="form-label"><i class="fas fa-book"></i> SINTA</label><input type="url" class="form-control" name="sinta" placeholder="https://sinta.kemdikbud.go.id/..."></div>
-                <div class="mb-3"><label class="form-label"><i class="fab fa-orcid"></i> ORCID</label><input type="url" class="form-control" name="orcid" placeholder="https://orcid.org/..."></div>
-                <div class="mb-3"><label class="form-label"><i class="fas fa-university"></i> Scopus</label><input type="url" class="form-control" name="scopus" placeholder="https://www.scopus.com/..."></div>
+            <!-- Academic links (default hidden because Asisten is default role selected) -->
+            <div id="academic-links-container" style="display:none;">
+                <hr>
+                <h6 class="mb-3">Profil Akademik (Khusus Dosen / Kepala Lab)</h6>
+                <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta_url" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
+                <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus_url" placeholder="https://www.scopus.com/pages/authors/..."></div>
+                <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="scholar_url" placeholder="https://scholar.google.com/citations?user=..."></div>
+                <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid_url" placeholder="https://orcid.org/..."></div>
             </div>`;
         
         modalForm.innerHTML = formHtml;
         
+        // Initial setup for default Asisten role selection
+        document.getElementById('dynamic-periode-container').style.display = 'block';
+        document.getElementById('academic-links-container').style.display = 'none';
+
         document.getElementById('dynamic-role-select').addEventListener('change', function() {
             document.getElementById('dynamic-periode-container').style.display = this.value === '2' ? 'block' : 'none';
-            document.getElementById('dynamic-research-container').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
+            document.getElementById('academic-links-container').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
         });
 
         // Trigger change to set initial visibility
@@ -568,8 +539,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 periodeOptions += `<option value="${p.id_periode}" ${isSelected}>${p.nama_periode}</option>`;
             });
 
+            const sintaUrl = target.dataset.sintaUrl || '';
+            const scopusUrl = target.dataset.scopusUrl || '';
+            const scholarUrl = target.dataset.scholarUrl || '';
+            const orcidUrl = target.dataset.orcidUrl || '';
+
             const isAsisten = rowData.dataset.roleId === '2';
             const displayPeriode = isAsisten ? 'block' : 'none';
+            const isAcademic = rowData.dataset.roleId === '1' || rowData.dataset.roleId === '3';
+            const displayAcademic = isAcademic ? 'block' : 'none';
 
             const formHtml = `<input type="hidden" name="${csrfTokenName}" value="${csrfTokenValue}">
                 <div class="mb-3"><label class="form-label">Nomor</label><input type="text" class="form-control" name="nomor" value="${rowData.cells[1].textContent}"></div>
@@ -582,7 +560,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         <option value="1" ${rowData.dataset.roleId === '1' ? 'selected' : ''}>Kepala Laboratorium</option>
                         <option value="2" ${rowData.dataset.roleId === '2' ? 'selected' : ''}>Asisten</option>
                         <option value="3" ${rowData.dataset.roleId === '3' ? 'selected' : ''}>Dosen</option>
-                        
                     </select>
                 </div>
                 <div class="mb-3" id="dynamic-periode-container-edit" style="display:${displayPeriode};">
@@ -590,25 +567,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     <select class="form-select mb-2" name="id_periode">
                         ${periodeOptions}
                     </select>
-                    <label class="form-label">Status Tugas</label>
-                    <select class="form-select" name="status_tugas">
-                        <option value="belum selesai" ${currentStatus === 'belum selesai' ? 'selected' : ''}>Masih Berjalan</option>
-                        <option value="selesai" ${currentStatus === 'selesai' ? 'selected' : ''}>Selesai</option>
-                    </select>
                 </div>
-                <div id="dynamic-research-container-edit" style="display:${(rowData.dataset.roleId === '1' || rowData.dataset.roleId === '3') ? 'block' : 'none'};">
-                    <h6 class="mt-3">Tautan Penelitian (Opsional)</h6>
-                    <div class="mb-3"><label class="form-label"><i class="fas fa-graduation-cap"></i> Google Scholar</label><input type="url" class="form-control" name="google_scholar" value="${target.dataset.gs || ''}"></div>
-                    <div class="mb-3"><label class="form-label"><i class="fas fa-book"></i> SINTA</label><input type="url" class="form-control" name="sinta" value="${target.dataset.sinta || ''}"></div>
-                    <div class="mb-3"><label class="form-label"><i class="fab fa-orcid"></i> ORCID</label><input type="url" class="form-control" name="orcid" value="${target.dataset.orcid || ''}"></div>
-                    <div class="mb-3"><label class="form-label"><i class="fas fa-university"></i> Scopus</label><input type="url" class="form-control" name="scopus" value="${target.dataset.scopus || ''}"></div>
+                <!-- Academic links edit (visible for role_id 1 and 3) -->
+                <div id="academic-links-container-edit" style="display:${displayAcademic};">
+                    <hr>
+                    <h6 class="mb-3">Profil Akademik (Khusus Dosen / Kepala Lab)</h6>
+                    <div class="mb-3"><label class="form-label">SINTA URL</label><input type="url" class="form-control" name="sinta_url" value="${sintaUrl}" placeholder="https://sinta.kemdiktisaintek.go.id/authors/profile/..."></div>
+                    <div class="mb-3"><label class="form-label">Scopus URL</label><input type="url" class="form-control" name="scopus_url" value="${scopusUrl}" placeholder="https://www.scopus.com/pages/authors/..."></div>
+                    <div class="mb-3"><label class="form-label">Google Scholar URL</label><input type="url" class="form-control" name="scholar_url" value="${scholarUrl}" placeholder="https://scholar.google.com/citations?user=..."></div>
+                    <div class="mb-3"><label class="form-label">ORCID URL</label><input type="url" class="form-control" name="orcid_url" value="${orcidUrl}" placeholder="https://orcid.org/..."></div>
                 </div>`;
 
             modalForm.innerHTML = formHtml;
 
             document.getElementById('dynamic-role-select-edit').addEventListener('change', function() {
                 document.getElementById('dynamic-periode-container-edit').style.display = this.value === '2' ? 'block' : 'none';
-                document.getElementById('dynamic-research-container-edit').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
+                document.getElementById('academic-links-container-edit').style.display = (this.value === '1' || this.value === '3') ? 'block' : 'none';
             });
 
             dataModal.show();

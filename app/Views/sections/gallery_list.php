@@ -2,7 +2,8 @@
     /* Menjaga rasio gambar dan video tetap 16:9 agar rapi */
     .gallery-card .card-img-top { 
         aspect-ratio: 16/9; 
-        object-fit: cover; 
+        object-fit: contain; 
+        background-color: #f8f9fa; 
     }
     .video-container { 
         position: relative; 
@@ -80,10 +81,13 @@
                 <iframe src="<?= esc($urlVideo) ?>" title="<?= esc($item['keterangan']) ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
               </div>
             <?php else: ?>
-              <img src="<?= base_url('uploads/galeri/' . esc($item['file_url'])) ?>" 
-                   class="card-img-top" 
-                   alt="<?= esc($item['keterangan']) ?>"
-                   onerror="this.src='https://placehold.co/800x450/E2E8F0/334155?text=Gambar+Tidak+Tersedia'">
+              <a href="<?= base_url('uploads/galeri/' . esc($item['file_url'])) ?>" data-bs-toggle="modal" data-bs-target="#previewImageModal">
+                <img src="<?= base_url('uploads/galeri/' . esc($item['file_url'])) ?>" 
+                     class="card-img-top" 
+                     alt="<?= esc($item['keterangan']) ?>"
+                     style="cursor: pointer;"
+                     onerror="this.src='https://placehold.co/800x450/E2E8F0/334155?text=Gambar+Tidak+Tersedia'">
+              </a>
             <?php endif; ?>
             
             <div class="card-body">
@@ -109,6 +113,17 @@
   </div>
 </div>
 
+<!-- Modal Pratinjau Gambar -->
+<div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 shadow-none" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); z-index: 1055;"></button>
+                <img id="modalPreviewImg" src="" alt="Pratinjau Gambar" class="img-fluid rounded-3 shadow-lg" style="max-height: 85vh; width: auto; object-fit: contain; border: 4px solid #fff; background-color: #000;">
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -174,5 +189,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Event Listener untuk Dropdown Sort
   gallerySortSelect.addEventListener('change', updateGalleryView);
+
+  // --- LOGIKA PREVIEW GAMBAR MODAL ---
+  const previewImageModal = document.getElementById('previewImageModal');
+  const modalPreviewImg = document.getElementById('modalPreviewImg');
+  if (previewImageModal && modalPreviewImg) {
+      previewImageModal.addEventListener('show.bs.modal', function (event) {
+          const triggerLink = event.relatedTarget;
+          const imgSrc = triggerLink.getAttribute('href');
+          modalPreviewImg.src = imgSrc;
+      });
+  }
 });
 </script>

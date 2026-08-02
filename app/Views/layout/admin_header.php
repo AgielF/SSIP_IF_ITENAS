@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $title ?? 'Admin Panel' ?></title>
+    <!-- Favicon Logo Lab -->
+    <link rel="icon" type="image/jpeg" href="<?= base_url('assets/images/GambarLogo.jpg') ?>">
     
     <!-- Bootstrap CSS -->
     <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">

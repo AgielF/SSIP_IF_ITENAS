@@ -80,6 +80,38 @@
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
+
+                    <?php if (in_array(strtolower($user['role_id'] ?? ''), ['admin', 'dosen', '1', '3'])): ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Platform Penelitian</h6>
+                        <div class="d-flex gap-3 fs-5">
+                            <?php if (!empty($user['scholar_url'])): ?>
+                                <a href="<?= esc($user['scholar_url']) ?>" target="_blank" class="text-dark" title="Google Scholar"><i class="fas fa-graduation-cap"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['sinta_url'])): ?>
+                                <a href="<?= esc($user['sinta_url']) ?>" target="_blank" class="text-dark" title="SINTA"><i class="fas fa-book"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['scopus_url'])): ?>
+                                <a href="<?= esc($user['scopus_url']) ?>" target="_blank" class="text-dark" title="Scopus"><i class="fas fa-book-open"></i></a>
+                            <?php endif; ?>
+                            <?php if (!empty($user['orcid_url'])): ?>
+                                <a href="<?= esc($user['orcid_url']) ?>" target="_blank" class="text-dark" title="ORCID"><i class="fab fa-orcid"></i></a>
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <h6 class="mt-3 mb-2"><i class="fas fa-link me-2 text-primary"></i>Hubungi Kontak</h6>
+                        <div class="d-flex gap-3 fs-5">
+                            <?php 
+                            $waNumber = preg_replace('/[^0-9]/', '', $user['no_telp'] ?? '');
+                            if (strpos($waNumber, '0') === 0) {
+                                $waNumber = '62' . substr($waNumber, 1);
+                            }
+                            ?>
+                            <?php if (!empty($waNumber)): ?>
+                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="text-success" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                            <?php endif; ?>
+                            <a href="mailto:<?= esc($user['nomor']) ?>@mahasiswa.itenas.ac.id" class="text-secondary" title="Email"><i class="fas fa-envelope"></i></a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

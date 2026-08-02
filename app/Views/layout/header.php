@@ -23,6 +23,8 @@ $isDosen   = ($roleName === 'Dosen');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $title ?? 'Lab. SSIP' ?></title>
+    <!-- Favicon Logo Lab -->
+    <link rel="icon" type="image/jpeg" href="<?= base_url('assets/images/GambarLogo.jpg') ?>">
     
 
     <!-- Bootstrap CSS -->

@@ -50,8 +50,8 @@ class RoleFilter implements FilterInterface
                     ->setStatusCode(403);
             }
 
-            // simpan user supaya bisa dipakai di controller
-            $request->user = $decoded;
+            // simpan user supaya bisa dipakai di controller (dinonaktifkan untuk menghindari deprecation warning di PHP 8.2+)
+            // $request->user = $decoded;
 
         } catch (\Exception $e) {
             return Services::response()

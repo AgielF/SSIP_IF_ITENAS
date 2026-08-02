@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Login | Sistem Informasi SKK</title>
+    <!-- Favicon Logo Lab -->
+    <link rel="icon" type="image/jpeg" href="<?= base_url('assets/images/GambarLogo.jpg') ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Font -->

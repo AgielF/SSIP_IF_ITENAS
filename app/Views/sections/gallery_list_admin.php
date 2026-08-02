@@ -4,7 +4,8 @@
     .fm-table tbody tr:hover { background-color: #f8f9fa; }
     .nav-tabs .nav-link { color: #555; font-weight: 500; }
     .nav-tabs .nav-link.active { color: #0d6efd; border-color: #dee2e6 #dee2e6 #fff; }
-    .img-thumbnail-table { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; }
+    .img-thumbnail-table { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+    .img-thumbnail-table:hover { transform: scale(1.05); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
     @media print {
         body * { visibility: hidden; }
         #printable-area, #printable-area * { visibility: visible; }
@@ -105,7 +106,7 @@
                                                     <i class="fab fa-youtube me-1"></i> Link Video
                                                 </a>
                                             <?php else: ?>
-                                                <a href="<?= base_url('uploads/galeri/' . $row[4]) ?>" target="_blank">
+                                                <a href="<?= base_url('uploads/galeri/' . $row[4]) ?>" data-bs-toggle="modal" data-bs-target="#previewImageModal">
                                                     <img src="<?= base_url('uploads/galeri/' . $row[4]) ?>" 
                                                          alt="Galeri" 
                                                          class="img-thumbnail-table"
@@ -240,6 +241,18 @@
                 <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Modal Pratinjau Gambar -->
+<div class="modal fade" id="previewImageModal" tabindex="-1" aria-labelledby="previewImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body p-0 text-center position-relative">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 shadow-none" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6)); z-index: 1055;"></button>
+                <img id="modalPreviewImg" src="" alt="Pratinjau Gambar" class="img-fluid rounded-3 shadow-lg" style="max-height: 85vh; width: auto; object-fit: contain; border: 4px solid #fff; background-color: #000;">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -425,6 +438,17 @@ document.addEventListener('DOMContentLoaded', function() {
             editModal.show();
         });
     });
+
+    // --- 5. LOGIKA PREVIEW GAMBAR MODAL ---
+    const previewImageModal = document.getElementById('previewImageModal');
+    const modalPreviewImg = document.getElementById('modalPreviewImg');
+    if (previewImageModal && modalPreviewImg) {
+        previewImageModal.addEventListener('show.bs.modal', function (event) {
+            const triggerLink = event.relatedTarget;
+            const imgSrc = triggerLink.getAttribute('href');
+            modalPreviewImg.src = imgSrc;
+        });
+    }
 
 });
 </script>

@@ -40,6 +40,14 @@
         <div class="row g-4 filterable-items">
             <?php if (!empty($asisten)): ?>
                 <?php foreach ($asisten as $i => $a): ?>
+                <?php 
+                $links = [
+                    'scholar' => !empty($a['scholar_url']) ? $a['scholar_url'] : '#',
+                    'sinta'   => !empty($a['sinta_url']) ? $a['sinta_url'] : '#',
+                    'scopus'  => !empty($a['scopus_url']) ? $a['scopus_url'] : '#',
+                    'orcid'   => !empty($a['orcid_url']) ? $a['orcid_url'] : '#'
+                ];
+                ?>
                 <div class="col-lg-3 col-md-4 col-sm-6 col-12 filter-item" data-role="<?= esc(strtolower($a['role'] ?? '')) ?>" data-period="<?= esc($a['nama_periode'] ?? 'semua') ?>">
                     <div class="card h-100 shadow-sm">
                         <div class="position-relative">
@@ -68,28 +76,48 @@
                                 <?= esc($a['nama_periode'] ?? '-') ?>
                             </p>
                             <?php if (in_array(strtolower($a['role'] ?? ''), ['admin', 'dosen'])): ?>
-                                <div class="d-flex justify-content-center gap-2 flex-wrap">
-                                    <?php if (!empty($a['google_scholar'])): ?>
-                                        <a href="<?= esc($a['google_scholar']) ?>" target="_blank" class="btn btn-primary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="Google Scholar">
-                                            <i class="fas fa-graduation-cap fa-sm"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($a['sinta'])): ?>
-                                        <a href="<?= esc($a['sinta']) ?>" target="_blank" class="btn btn-info btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="SINTA">
-                                            <i class="fas fa-book fa-sm"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($a['orcid'])): ?>
-                                        <a href="<?= esc($a['orcid']) ?>" target="_blank" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" title="ORCID">
-                                            <i class="fab fa-orcid fa-sm"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                    <?php if (!empty($a['scopus'])): ?>
-                                        <a href="<?= esc($a['scopus']) ?>" target="_blank" class="btn btn-warning btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="Scopus">
-                                            <i class="fas fa-university fa-sm"></i>
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
+                            <div class="d-flex justify-content-center gap-2">
+                                <!-- Google Scholar -->
+                                <a href="<?= esc($links['scholar']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #4285F4;" title="Google Scholar">
+                                    <i class="fas fa-graduation-cap fa-sm"></i>
+                                </a>
+                                
+                                <!-- Sinta -->
+                                <a href="<?= esc($links['sinta']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #005a9c;" title="SINTA">
+                                    <i class="fas fa-book fa-sm"></i>
+                                </a>
+                                
+                                <!-- Scopus -->
+                                <a href="<?= esc($links['scopus']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #f6821f;" title="Scopus">
+                                    <i class="fas fa-book-open fa-sm"></i>
+                                </a>
+                                
+                                <!-- ORCID -->
+                                <a href="<?= esc($links['orcid']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #a6ce39;" title="ORCID">
+                                    <i class="fab fa-orcid fa-sm"></i>
+                                </a>
+                            </div>
+                            <?php else: ?>
+                            <!-- Tampilan Asisten/Mahasiswa: WhatsApp & Email Akademik -->
+                            <div class="d-flex justify-content-center gap-2">
+                                <?php 
+                                $waNumber = preg_replace('/[^0-9]/', '', $a['no_telp'] ?? '');
+                                if (strpos($waNumber, '0') === 0) {
+                                    $waNumber = '62' . substr($waNumber, 1);
+                                }
+                                ?>
+                                <!-- WhatsApp -->
+                                <?php if (!empty($waNumber)): ?>
+                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="btn btn-success btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px;" title="Hubungi WhatsApp">
+                                    <i class="fab fa-whatsapp fa-sm"></i>
+                                </a>
+                                <?php endif; ?>
+
+                                <!-- Email Akademik Itenas -->
+                                <a href="mailto:<?= esc($a['nomor']) ?>@mahasiswa.itenas.ac.id" class="btn btn-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 32px; height: 32px; background-color: #6c757d;" title="Kirim Email">
+                                    <i class="fas fa-envelope fa-sm"></i>
+                                </a>
+                            </div>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -119,7 +147,6 @@
             </div>
         </div>
     </div> 
-
 <style>
 .aspect-ratio-portrait {
     aspect-ratio: 3/4;
