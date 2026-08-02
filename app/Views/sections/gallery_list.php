@@ -68,8 +68,8 @@
                 <?php
                     $urlVideo = $item['file_url'];
                     
-                    // 1. Deteksi & Convert Link YouTube
-                    if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $urlVideo, $ytMatch)) {
+                    // 1. Deteksi & Convert Link YouTube (termasuk Shorts)
+                    if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|shorts/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $urlVideo, $ytMatch)) {
                         $urlVideo = 'https://www.youtube.com/embed/' . $ytMatch[1];
                     } 
                     // 2. Deteksi & Convert Link Google Drive
