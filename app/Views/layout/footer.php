@@ -41,7 +41,7 @@
                 </p>
                 <p class="small">
                     <strong>Email:</strong><br>
-                    labSSIP@itenas.ac.id
+                    jasman@itenas.ac.id
                 </p>
                 <div class="social-icons">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
