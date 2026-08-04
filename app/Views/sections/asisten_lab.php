@@ -60,70 +60,74 @@
                                 <img src="https://placehold.co/400x600/E2E8F0/334155?text=<?= urlencode(esc($a['nama'])) ?>" class="card-img-top aspect-ratio-portrait" alt="Foto <?= esc($a['nama']) ?>">
                             <?php endif; ?>
                         </div>
-                        <div class="card-body text-center p-4">
-                            <h5 class="card-title mb-1 fw-bold">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <h5 class="card-title mb-1 fw-bold card-title-height">
                                 <a href="<?= base_url('asisten/' . $a['id']) ?>" class="text-decoration-none text-dark card-name-link">
                                     <?= esc($a['nama']) ?>
                                 </a>
                             </h5>
                             <p class="card-text text-muted small mb-2 d-flex align-items-center justify-content-center">
-                                <i class="far fa-id-card me-1.5 text-muted"></i> <?= esc($a['nomor'] ?? 'N/A') ?>
+                                <i class="far fa-id-card text-muted" style="margin-right: 5px;"></i> <?= esc($a['nomor'] ?? 'N/A') ?>
                             </p>
-                            <span class="badge bg-light text-secondary border px-3 py-1.5 mb-3 small d-inline-block rounded-pill">
-                                <?= esc($a['jurusan'] ?? 'Informatika') ?>
-                            </span>
-
-                            <hr class="my-3 opacity-25">
-
-                            <?php if (in_array(strtolower($a['role'] ?? ''), ['admin', 'dosen'])): ?>
-                            <div class="d-flex justify-content-center gap-2">
-                                <!-- Google Scholar -->
-                                <a href="<?= esc($links['scholar']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #4285F4; border: none; transition: transform 0.2s;" title="Google Scholar" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fas fa-graduation-cap fa-sm"></i>
-                                </a>
-                                
-                                <!-- Sinta -->
-                                <a href="<?= esc($links['sinta']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #005a9c; border: none; transition: transform 0.2s;" title="SINTA" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fas fa-book fa-sm"></i>
-                                </a>
-                                
-                                <!-- Scopus -->
-                                <a href="<?= esc($links['scopus']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #f6821f; border: none; transition: transform 0.2s;" title="Scopus" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fas fa-book-open fa-sm"></i>
-                                </a>
-                                
-                                <!-- ORCID -->
-                                <a href="<?= esc($links['orcid']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #a6ce39; border: none; transition: transform 0.2s;" title="ORCID" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fab fa-orcid fa-sm"></i>
-                                </a>
-                            </div>
-                            <?php else: ?>
-                            <!-- Tampilan Asisten/Mahasiswa: WhatsApp, Email & Periode -->
-                            <div class="d-flex justify-content-center align-items-center gap-2">
-                                <?php 
-                                $waNumber = preg_replace('/[^0-9]/', '', $a['no_telp'] ?? '');
-                                if (strpos($waNumber, '0') === 0) {
-                                    $waNumber = '62' . substr($waNumber, 1);
-                                }
-                                ?>
-                                <!-- WhatsApp -->
-                                <?php if (!empty($waNumber)): ?>
-                                <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #25D366; border: none; transition: transform 0.2s;" title="WhatsApp" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-                                <?php endif; ?>
-
-                                <!-- Email Akademik Itenas -->
-                                <a href="mailto:<?= esc($a['nomor']) ?>@mahasiswa.itenas.ac.id" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #EA4335; border: none; transition: transform 0.2s;" title="Kirim Email" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                                    <i class="fas fa-envelope"></i>
-                                </a>
-
-                                <!-- Periode Tag -->
-                                <span class="badge bg-light text-dark border rounded-pill px-3 py-2 d-inline-flex align-items-center small" style="font-weight: 500; height: 36px;">
-                                    <i class="far fa-calendar-alt me-1.5 text-muted"></i> <?= esc($a['nama_periode'] ?? '-') ?>
+                            <div>
+                                <span class="badge bg-light text-secondary border px-3 py-1.5 mb-3 small d-inline-block rounded-pill">
+                                    <?= esc($a['jurusan'] ?? 'Informatika') ?>
                                 </span>
                             </div>
-                            <?php endif; ?>
+
+                            <div class="mt-auto">
+                                <hr class="my-3 opacity-25">
+
+                                <?php if (in_array(strtolower($a['role'] ?? ''), ['admin', 'dosen'])): ?>
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Google Scholar -->
+                                    <a href="<?= esc($links['scholar']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #4285F4; border: none; transition: transform 0.2s;" title="Google Scholar" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fas fa-graduation-cap fa-sm"></i>
+                                    </a>
+                                    
+                                    <!-- Sinta -->
+                                    <a href="<?= esc($links['sinta']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #005a9c; border: none; transition: transform 0.2s;" title="SINTA" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fas fa-book fa-sm"></i>
+                                    </a>
+                                    
+                                    <!-- Scopus -->
+                                    <a href="<?= esc($links['scopus']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #f6821f; border: none; transition: transform 0.2s;" title="Scopus" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fas fa-book-open fa-sm"></i>
+                                    </a>
+                                    
+                                    <!-- ORCID -->
+                                    <a href="<?= esc($links['orcid']) ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #a6ce39; border: none; transition: transform 0.2s;" title="ORCID" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fab fa-orcid fa-sm"></i>
+                                    </a>
+                                </div>
+                                <?php else: ?>
+                                <!-- Tampilan Asisten/Mahasiswa: WhatsApp, Email & Periode -->
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <?php 
+                                    $waNumber = preg_replace('/[^0-9]/', '', $a['no_telp'] ?? '');
+                                    if (strpos($waNumber, '0') === 0) {
+                                        $waNumber = '62' . substr($waNumber, 1);
+                                    }
+                                    ?>
+                                    <!-- WhatsApp -->
+                                    <?php if (!empty($waNumber)): ?>
+                                    <a href="https://wa.me/<?= $waNumber ?>" target="_blank" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #25D366; border: none; transition: transform 0.2s;" title="WhatsApp" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                    <?php endif; ?>
+
+                                    <!-- Email Akademik Itenas -->
+                                    <a href="mailto:<?= esc($a['nomor']) ?>@mahasiswa.itenas.ac.id" class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background-color: #EA4335; border: none; transition: transform 0.2s;" title="Kirim Email" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                        <i class="fas fa-envelope"></i>
+                                    </a>
+
+                                    <!-- Periode Tag -->
+                                    <span class="badge bg-light text-dark border rounded-pill px-3 py-2 d-inline-flex align-items-center small" style="font-weight: 500; height: 36px;">
+                                        <i class="far fa-calendar-alt text-muted" style="margin-right: 6px;"></i> <?= esc($a['nama_periode'] ?? '-') ?>
+                                    </span>
+                                </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -165,6 +169,12 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+}
+.card-title-height {
+    min-height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 </style>
 

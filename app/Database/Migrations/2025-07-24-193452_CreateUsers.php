@@ -16,7 +16,7 @@ class CreateUsersTable extends Migration
             ],
             'nomor' => [
                 'type' => 'VARCHAR',
-                'constraint' => 9,
+                'constraint' => 30,
                 'unique' => true
             ],
             'nama' => [
