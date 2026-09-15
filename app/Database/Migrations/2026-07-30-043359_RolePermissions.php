@@ -23,15 +23,31 @@ class RolePermissions extends Migration
         $builder = $db->table('role_permissions');
         
         $seedData = [
-            // Asisten (Role 2) default permissions
+            // Asisten (Role 2) default permissions (Non-CRUD)
             ['role_id' => 2, 'menu_key' => 'jadwal_saya'],
-            ['role_id' => 2, 'menu_key' => 'jadwal_admin'],
             ['role_id' => 2, 'menu_key' => 'sertifikat_klaim'],
             
-            // Dosen (Role 3) default permissions
-            ['role_id' => 3, 'menu_key' => 'project_lab_admin'],
-            ['role_id' => 3, 'menu_key' => 'penelitian_proyek_admin'],
-            ['role_id' => 3, 'menu_key' => 'publikasi_ilmiah_admin']
+            // Asisten (Role 2) default permissions (CRUD)
+            ['role_id' => 2, 'menu_key' => 'jadwal_admin_view'],
+            ['role_id' => 2, 'menu_key' => 'jadwal_admin_create'],
+            ['role_id' => 2, 'menu_key' => 'jadwal_admin_update'],
+            ['role_id' => 2, 'menu_key' => 'jadwal_admin_delete'],
+            
+            // Dosen (Role 3) default permissions (CRUD)
+            ['role_id' => 3, 'menu_key' => 'project_lab_admin_view'],
+            ['role_id' => 3, 'menu_key' => 'project_lab_admin_create'],
+            ['role_id' => 3, 'menu_key' => 'project_lab_admin_update'],
+            ['role_id' => 3, 'menu_key' => 'project_lab_admin_delete'],
+            
+            ['role_id' => 3, 'menu_key' => 'penelitian_proyek_admin_view'],
+            ['role_id' => 3, 'menu_key' => 'penelitian_proyek_admin_create'],
+            ['role_id' => 3, 'menu_key' => 'penelitian_proyek_admin_update'],
+            ['role_id' => 3, 'menu_key' => 'penelitian_proyek_admin_delete'],
+
+            ['role_id' => 3, 'menu_key' => 'publikasi_ilmiah_admin_view'],
+            ['role_id' => 3, 'menu_key' => 'publikasi_ilmiah_admin_create'],
+            ['role_id' => 3, 'menu_key' => 'publikasi_ilmiah_admin_update'],
+            ['role_id' => 3, 'menu_key' => 'publikasi_ilmiah_admin_delete']
         ];
         
         $builder->insertBatch($seedData);
