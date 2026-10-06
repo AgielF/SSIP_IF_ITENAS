@@ -137,7 +137,7 @@ Follow these steps to run the project in a local environment (Ubuntu):
    database.default.DBDriver = MySQLi
 
    # JWT Secret (Minimum 32 characters)
-   JWT_SECRET = rahasia_keamanan_sistem_ssip_lab_itenas_2026_aman!
+   JWT_SECRET = ganti_dengan_string_acak_minimal_32_karakter
    ```
 
 4. **Migration & Seeding Database**

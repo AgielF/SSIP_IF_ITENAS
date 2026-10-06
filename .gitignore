@@ -127,3 +127,9 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+# Artefak lokal, jangan dipublikasikan
+/*.sql
+/hasil_*.txt
+/sqli_report.txt
+/target_routes.txt
